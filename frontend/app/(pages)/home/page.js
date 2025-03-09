@@ -1,50 +1,49 @@
-"use client"
-import { Search, User, Calendar, Clock, ChevronLeft, ChevronRight, Github, Twitter } from "lucide-react"
-import Image from "next/image"
+"use client";
+import {
+  Search,
+  User,
+  Calendar,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  Github,
+  Twitter,
+} from "lucide-react";
+import Image from "next/image";
 
-import {RestaurantCard} from "@/components/common/RestaurantCard"
-import { StarIcon } from "@/components/common/StarIcon"
+import { RestaurantCard } from "@/components/common/RestaurantCard";
+import { StarIcon } from "@/components/common/StarIcon";
+
+import { Restaurants } from "@/constants/constants";
+
+
 
 export default function Component() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
-
-
-      
-
       <main className="flex-1 container mx-auto px-4 py-6">
-        {/* <h1 className="text-2xl font-bold mb-6">Currently Available Tables</h1> */}
-
-        {/* <div className="relative">
+        <h1 className="text-2xl font-bold mb-6">Currently Available Tables</h1>
+        <div className="relative">
           <div className="flex overflow-x-auto gap-4 pb-4">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <RestaurantCard key={item} />
+            {Restaurants.map((restaurant) => (
+              <RestaurantCard key={restaurant.id} {...restaurant} />
             ))}
-          </div> */}
+          </div>
 
           {/* <button className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
             <ChevronLeft className="h-5 w-5" />
-          </button> */}
+          </button>
 
-          {/* <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
+          <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
             <ChevronRight className="h-5 w-5" />
           </button> */}
-
-
-        {/* </div> */}
-            
-            
-            {/* category */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        </div>
+        {/* category
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           {[1, 2, 3].map((category) => (
             <CategorySection key={category} />
           ))}
         </div> */}
-
-
-
-
-
       </main>
 
       <footer className="text-center py-4 text-sm text-gray-600 border-t">
@@ -55,9 +54,8 @@ export default function Component() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
-
 
 function CategorySection() {
   return (
@@ -84,7 +82,9 @@ function CategorySection() {
                   <StarIcon key={star} className="h-3 w-3" />
                 ))}
               </div>
-              <span className="text-xs text-gray-500 ml-1">(Round down review #)</span>
+              <span className="text-xs text-gray-500 ml-1">
+                (Round down review #)
+              </span>
             </div>
 
             <div className="text-xs text-gray-500">Cuisine | $$ | Region</div>
@@ -92,9 +92,8 @@ function CategorySection() {
         </div>
       ))}
     </div>
-  )
+  );
 }
-
 
 function ChevronDown() {
   return (
@@ -111,6 +110,5 @@ function ChevronDown() {
     >
       <polyline points="6 9 12 15 18 9" />
     </svg>
-  )
+  );
 }
-
