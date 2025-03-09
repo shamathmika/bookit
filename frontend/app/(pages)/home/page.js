@@ -14,68 +14,9 @@ import Image from "next/image";
 import { RestaurantCard } from "@/components/common/RestaurantCard";
 import { StarIcon } from "@/components/common/StarIcon";
 
-const Restaurants = [
-  {
-    id: 1,
-    name: "Joe's Diner",
-    image:
-      "https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.0,
-    cuisine: "American",
-    priceRange: "$$",
-    region: "Midtown",
-    bookings: 8,
-    time: 30,
-  },
-  {
-    id: 2,
-    name: "Pasta Palace",
-    image:
-      "https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.5,
-    cuisine: "Italian",
-    priceRange: "$$$",
-    region: "Downtown",
-    bookings: 12,
-    time: 45,
-  },
-  {
-    id: 3,
-    name: "Sushi Central",
-    image:
-      "https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.2,
-    cuisine: "Japanese",
-    priceRange: "$$$",
-    region: "Uptown",
-    bookings: 10,
-    time: 60,
-  },
-  {
-    id: 3,
-    name: "Anna Idly",
-    image:
-      "https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.2,
-    cuisine: "South indian",
-    priceRange: "$$$",
-    region: "south",
-    bookings: 10,
-    time: 60,
-  },
-  {
-    id: 3,
-    name: "Anna Idly",
-    image:
-      "https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.2,
-    cuisine: "South indian",
-    priceRange: "$$$",
-    region: "south",
-    bookings: 10,
-    time: 60,
-  },
-];
+import { Restaurants } from "@/constants/constants";
+
+
 
 export default function Component() {
   return (
@@ -89,20 +30,20 @@ export default function Component() {
             ))}
           </div>
 
-          <button className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
+          {/* <button className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
             <ChevronLeft className="h-5 w-5" />
           </button>
 
           <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
             <ChevronRight className="h-5 w-5" />
-          </button>
+          </button> */}
         </div>
-        category
+        {/* category
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           {[1, 2, 3].map((category) => (
             <CategorySection key={category} />
           ))}
-        </div>
+        </div> */}
       </main>
 
       <footer className="text-center py-4 text-sm text-gray-600 border-t">

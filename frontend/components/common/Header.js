@@ -57,10 +57,11 @@ export function Header() {
             <Clock className="h-4 w-4 mr-2" />
             <span>Time</span>
           </div>
-
+          <Link href="/search">
           <button className="bg-[#8B2615] text-white px-6 py-2 rounded">
             Go
           </button>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">
