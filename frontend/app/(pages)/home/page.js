@@ -16,13 +16,13 @@ import { StarIcon } from "@/components/common/StarIcon";
 
 import { Restaurants } from "@/constants/constants";
 
-
+import { Categories } from "@/constants/constants";
 
 export default function Component() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <main className="flex-1 container mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold mb-6">Currently Available Tables</h1>
+        <h1 className="text-4xl font-bold mb-6">Currently Available Tables</h1>
         <div className="relative">
           <div className="flex overflow-x-auto gap-4 pb-4">
             {Restaurants.map((restaurant) => (
@@ -38,12 +38,14 @@ export default function Component() {
             <ChevronRight className="h-5 w-5" />
           </button> */}
         </div>
-        {/* category
+        <div className="text-4xl font-bold mb-6 mt-5">
+        Categories
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          {[1, 2, 3].map((category) => (
-            <CategorySection key={category} />
-          ))}
-        </div> */}
+        {Categories.map((category) => (
+    <CategorySection key={category.id} category={category} />
+  ))}
+        </div>
       </main>
 
       <footer className="text-center py-4 text-sm text-gray-600 border-t">
@@ -56,18 +58,17 @@ export default function Component() {
     </div>
   );
 }
-
-function CategorySection() {
+function CategorySection({ category }) {
   return (
     <div className="border rounded-md p-4">
-      <h2 className="text-xl text-[#8B2615] font-medium mb-4">Category</h2>
+      <h2 className="text-xl text-[#8B2615] font-medium mb-4">{category.name}</h2>
 
       {[1, 2, 3, 4].map((item) => (
         <div key={item} className="flex gap-3 py-3 border-t">
           <div className="flex-shrink-0">
             <Image
-              src="/placeholder.svg?height=60&width=60"
-              alt="Restaurant"
+              src="https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop"
+              alt={category.name}
               width={60}
               height={60}
               className="rounded"
@@ -94,6 +95,8 @@ function CategorySection() {
     </div>
   );
 }
+
+
 
 function ChevronDown() {
   return (

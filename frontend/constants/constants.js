@@ -61,3 +61,27 @@ export const Restaurants = [
       time: 60,
     },
   ];
+
+export const Categories = [
+    {
+      id: 1,
+      name: "Fine Dining",
+    },
+    {
+      id: 2,
+      name: "Fast Food",
+    },
+    {
+      id: 3,
+      name: "Cafes",
+    },
+    // {
+    //   id: 4,
+    //   name: "Buffets",
+    // },
+    // {
+    //   id: 5,
+    //   name: "Street Food",
+    // },
+  ];
+  
