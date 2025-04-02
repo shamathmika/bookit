@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.202</groupId>
-	<artifactId>backend</artifactId>
+	<artifactId>BookIt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>OpenTable</name>
 	<description>Demo project for Spring Boot</description>
