@@ -1,0 +1,451 @@
+[{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ca6"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ca7"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ca8"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "tableNumber": 3,
+  "capacity": 6,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ca9"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "tableNumber": 4,
+  "capacity": 8,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378caa"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "tableNumber": 5,
+  "capacity": 10,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cab"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cac"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cad"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "tableNumber": 3,
+  "capacity": 6,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cae"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378caf"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb0"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 3,
+  "capacity": 6,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb1"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 4,
+  "capacity": 8,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb2"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 5,
+  "capacity": 10,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb3"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 6,
+  "capacity": 2,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb4"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 7,
+  "capacity": 4,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb5"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 8,
+  "capacity": 6,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb6"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 9,
+  "capacity": 8,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb7"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "tableNumber": 10,
+  "capacity": 10,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb8"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cb9"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cba"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "tableNumber": 3,
+  "capacity": 6,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cbb"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "tableNumber": 4,
+  "capacity": 8,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cbc"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cbd"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cbe"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 3,
+  "capacity": 6,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cbf"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 4,
+  "capacity": 8,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc0"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 5,
+  "capacity": 10,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc1"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 6,
+  "capacity": 2,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc2"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 7,
+  "capacity": 4,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc3"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 8,
+  "capacity": 6,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc4"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "tableNumber": 9,
+  "capacity": 8,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc5"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c89"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc6"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c89"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc7"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 1,
+  "capacity": 2,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc8"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 2,
+  "capacity": 4,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cc9"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 3,
+  "capacity": 6,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cca"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 4,
+  "capacity": 8,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ccb"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 5,
+  "capacity": 10,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ccc"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 6,
+  "capacity": 2,
+  "status": "occupied"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378ccd"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 7,
+  "capacity": 4,
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "67d4bb5ecde5488856378cce"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "tableNumber": 8,
+  "capacity": 6,
+  "status": "occupied"
+}]

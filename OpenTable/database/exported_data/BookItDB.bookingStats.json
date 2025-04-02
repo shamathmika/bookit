@@ -1,0 +1,77 @@
+[{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce1"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "month": "2025-03",
+  "totalBookings": 5,
+  "totalCancellations": 0
+},
+{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce2"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "month": "2025-03",
+  "totalBookings": 3,
+  "totalCancellations": 1
+},
+{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce3"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "month": "2025-03",
+  "totalBookings": 0,
+  "totalCancellations": 0
+},
+{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce4"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "month": "2025-03",
+  "totalBookings": 1,
+  "totalCancellations": 1
+},
+{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce5"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "month": "2025-03",
+  "totalBookings": 2,
+  "totalCancellations": 1
+},
+{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce6"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c89"
+  },
+  "month": "2025-03",
+  "totalBookings": 1,
+  "totalCancellations": 0
+},
+{
+  "_id": {
+    "$oid": "67d4c634cde5488856378ce7"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "month": "2025-03",
+  "totalBookings": 1,
+  "totalCancellations": 0
+}]

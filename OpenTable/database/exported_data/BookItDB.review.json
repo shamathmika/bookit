@@ -1,0 +1,417 @@
+[{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cf5"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "customerID": {
+    "$oid": "67d4a1096679edfaf31e70a7"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd3"
+  },
+  "rating": 5,
+  "comments": "The food was excellent, and the service was top-notch. Would highly recommend this place to anyone looking for a great dining experience!",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-16T19:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cf6"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "customerID": {
+    "$oid": "67d4a1096679edfaf31e70aa"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd4"
+  },
+  "rating": 4,
+  "comments": "",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-16T21:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cf7"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9a"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd5"
+  },
+  "rating": 3,
+  "comments": "The food was decent, but the atmosphere could have been better. Overall, it was a fine experience.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-16T14:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cf8"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9b"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd6"
+  },
+  "rating": 2,
+  "comments": "I was disappointed with the food and service. I expected more for the price.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-17T16:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cf9"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9c"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd7"
+  },
+  "rating": 1,
+  "comments": "The reservation was cancelled at the last minute without any prior notice. Very frustrating experience.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-18T10:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cfa"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9d"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd8"
+  },
+  "rating": 5,
+  "comments": "Fantastic experience! The food was absolutely delicious, and the ambiance was perfect for a night out.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-18T22:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cfb"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c89"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9e"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd9"
+  },
+  "rating": 4,
+  "comments": "Great food, but the wait time was a bit long. Overall, I would still come back again.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-18T11:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cfc"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9d"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cda"
+  },
+  "rating": 3,
+  "comments": "The restaurant was decent, but I felt the food was a bit overpriced for what we got.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-18T14:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cfd"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "customerID": {
+    "$oid": "67d4a1096679edfaf31e70a7"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cea"
+  },
+  "rating": 5,
+  "comments": "One of the best dining experiences I've had in a while. The service was excellent, and the food was perfect.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-16T19:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4cd17cde5488856378cfe"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9b"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378ceb"
+  },
+  "rating": 4,
+  "comments": "Good food, but the noise level was quite high. Would prefer a quieter atmosphere.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-16T19:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d194cde5488856378d0b"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd4"
+  },
+  "customerID": {
+    "$oid": "67d4a1096679edfaf31e70aa"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "rating": 4,
+  "comments": "The food was amazing! I had the best steak I've ever tasted. The ambiance was great too, though the service was a little slow.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-16T21:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1a9cde5488856378d0d"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd5"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9a"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "rating": 5,
+  "comments": "Excellent experience. Everything was perfect, from the food to the staff. The dessert was to die for!",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-17T10:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1a9cde5488856378d0e"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd6"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9b"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "rating": 3,
+  "comments": "The food was decent, but there was a bit of a wait, and the place was very noisy. Would come again if it's less crowded.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-16T15:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1bdcde5488856378d10"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd7"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9c"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "rating": 1,
+  "comments": "We were disappointed. The table was dirty, the food was cold, and the staff seemed uninterested in helping. Not coming back.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-18T22:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1bdcde5488856378d11"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd8"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9d"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "rating": 4,
+  "comments": "Nice place! The food was good, but it could have been better. The ambiance was relaxing, though. The service was excellent.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-18T23:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1bdcde5488856378d12"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cd9"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9e"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c89"
+  },
+  "rating": 5,
+  "comments": "Great service, friendly staff, and delicious food. I would definitely recommend it to my friends!",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-19T10:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1d3cde5488856378d14"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cda"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9d"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "rating": 2,
+  "comments": "The food was average, and the service was slow. I had high expectations, but I left feeling disappointed.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-19T14:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1d3cde5488856378d15"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cdb"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9e"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "rating": 4,
+  "comments": "Lovely evening! Food was great, but there was a mix-up with our reservation. Everything else was fine, though.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-20T21:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1d3cde5488856378d16"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cdc"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9f"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "rating": 3,
+  "comments": "It was okay. Nothing special. The food was good but not great. Service was fine but could be improved.",
+  "photos": [],
+  "date": {
+    "$date": "2025-03-21T21:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67d4d1d3cde5488856378d17"
+  },
+  "bookingID": {
+    "$oid": "67d4c14fcde5488856378cdd"
+  },
+  "customerID": {
+    "$oid": "67d4b087cde5488856378c9a"
+  },
+  "restaurantID": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "rating": 5,
+  "comments": "Amazing! Everything was perfect, especially the dessert. I would absolutely come again and recommend it to others.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "date": {
+    "$date": "2025-03-22T22:00:00.000Z"
+  }
+}]

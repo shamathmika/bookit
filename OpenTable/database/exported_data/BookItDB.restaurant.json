@@ -1,0 +1,203 @@
+[{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c83"
+  },
+  "name": "The Gourmet Bistro",
+  "description": "A high-end dining experience offering exquisite French cuisine, carefully crafted by renowned chefs who bring the finest culinary traditions to your table. From delicate appetizers to rich, flavorful main courses, each dish is made with premium ingredients and presented with artistic flair. The restaurant provides a luxurious and intimate ambiance, ideal for special occasions or an elegant night out. With its impeccable service and world-class menu, The Gourmet Bistro is a perfect destination for those looking to indulge in the ultimate gastronomic experience.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "3258 Stevens Creek Blvd",
+    "city": "San Jose",
+    "state": "CA",
+    "zipCode": "95117"
+  },
+  "contact": "123-456-7890",
+  "cuisine": "French",
+  "costRating": 2,
+  "avgStarRating": 4.5,
+  "status": "active",
+  "openTiming": "10:00 AM",
+  "closeTiming": "10:00 PM",
+  "totalTables": 5
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c84"
+  },
+  "name": "Sushi House",
+  "description": "A cozy spot for traditional Japanese sushi.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "1510 Winchester Blvd",
+    "city": "San Jose",
+    "state": "CA",
+    "zipCode": "95128"
+  },
+  "contact": "987-654-3210",
+  "cuisine": "Japanese",
+  "costRating": 1,
+  "avgStarRating": 4.2,
+  "status": "active",
+  "openTiming": "11:00 AM",
+  "closeTiming": "10:00 PM",
+  "totalTables": 3
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c86"
+  },
+  "name": "Pasta Pizzaria",
+  "description": "Serving the finest Italian pasta and pizza, combining traditional Italian recipes with a modern twist. The warm and inviting atmosphere makes it the perfect place for families and friends to gather and enjoy delicious, hand-crafted pizzas and pastas. Whether you are craving a classic Margherita pizza or a hearty bowl of homemade spaghetti, Pasta Pizzaria has something for everyone. The menu features fresh ingredients, local produce, and a wide selection of wines to complement your meal.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "90 S 1st St",
+    "city": "San Jose",
+    "state": "CA",
+    "zipCode": "95113"
+  },
+  "contact": "333-333-3333",
+  "cuisine": "Italian",
+  "costRating": 2,
+  "avgStarRating": 4.3,
+  "status": "active",
+  "openTiming": "11:00 AM",
+  "closeTiming": "10:00 PM",
+  "totalTables": 18
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c87"
+  },
+  "name": "Taco Shack",
+  "description": "Delicious tacos with a modern twist.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "3181 Homestead Rd",
+    "city": "Santa Clara",
+    "state": "CA",
+    "zipCode": "95051"
+  },
+  "contact": "444-444-4444",
+  "cuisine": "Mexican",
+  "costRating": 1,
+  "avgStarRating": 4.1,
+  "status": "active",
+  "openTiming": "12:00 PM",
+  "closeTiming": "8:00 PM",
+  "totalTables": 4
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c88"
+  },
+  "name": "Seafood Galore",
+  "description": "Fresh and high-quality seafood sourced from the finest oceans and prepared with the utmost care. Offering a variety of shellfish, shrimp, and the best cuts of fish.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "1100 N 1st St",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33128"
+  },
+  "contact": "555-444-4444",
+  "cuisine": "Seafood",
+  "costRating": 2,
+  "avgStarRating": 4.7,
+  "status": "active",
+  "openTiming": "10:30 AM",
+  "closeTiming": "11:30 PM",
+  "totalTables": 9
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c89"
+  },
+  "name": "Vegan Bistro",
+  "description": "Healthy and fresh plant-based meals.",
+  "photos": [],
+  "address": {
+    "street": "2200 Ponce de Leon Blvd",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33134"
+  },
+  "contact": "555-999-9999",
+  "cuisine": "Vegan",
+  "costRating": 1,
+  "avgStarRating": 4.3,
+  "status": "active",
+  "openTiming": "8:00 AM",
+  "closeTiming": "10:00 PM",
+  "totalTables": 10
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c8a"
+  },
+  "name": "Vino e Cucina",
+  "description": "Fine Italian dining with a variety of wines from local vineyards.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "555 Napa St",
+    "city": "Napa",
+    "state": "CA",
+    "zipCode": "94559"
+  },
+  "contact": "333-555-1234",
+  "cuisine": "Italian",
+  "costRating": 2,
+  "avgStarRating": 4.5,
+  "status": "active",
+  "openTiming": "9:00 AM",
+  "closeTiming": "10:00 PM",
+  "totalTables": 8
+},
+{
+  "_id": {
+    "$oid": "67d4a687cde5488856378c8b"
+  },
+  "name": "The Steakhouse",
+  "description": "Premium cuts of steak grilled to perfection, served in a classic steakhouse environment.",
+  "photos": [
+    "https://tinyurl.com/yx8zhm94",
+    "https://tinyurl.com/yx8zhm94"
+  ],
+  "address": {
+    "street": "1520 Park Ave",
+    "city": "Chicago",
+    "state": "IL",
+    "zipCode": "60612"
+  },
+  "contact": "312-555-1010",
+  "cuisine": "American",
+  "costRating": 3,
+  "avgStarRating": 4.8,
+  "status": "active",
+  "openTiming": "10:00 AM",
+  "closeTiming": "10:30 PM",
+  "totalTables": 0
+}]
