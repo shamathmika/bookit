@@ -11,8 +11,8 @@
 	<groupId>com.202</groupId>
 	<artifactId>BookIt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>OpenTable</name>
-	<description>Demo project for Spring Boot</description>
+	<name>backend</name>
+	<description>Table reservation website</description>
 	<url/>
 	<licenses>
 		<license/>
