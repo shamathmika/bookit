@@ -1,0 +1,7 @@
+backend/src/main/resources/.env.example
+.DS_Store
+backend/src/main/resources/.env.example
+backend/src/main/resources/.env.example
+backend/src/main/resources/.env.example
+*.example
+backend/src/main/resources/.env.example
