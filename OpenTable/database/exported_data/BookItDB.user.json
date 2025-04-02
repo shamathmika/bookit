@@ -1,0 +1,204 @@
+[{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70a7"
+  },
+  "name": "Bob Smith",
+  "password": "hashed_password_456",
+  "role": "customer",
+  "email": "bob.smith@example.com"
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70a8"
+  },
+  "name": "Indraneel Vishwas Sarode",
+  "password": "admin1",
+  "role": "admin",
+  "email": "indraneel@bookit.com"
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70a9"
+  },
+  "name": "Diana Prince",
+  "password": "hashed_password_321",
+  "role": "manager",
+  "email": "diana.prince@example.com",
+  "restaurantIDs": [
+    {
+      "$oid": "67d4a687cde5488856378c84"
+    },
+    {
+      "$oid": "67d4a687cde5488856378c85"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70aa"
+  },
+  "name": "Ethan Hunt",
+  "password": "hashed_password_654",
+  "role": "customer",
+  "phoneNumber": "+1122334455"
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70ab"
+  },
+  "name": "Fiona Gallagher",
+  "password": "hashed_password_987",
+  "role": "customer",
+  "email": "fiona.g@example.com",
+  "phoneNumber": "+2233445566"
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70ac"
+  },
+  "name": "Jahnavi Kedia",
+  "password": "admin2",
+  "role": "admin",
+  "email": "jahnavi@bookit.com"
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70ad"
+  },
+  "name": "Hannah Montana",
+  "password": "hashed_password_753",
+  "role": "manager",
+  "phoneNumber": "+3344556677",
+  "restaurantIDs": [
+    {
+      "$oid": "67d4a687cde5488856378c86"
+    },
+    {
+      "$oid": "67d4a687cde5488856378c87"
+    },
+    {
+      "$oid": "67d4a687cde5488856378c88"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70ae"
+  },
+  "name": "Ian Curtis",
+  "password": "hashed_password_852",
+  "role": "customer",
+  "email": "ian.c@example.com"
+},
+{
+  "_id": {
+    "$oid": "67d4a1096679edfaf31e70af"
+  },
+  "name": "Vignesh Jetty Ravi",
+  "password": "admin3",
+  "role": "admin",
+  "email": "vignesh@bookit.com"
+},
+{
+  "_id": {
+    "$oid": "67d4a96acde5488856378c90"
+  },
+  "name": "Alice Johnson",
+  "password": "hashed_password_123",
+  "role": "manager",
+  "email": "alice.johnson@example.com",
+  "phoneNumber": "+1234567890",
+  "restaurantIDs": [
+    {
+      "$oid": "67d4a687cde5488856378c83"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67d4aa9acde5488856378c92"
+  },
+  "name": "Steve Rogers",
+  "password": "hashed_password_111",
+  "role": "manager",
+  "email": "steve.rogers@example.com",
+  "phoneNumber": "+1122334455",
+  "restaurantIDs": [
+    {
+      "$oid": "67d4a687cde5488856378c89"
+    },
+    {
+      "$oid": "67d4a687cde5488856378c8a"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "67d4aa9acde5488856378c93"
+  },
+  "name": "Natasha Romanoff",
+  "password": "hashed_password_222",
+  "role": "manager",
+  "email": "natasha.romanoff@example.com",
+  "phoneNumber": "+9988776655",
+  "restaurantIDs": []
+},
+{
+  "_id": {
+    "$oid": "67d4b087cde5488856378c9a"
+  },
+  "name": "Liam Neeson",
+  "password": "hashed_password_111",
+  "role": "customer",
+  "email": "liam.neeson@example.com",
+  "phoneNumber": "+1345678901"
+},
+{
+  "_id": {
+    "$oid": "67d4b087cde5488856378c9b"
+  },
+  "name": "Olivia Pope",
+  "password": "hashed_password_222",
+  "role": "customer",
+  "email": "olivia.pope@example.com",
+  "phoneNumber": "+1456789012"
+},
+{
+  "_id": {
+    "$oid": "67d4b087cde5488856378c9c"
+  },
+  "name": "James Bond",
+  "password": "hashed_password_333",
+  "role": "customer",
+  "email": "james.bond@example.com",
+  "phoneNumber": "+1567890123"
+},
+{
+  "_id": {
+    "$oid": "67d4b087cde5488856378c9d"
+  },
+  "name": "Emma Watson",
+  "password": "hashed_password_444",
+  "role": "customer",
+  "email": "emma.watson@example.com",
+  "phoneNumber": "+1678901234"
+},
+{
+  "_id": {
+    "$oid": "67d4b087cde5488856378c9e"
+  },
+  "name": "Chris Hemsworth",
+  "password": "hashed_password_555",
+  "role": "customer",
+  "email": "chris.hemsworth@example.com",
+  "phoneNumber": "+1789012345"
+},
+{
+  "_id": {
+    "$oid": "67d4b087cde5488856378c9f"
+  },
+  "name": "Shamathmika",
+  "password": "admin4",
+  "role": "admin",
+  "email": "shamathmika@bookit.com"
+}]
