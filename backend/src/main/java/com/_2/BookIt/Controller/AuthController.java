@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin (origins = {
 		"http://localhost:8080",
+		"http://localhost:3000",
 		"https://bookit.com",
 		"https://restaurant.bookit.com",
 		"https://admin.bookit.com"
