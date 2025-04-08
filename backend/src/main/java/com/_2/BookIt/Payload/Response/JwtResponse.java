@@ -2,7 +2,7 @@ package com._2.BookIt.Payload.Response;
 
 // Project packages
 
-import com._2.BookIt.Model.Role;
+import com._2.BookIt.Enum.Role;
 
 // Lombok packages
 import lombok.Getter;

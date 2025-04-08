@@ -13,16 +13,22 @@
     "street": "3258 Stevens Creek Blvd",
     "city": "San Jose",
     "state": "CA",
-    "zipCode": "95117"
+    "zipCode": "95117",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -121.9486,
+        37.3237
+      ]
+    }
   },
   "contact": "123-456-7890",
   "cuisine": "French",
   "costRating": 2,
   "avgStarRating": 4.5,
-  "status": "active",
-  "openTiming": "10:00 AM",
-  "closeTiming": "10:00 PM",
-  "totalTables": 5
+  "status": "ACTIVE",
+  "closingTime": "10:00 PM",
+  "openingTime": "10:00 AM"
 },
 {
   "_id": {
@@ -38,16 +44,22 @@
     "street": "1510 Winchester Blvd",
     "city": "San Jose",
     "state": "CA",
-    "zipCode": "95128"
+    "zipCode": "95128",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -121.9509,
+        37.3137
+      ]
+    }
   },
   "contact": "987-654-3210",
   "cuisine": "Japanese",
   "costRating": 1,
   "avgStarRating": 4.2,
-  "status": "active",
-  "openTiming": "11:00 AM",
-  "closeTiming": "10:00 PM",
-  "totalTables": 3
+  "status": "ACTIVE",
+  "closingTime": "10:00 PM",
+  "openingTime": "11:00 AM"
 },
 {
   "_id": {
@@ -65,16 +77,22 @@
     "street": "90 S 1st St",
     "city": "San Jose",
     "state": "CA",
-    "zipCode": "95113"
+    "zipCode": "95113",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -121.886,
+        37.3364
+      ]
+    }
   },
   "contact": "333-333-3333",
   "cuisine": "Italian",
   "costRating": 2,
   "avgStarRating": 4.3,
-  "status": "active",
-  "openTiming": "11:00 AM",
-  "closeTiming": "10:00 PM",
-  "totalTables": 18
+  "status": "ACTIVE",
+  "closingTime": "10:00 PM",
+  "openingTime": "11:00 AM"
 },
 {
   "_id": {
@@ -93,16 +111,22 @@
     "street": "3181 Homestead Rd",
     "city": "Santa Clara",
     "state": "CA",
-    "zipCode": "95051"
+    "zipCode": "95051",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -121.9986,
+        37.336
+      ]
+    }
   },
   "contact": "444-444-4444",
   "cuisine": "Mexican",
   "costRating": 1,
   "avgStarRating": 4.1,
-  "status": "active",
-  "openTiming": "12:00 PM",
-  "closeTiming": "8:00 PM",
-  "totalTables": 4
+  "status": "ACTIVE",
+  "closingTime": "8:00 PM",
+  "openingTime": "12:00 PM"
 },
 {
   "_id": {
@@ -119,16 +143,22 @@
     "street": "1100 N 1st St",
     "city": "Miami",
     "state": "FL",
-    "zipCode": "33128"
+    "zipCode": "33128",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -80.2087,
+        25.7841
+      ]
+    }
   },
   "contact": "555-444-4444",
   "cuisine": "Seafood",
   "costRating": 2,
   "avgStarRating": 4.7,
-  "status": "active",
-  "openTiming": "10:30 AM",
-  "closeTiming": "11:30 PM",
-  "totalTables": 9
+  "status": "ACTIVE",
+  "closingTime": "11:30 PM",
+  "openingTime": "10:30 AM"
 },
 {
   "_id": {
@@ -141,16 +171,22 @@
     "street": "2200 Ponce de Leon Blvd",
     "city": "Miami",
     "state": "FL",
-    "zipCode": "33134"
+    "zipCode": "33134",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -80.2687,
+        25.752
+      ]
+    }
   },
   "contact": "555-999-9999",
   "cuisine": "Vegan",
   "costRating": 1,
   "avgStarRating": 4.3,
-  "status": "active",
-  "openTiming": "8:00 AM",
-  "closeTiming": "10:00 PM",
-  "totalTables": 10
+  "status": "ACTIVE",
+  "closingTime": "10:00 PM",
+  "openingTime": "8:00 AM"
 },
 {
   "_id": {
@@ -165,16 +201,22 @@
     "street": "555 Napa St",
     "city": "Napa",
     "state": "CA",
-    "zipCode": "94559"
+    "zipCode": "94559",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -122.2902,
+        38.2954
+      ]
+    }
   },
   "contact": "333-555-1234",
   "cuisine": "Italian",
   "costRating": 2,
   "avgStarRating": 4.5,
-  "status": "active",
-  "openTiming": "9:00 AM",
-  "closeTiming": "10:00 PM",
-  "totalTables": 8
+  "status": "ACTIVE",
+  "closingTime": "10:00 PM",
+  "openingTime": "9:00 AM"
 },
 {
   "_id": {
@@ -190,14 +232,20 @@
     "street": "1520 Park Ave",
     "city": "Chicago",
     "state": "IL",
-    "zipCode": "60612"
+    "zipCode": "60612",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -87.6629,
+        41.8816
+      ]
+    }
   },
   "contact": "312-555-1010",
   "cuisine": "American",
   "costRating": 3,
   "avgStarRating": 4.8,
-  "status": "active",
-  "openTiming": "10:00 AM",
-  "closeTiming": "10:30 PM",
-  "totalTables": 0
+  "status": "ACTIVE",
+  "closingTime": "10:30 PM",
+  "openingTime": "10:00 AM"
 }]

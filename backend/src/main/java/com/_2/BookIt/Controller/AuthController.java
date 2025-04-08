@@ -1,7 +1,7 @@
 package com._2.BookIt.Controller;
 
 
-import com._2.BookIt.Model.Role;
+import com._2.BookIt.Enum.Role;
 import com._2.BookIt.Model.User;
 import com._2.BookIt.Payload.Request.SigninRequest;
 import com._2.BookIt.Payload.Request.SignupRequest;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * Controller class for sign in and sign up.
  */
 @CrossOrigin (origins = {
-		"http://localhost:8080",
+		"http://localhost:8080",    // TODO: Delete localhost entries when moving to cloud
 		"http://localhost:3000",
 		"https://bookit.com",
 		"https://restaurant.bookit.com",

@@ -5,6 +5,7 @@ package com._2.BookIt.Security.Jwt;
 import com._2.BookIt.Security.Services.UserDetailsServiceImpl;
 
 // Servlet packages
+import com._2.BookIt.Util.URLConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,11 +21,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 // Java packages
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * Filter to validate the JWT token and set user authentication in the security context.
@@ -50,6 +54,26 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal (HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		
+		// Skip authorization checks for public URLs
+		System.out.println("Request URI: " + request.getRequestURI());
+		AntPathMatcher pathMatcher = new AntPathMatcher();
+		String uri = request.getRequestURI();
+		
+		Stream<String> allowedPaths = Stream.concat(
+				Arrays.stream(URLConstants.PUBLIC_URLS),
+				Arrays.stream(URLConstants.AUTH_URLS)
+		);
+		
+		boolean isAllowed = allowedPaths.anyMatch(pattern ->
+				pathMatcher.match(pattern, uri) || uri.equals(pattern)
+		);
+		
+		if (isAllowed) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
 		try {
 			String jwt = parseJwt(request);
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {

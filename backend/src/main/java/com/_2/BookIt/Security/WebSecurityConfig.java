@@ -98,6 +98,7 @@ public class WebSecurityConfig {
 						.requestMatchers(URLConstants.PUBLIC_URLS).permitAll() // Allow public pages
 						.requestMatchers(URLConstants.AUTH_URLS).permitAll() // Allow API authentication routes (/signin and /signup)
 						.requestMatchers(URLConstants.TEST_URLS).permitAll() // Allow test-related API routes
+						.requestMatchers(URLConstants.SWAGGER_URLS).permitAll() // Allow Swagger API routes. TODO: Allow this only for admin roles
 						.anyRequest().authenticated()); // Require authentication for all
 		
 		http.authenticationProvider(authenticationProvider());
