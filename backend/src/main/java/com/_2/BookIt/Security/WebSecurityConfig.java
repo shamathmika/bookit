@@ -89,6 +89,7 @@ public class WebSecurityConfig {
 	 * @return SecurityFilterChain instance
 	 * @throws Exception if there is an error configuring the security filter chain
 	 */
+
 	@Bean
 	public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
