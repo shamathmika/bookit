@@ -2,7 +2,7 @@ package com._2.BookIt.Payload.Request;
 
 //Project packages
 
-import com._2.BookIt.Model.Role;
+import com._2.BookIt.Enum.Role;
 
 // Validation packages
 import jakarta.validation.constraints.NotBlank;

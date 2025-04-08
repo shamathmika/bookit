@@ -7,7 +7,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -18,7 +18,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -29,7 +29,7 @@
   },
   "tableNumber": 3,
   "capacity": 6,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -40,7 +40,7 @@
   },
   "tableNumber": 4,
   "capacity": 8,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -51,7 +51,7 @@
   },
   "tableNumber": 5,
   "capacity": 10,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -62,7 +62,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -73,7 +73,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -84,7 +84,7 @@
   },
   "tableNumber": 3,
   "capacity": 6,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -95,7 +95,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -106,7 +106,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -117,7 +117,7 @@
   },
   "tableNumber": 3,
   "capacity": 6,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -128,7 +128,7 @@
   },
   "tableNumber": 4,
   "capacity": 8,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -139,7 +139,7 @@
   },
   "tableNumber": 5,
   "capacity": 10,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -150,7 +150,7 @@
   },
   "tableNumber": 6,
   "capacity": 2,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -161,7 +161,7 @@
   },
   "tableNumber": 7,
   "capacity": 4,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -172,7 +172,7 @@
   },
   "tableNumber": 8,
   "capacity": 6,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -183,7 +183,7 @@
   },
   "tableNumber": 9,
   "capacity": 8,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -194,7 +194,7 @@
   },
   "tableNumber": 10,
   "capacity": 10,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -205,7 +205,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -216,7 +216,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -227,7 +227,7 @@
   },
   "tableNumber": 3,
   "capacity": 6,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -238,7 +238,7 @@
   },
   "tableNumber": 4,
   "capacity": 8,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -249,7 +249,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -260,7 +260,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -271,7 +271,7 @@
   },
   "tableNumber": 3,
   "capacity": 6,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -282,7 +282,7 @@
   },
   "tableNumber": 4,
   "capacity": 8,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -293,7 +293,7 @@
   },
   "tableNumber": 5,
   "capacity": 10,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -304,7 +304,7 @@
   },
   "tableNumber": 6,
   "capacity": 2,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -315,7 +315,7 @@
   },
   "tableNumber": 7,
   "capacity": 4,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -326,7 +326,7 @@
   },
   "tableNumber": 8,
   "capacity": 6,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -337,7 +337,7 @@
   },
   "tableNumber": 9,
   "capacity": 8,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -348,7 +348,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -359,7 +359,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -370,7 +370,7 @@
   },
   "tableNumber": 1,
   "capacity": 2,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -381,7 +381,7 @@
   },
   "tableNumber": 2,
   "capacity": 4,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -392,7 +392,7 @@
   },
   "tableNumber": 3,
   "capacity": 6,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -403,7 +403,7 @@
   },
   "tableNumber": 4,
   "capacity": 8,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -414,7 +414,7 @@
   },
   "tableNumber": 5,
   "capacity": 10,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -425,7 +425,7 @@
   },
   "tableNumber": 6,
   "capacity": 2,
-  "status": "occupied"
+  "status": "OCCUPIED"
 },
 {
   "_id": {
@@ -436,7 +436,7 @@
   },
   "tableNumber": 7,
   "capacity": 4,
-  "status": "available"
+  "status": "AVAILABLE"
 },
 {
   "_id": {
@@ -447,5 +447,5 @@
   },
   "tableNumber": 8,
   "capacity": 6,
-  "status": "occupied"
+  "status": "OCCUPIED"
 }]
