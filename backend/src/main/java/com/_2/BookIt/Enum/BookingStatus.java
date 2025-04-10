@@ -1,4 +1,4 @@
-package com._2.BookIt.Model;
+package com._2.BookIt.Enum;
 
 public enum BookingStatus {
     confirmed,

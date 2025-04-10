@@ -9,7 +9,7 @@ public class URLConstants {
 			"/",                        // bookit.com/
 			"/favicon.ico",             // browser automatically calls GET /favicon.ico on first load
 			"/home",                    // if defined, landing page; essentially same as /
-			
+			"/debug/**",
 			/* Search Results */
 			"/searchResults",           //  search results page
 			
