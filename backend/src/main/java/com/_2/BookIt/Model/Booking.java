@@ -1,5 +1,6 @@
 package com._2.BookIt.Model;
 
+import com._2.BookIt.Enum.BookingStatus;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
