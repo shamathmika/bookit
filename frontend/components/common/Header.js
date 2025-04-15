@@ -10,25 +10,55 @@ import {
   Twitter,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+
 export function Header() {
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+  const [location, setLocation] = useState("");
+  const [guestCount, setGuestCount] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   function HandleClick() {
-
-    
-    
+    // Handle sign in click
   }
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleGuestCountChange = (e) => {
+    const count = parseInt(e.target.value);
+    if (count > 0) {
+      setGuestCount(count);
+    }
+  };
 
   return (
     <div className="border-b">
       <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
         <div className="flex items-center mr-4">
+          <Link href="/home">
           <span className="text-[#A31D1D] text-xl font-medium">SiteName</span>
+          </Link>
         </div>
 
         <div className="flex flex-1 flex-wrap items-center gap-2">
           <div className="relative">
             <button className="flex items-center gap-1 border rounded px-3 py-2 bg-white">
-              Location
+              <select
+                className="outline-none bg-transparent"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              >
+                <option value="">Select Location</option>
+                <option value="new-york">New York</option>
+                <option value="los-angeles">Los Angeles</option>
+                <option value="chicago">Chicago</option>
+                <option value="houston">Houston</option>
+              </select>
             </button>
           </div>
 
@@ -39,36 +69,60 @@ export function Header() {
                 type="text"
                 placeholder="Search for Location, Restaurant or Cuisine"
                 className="w-full px-2 py-2 outline-none"
+                value={searchQuery}
+                onChange={handleSearch}
               />
             </div>
           </div>
 
           <div className="flex items-center border rounded px-3 py-2 bg-white">
             <User className="h-4 w-4 mr-2" />
-            <span>#</span>
+            <input
+              type="number"
+              min="1"
+              value={guestCount}
+              onChange={handleGuestCountChange}
+              className="w-12 outline-none bg-transparent"
+            />
           </div>
 
           <div className="flex items-center border rounded px-3 py-2 bg-white">
             <Calendar className="h-4 w-4 mr-2" />
-            <span>Date</span>
+            <DatePicker
+              selected={date}
+              onChange={(date) => setDate(date)}
+              className="w-24 outline-none bg-transparent"
+              dateFormat="MM/dd/yyyy"
+            />
           </div>
 
           <div className="flex items-center border rounded px-3 py-2 bg-white">
             <Clock className="h-4 w-4 mr-2" />
-            <span>Time</span>
+            <DatePicker
+              selected={time}
+              onChange={(time) => setTime(time)}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={15}
+              timeCaption="Time"
+              dateFormat="h:mm aa"
+              className="w-24 outline-none bg-transparent"
+            />
           </div>
           <Link href="/search">
-          <button className="bg-[#8B2615] text-white px-6 py-2 rounded">
-            Go
-          </button>
+            <button className="bg-[#8B2615] text-white px-6 py-2 rounded">
+              Go
+            </button>
           </Link>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">For Restaurants</span>
           <Link href="/signup">
-            <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
-            onClick={HandleClick}>
+            <button
+              className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
+              onClick={HandleClick}
+            >
               Sign In
             </button>
           </Link>
