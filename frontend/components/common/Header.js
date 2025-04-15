@@ -13,12 +13,14 @@ import Link from "next/link";
 import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [location, setLocation] = useState("");
-  const [guestCount, setGuestCount] = useState(1);
+  const [guestCount, setGuestCount] = useState(2);
   const [searchQuery, setSearchQuery] = useState("");
 
   function HandleClick() {
@@ -36,12 +38,45 @@ export function Header() {
     }
   };
 
+  const handleSearchSubmit = async () => {
+    try {
+      const searchParams = {
+        query: searchQuery,
+        guestCount,
+        date: date.toISOString().split('T')[0],
+        time: time.toLocaleTimeString('en-US', { hour12: false }),
+        location
+      };
+
+      // Make API call to backend
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(searchParams),
+      });
+
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+
+      const data = await response.json();
+      
+      // Navigate to search page with results
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}&guests=${guestCount}&date=${date.toISOString().split('T')[0]}&time=${time.toLocaleTimeString('en-US', { hour12: false })}&location=${encodeURIComponent(location)}`);
+    } catch (error) {
+      console.error('Search error:', error);
+      // Handle error appropriately
+    }
+  };
+
   return (
     <div className="border-b">
       <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
         <div className="flex items-center mr-4">
           <Link href="/home">
-          <span className="text-[#A31D1D] text-xl font-medium">SiteName</span>
+            <span className="text-[#A31D1D] text-xl font-medium">SiteName</span>
           </Link>
         </div>
 
@@ -109,11 +144,12 @@ export function Header() {
               className="w-24 outline-none bg-transparent"
             />
           </div>
-          <Link href="/search">
-            <button className="bg-[#8B2615] text-white px-6 py-2 rounded">
-              Go
-            </button>
-          </Link>
+          <button 
+            className="bg-[#8B2615] text-white px-6 py-2 rounded"
+            onClick={handleSearchSubmit}
+          >
+            Go
+          </button>
         </div>
 
         <div className="flex items-center gap-2">
