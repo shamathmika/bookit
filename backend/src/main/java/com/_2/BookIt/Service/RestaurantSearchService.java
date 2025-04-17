@@ -36,7 +36,7 @@ public class RestaurantSearchService {
     @Autowired
     private ReviewRepository reviewRepo;
 
-    public List<RestaurantSearchResponse> search(String name, String location, String datetimeStr, int people) {
+    public List<RestaurantSearchResponse> search(String name, String location, String state, String zipCode, String datetimeStr, int people) {
         Date now = new Date();
         Date inputTime = now;
 
@@ -49,7 +49,21 @@ public class RestaurantSearchService {
         timesToCheck.add(inputTime);
         timesToCheck.add(shiftTime(inputTime, 30));
 
-        List<Restaurant> restaurants = restaurantRepo.findByAddress_CityAndStatus(location, "ACTIVE");
+        List<Restaurant> restaurants = restaurantRepo.findAll().stream()
+                .filter(r -> r.getStatus().toString().equals("ACTIVE"))
+                .filter(r -> {
+                    if (zipCode != null) {
+                        return r.getAddress().getZipCode().equalsIgnoreCase(zipCode);
+                    } else if (state != null) {
+                        return r.getAddress().getState().equalsIgnoreCase(state);
+                    } else if (location != null) {
+                        return r.getAddress().getCity().equalsIgnoreCase(location);
+                    } else {
+                        return true;
+                    }
+                })
+                .collect(Collectors.toList());
+
         if (name != null && !name.isBlank()) {
             restaurants = restaurants.stream()
                     .filter(r -> r.getName().toLowerCase().contains(name.toLowerCase()))
