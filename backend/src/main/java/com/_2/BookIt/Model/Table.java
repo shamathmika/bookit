@@ -33,7 +33,7 @@ public class Table {
 	private String id;
 	
 	@NotNull (message = "Restaurant ID is required")
-	private ObjectId restaurantId;
+	private ObjectId restaurantID;
 	
 	@NotNull (message = "Table number is required")
 	private Integer tableNumber;
@@ -45,8 +45,8 @@ public class Table {
 	private TableStatus status = TableStatus.AVAILABLE;
 	
 	// Constructor
-	public Table (ObjectId restaurantId, Integer tableNumber, Integer capacity) {
-		this.restaurantId = restaurantId;
+	public Table (ObjectId restaurantID, Integer tableNumber, Integer capacity) {
+		this.restaurantID = restaurantID;
 		this.tableNumber = tableNumber;
 		this.capacity = capacity;
 	}

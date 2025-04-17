@@ -5,9 +5,12 @@ package com._2.BookIt.Model;
 import com._2.BookIt.Enum.RestaurantStatus;
 
 // JSON packages
+import com._2.BookIt.Util.ObjectIdSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 // Validation packages
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -15,6 +18,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 // Spring packages
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,7 +38,9 @@ import java.util.List;
 public class Restaurant {
 	@Id
 	@Setter (AccessLevel.NONE)
-	private String id;
+	@JsonSerialize(using = ObjectIdSerializer.class)
+	@Schema(type = "string", description = "MongoDB ObjectId")
+	private ObjectId id;
 	
 	@NotBlank (message = "Name is required")
 	private String name;
@@ -66,12 +72,10 @@ public class Restaurant {
 	private RestaurantStatus status;
 	
 	@NotBlank (message = "Opening time is required")
-	@JsonFormat (pattern = "hh:mm a")
-	private LocalTime openingTime;
+	private String openingTime;
 	
 	@NotBlank (message = "Closing time is required")
-	@JsonFormat (pattern = "hh:mm a")
-	private LocalTime closingTime;
+	private String closingTime;
 	
 	/**
 	 * Nested class for Photo URL.
@@ -129,7 +133,7 @@ public class Restaurant {
 	}
 	
 	// Constructor
-	public Restaurant (String name, String description, List<PhotoUrl> photos, Address address, String contact, String cuisine, Integer costRating, Double avgStarRating, RestaurantStatus status, LocalTime openingTime, LocalTime closingTime) {
+	public Restaurant (String name, String description, List<PhotoUrl> photos, Address address, String contact, String cuisine, Integer costRating, Double avgStarRating, RestaurantStatus status, String openingTime, String closingTime) {
 		this.name = name;
 		this.description = description;
 		this.photos = photos;
