@@ -58,6 +58,12 @@ public class ReviewService {
         existingReview.setDate(new Date()); // update timestamp
 
         return reviewRepository.save(existingReview);
+
     }
+    public List<Review> getReviewsByUserId(String userId) {
+        ObjectId objectId = new ObjectId(userId);
+        return reviewRepository.findByCustomerID(objectId);
+    }
+
 
 }
