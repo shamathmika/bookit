@@ -1,9 +1,11 @@
 package com._2.BookIt.Service;
 import com._2.BookIt.Dto.BookingCount;
+import com._2.BookIt.Dto.RestaurantDetailsResponse;
 import com._2.BookIt.Dto.RestaurantSearchResponse;
 import com._2.BookIt.Dto.ReviewCount;
 import com._2.BookIt.Model.Booking;
 import com._2.BookIt.Model.Restaurant;
+import com._2.BookIt.Model.Review;
 import com._2.BookIt.Model.Table;
 import com._2.BookIt.Repository.BookingRepository;
 import com._2.BookIt.Repository.RestaurantRepository;
@@ -132,6 +134,63 @@ public class RestaurantSearchService {
 
         return result.stream().sorted(Comparator.comparingDouble(RestaurantSearchResponse::getAvgRating).reversed()).limit(10).toList();
     }
+
+    public RestaurantDetailsResponse getRestaurantDetails(String id) {
+        ObjectId objectId = new ObjectId(id);
+        Restaurant r = restaurantRepo.findById(objectId).orElseThrow();
+        List<Review> reviews = reviewRepo.findByRestaurantID(objectId);
+
+        Date now = new Date();
+
+        Date startOfDay = Date.from(
+                now.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+        );
+
+        Date endOfDay = Date.from(
+                now.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .plusDays(1)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .minusSeconds(1)
+                        .toInstant()
+        );
+
+
+        List<BookingCount> todayBookings = bookingRepo.countConfirmedTodayByRestaurant(List.of(objectId), startOfDay, endOfDay);
+        long bookedToday = todayBookings.isEmpty() ? 0 : todayBookings.get(0).getCount();
+
+        List<ReviewCount> reviewCounts = reviewRepo.countReviewsByRestaurant(List.of(objectId));
+        long totalReviews = reviewCounts.isEmpty() ? 0 : reviewCounts.get(0).getCount();
+
+
+        double[] coords = r.getAddress().getLocation().getCoordinates();
+        String mapsUrl = String.format("https://www.google.com/maps?q=%f,%f&z=15&output=embed", coords[1], coords[0]);
+
+        return new RestaurantDetailsResponse(
+                r.getName(),
+                r.getDescription(),
+                r.getContact(),
+                r.getCuisine(),
+                r.getCostRating(),
+                r.getAvgStarRating(),
+                totalReviews,
+                bookedToday,
+                r.getAddress().getStreet(),
+                r.getAddress().getCity(),
+                r.getAddress().getState(),
+                r.getAddress().getZipCode(),
+                coords,
+                mapsUrl,
+                reviews
+        );
+    }
+
+
 
     private Date shiftTime(Date date, int minutes) {
         return Date.from(date.toInstant().plus(minutes, ChronoUnit.MINUTES));

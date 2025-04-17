@@ -39,7 +39,7 @@ public class RestaurantService {
 	@Autowired
 	private BookingRepository bookingRepo;
 	
-	public Restaurant getRestaurantById (String id) {
+	public Restaurant getRestaurantById (ObjectId id) {
 		return restaurantRepository.findById(id).orElse(null);
 	}
 
