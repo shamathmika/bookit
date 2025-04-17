@@ -19,7 +19,7 @@ import java.util.List;
 public class TableService {
 	private TableRepository tableRepository;
 	
-	public List<Table> findAvailableTables (ObjectId restaurantId) {
-		return tableRepository.findByRestaurantIdAndStatus(restaurantId, TableStatus.AVAILABLE);
+	public List<Table> findAvailableTables (ObjectId restaurantID) {
+		return tableRepository.findByRestaurantIDAndStatus(restaurantID, TableStatus.AVAILABLE);
 	}
 }

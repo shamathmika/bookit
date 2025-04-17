@@ -1,11 +1,15 @@
 package com._2.BookIt.Model;
 
+import com._2.BookIt.Util.ObjectIdDeserializer;
+import com._2.BookIt.Util.ObjectIdSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import jakarta.validation.constraints.*;
 
 @Document(collection = "bookingStats")
 @Data
@@ -15,19 +19,22 @@ import jakarta.validation.constraints.*;
 public class BookingStats {
 
     @Id
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @Schema(type = "string", description = "MongoDB ObjectId")
     private ObjectId id;
 
     @NotNull(message = "restaurantID is required")
+    @JsonDeserialize(using = ObjectIdDeserializer.class)
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @Schema(type = "string")
     private ObjectId restaurantID;
 
-    @NotBlank(message = "Month is required")
-    private String month; // Format suggestion: "2025-04" or "April 2025"
+    @NotNull(message = "Month is required")
+    private String month;
 
     @Builder.Default
-    @Min(value = 0, message = "Total bookings cannot be negative")
-    private Integer totalBookings = 0;
+    private int totalBookings = 0;
 
     @Builder.Default
-    @Min(value = 0, message = "Total cancellations cannot be negative")
-    private Integer totalCancellations = 0;
+    private int totalCancellations = 0;
 }

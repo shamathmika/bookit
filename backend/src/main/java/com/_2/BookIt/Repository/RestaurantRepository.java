@@ -26,4 +26,8 @@ public interface RestaurantRepository extends MongoRepository<Restaurant, String
 	List<Restaurant> findByAddress_CityIgnoreCaseAndStatus (String city, RestaurantStatus status);
 	
 	List<Restaurant> findByAddress_LocationNear (Point location, Distance distance);
+
+	long countByStatus(String status);
+
+	List<Restaurant> findByAddress_CityAndStatus(String city, String status);
 }

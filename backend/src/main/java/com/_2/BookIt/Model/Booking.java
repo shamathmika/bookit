@@ -1,17 +1,18 @@
 package com._2.BookIt.Model;
 
-import com._2.BookIt.Enum.BookingStatus;
+import com._2.BookIt.Util.ObjectIdSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
-@Document(collection = "bookings")
+@Document(collection = "booking")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,27 +20,32 @@ import java.time.LocalDateTime;
 public class Booking {
 
     @Id
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @Schema(type = "string", description = "MongoDB ObjectId")
     private ObjectId id;
 
     @NotNull(message = "restaurantID is required")
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @Schema(type = "string")
     private ObjectId restaurantID;
 
     @NotNull(message = "tableID is required")
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @Schema(type = "string")
     private ObjectId tableID;
 
     @NotNull(message = "userID is required")
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @Schema(type = "string")
     private ObjectId userID;
 
-    @NotNull(message = "dateTime is required")
-    @FutureOrPresent(message = "Booking date must be in the future or present")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime dateTime;
+    @NotNull(message = "Booking date/time is required")
+    @FutureOrPresent(message = "Booking date must be in the present or future")
+    private Date dateTime;
 
-    @NotNull(message = "totalCustomers is required")
-    @Min(value = 1, message = "At least one customer is required")
-    private Integer totalCustomers;
+    @Min(value = 1, message = "Total customers must be at least 1")
+    private int totalCustomers;
 
-    @NotNull(message = "status is required")
-    private BookingStatus status;
+    @Pattern(regexp = "confirmed|pending|cancelled", message = "Status must be 'confirmed', 'pending', or 'cancelled'")
+    private String status;
 }
-

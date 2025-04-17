@@ -19,13 +19,14 @@ import java.util.Optional;
  * Repository for Tables.
  */
 public interface TableRepository extends MongoRepository<Table, String> {
-	List<Table> findByRestaurantId (ObjectId restaurantID);
-	
-	List<Table> findByRestaurantIdAndStatus (ObjectId restaurantID, TableStatus status);
-	
-	boolean existsByRestaurantIdAndTableNumber (ObjectId restaurantID, Integer tableNumber);
-	
-	Optional<Table> findByRestaurantIdAndTableNumber (ObjectId restaurantID, Integer tableNumber);
-	
-	long countByRestaurantId (ObjectId restaurantID);
+	List<Table> findByRestaurantID(ObjectId restaurantID);
+	List<Table> findByRestaurantIDAndStatus(ObjectId restaurantID, TableStatus status);
+	Optional<Table> findByRestaurantIDAndTableNumber(ObjectId restaurantID, Integer tableNumber);
+	boolean existsByRestaurantIDAndTableNumber(ObjectId restaurantID, Integer tableNumber);
+	long countByRestaurantID(ObjectId restaurantID);
+
+
+	List<Table> findAllByRestaurantIDIn(List<ObjectId> restaurantIds);
+
+
 }
