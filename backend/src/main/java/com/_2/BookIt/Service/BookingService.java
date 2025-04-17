@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -65,6 +66,30 @@ public class BookingService {
 
     public long getTotalBookingCount() {
         return bookingRepository.count();
+    }
+
+    public List<Booking> getBookingsByUserId(String id) {
+        return bookingRepository.findByUserID(new ObjectId(id));
+    }
+
+
+    public void cancelBookingIfFuture(String bookingId) {
+        Booking booking = bookingRepository.findById(new ObjectId(bookingId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+
+        if (booking.getDateTime().after(new Date())) {
+            booking.setStatus("cancelled"); // ✅ Corrected
+            bookingRepository.save(booking);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot cancel past bookings");
+        }
+    }
+
+
+    public boolean isOwnerOfBooking(String bookingId, String userId) {
+        return bookingRepository.findById(new ObjectId(bookingId))
+                .map(b -> b.getUserID().equals(userId))
+                .orElse(false);
     }
 
 }
