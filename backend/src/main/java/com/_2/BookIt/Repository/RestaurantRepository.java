@@ -6,6 +6,7 @@ import com._2.BookIt.Enum.RestaurantStatus;
 import com._2.BookIt.Model.Restaurant;
 
 // Spring packages
+import org.bson.types.ObjectId;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Repository interface for Restaurants.
  */
-public interface RestaurantRepository extends MongoRepository<Restaurant, String> {
+public interface RestaurantRepository extends MongoRepository<Restaurant, ObjectId> {
 	List<Restaurant> findByNameContainingIgnoreCase (String name);
 	
 	List<Restaurant> findByStatus (RestaurantStatus status);
