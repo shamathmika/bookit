@@ -18,10 +18,12 @@ public class RestaurantSearchController {
     public ResponseEntity<List<RestaurantSearchResponse>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false, defaultValue = "San Jose") String location,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) String zipCode,
             @RequestParam(required = false) String datetime,
             @RequestParam(required = false, defaultValue = "1") int people
     ) {
-        List<RestaurantSearchResponse> response = restaurantSearchService.search(name, location, datetime, people);
+        List<RestaurantSearchResponse> response = restaurantSearchService.search(name, location, state, zipCode, datetime, people);
         return ResponseEntity.ok(response);
     }
 }
