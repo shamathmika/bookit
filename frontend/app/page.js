@@ -1,9 +1,8 @@
-
+// app/page.js
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return (
-    <div className="h-screen text-9xl flex justify-center items-center">
-    hi
-    </div>
-  );
+  // This will trigger a server-side redirect to the /login route
+  redirect('/login');
+  // Since redirect() never returns, you don't need to return any JSX.
 }
