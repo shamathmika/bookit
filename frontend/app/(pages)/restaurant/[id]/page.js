@@ -1,18 +1,81 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter } from "lucide-react"
 import Image from "next/image"
 import ReviewModal from "../reviews/page"
+import { useParams } from "next/navigation"
 
 export default function RestaurantDetails() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
+  const [restaurant, setRestaurant] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const params = useParams()
+
+  useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/restaurants/${params.id}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch restaurant details')
+        }
+        const data = await response.json()
+        setRestaurant(data)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRestaurantDetails()
+  }, [params.id])
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <main className="flex-1 container mx-auto px-4 py-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
+            <div className="h-64 bg-gray-200 rounded mb-6"></div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2">
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+              </div>
+              <div className="md:col-span-1">
+                <div className="h-48 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <main className="flex-1 container mx-auto px-4 py-6">
+          <div className="text-red-500">Error: {error}</div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!restaurant) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <main className="flex-1 container mx-auto px-4 py-6">
+          <div>Restaurant not found</div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-
-  
-
       <main className="flex-1 container mx-auto px-4 py-0">
         <div className="w-full h-64 md:h-80 bg-gray-100 overflow-hidden">
           <Image
@@ -26,64 +89,51 @@ export default function RestaurantDetails() {
 
         <div className="grid md:grid-cols-3 gap-6 mt-6">
           <div className="md:col-span-2">
-            <h1 className="text-2xl font-bold">Restaurant</h1>
+            <h1 className="text-2xl font-bold">{restaurant.name}</h1>
 
             <div className="flex flex-wrap items-center gap-4 mt-2">
               <div className="flex items-center">
                 <div className="flex text-red-500">
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 stroke-current fill-none" />
+                  {[...Array(5)].map((_, i) => (
+                    <StarIcon 
+                      key={i} 
+                      className={`h-5 w-5 ${i < Math.floor(restaurant.avgRating) ? 'fill-current' : 'stroke-current fill-none'}`} 
+                    />
+                  ))}
                 </div>
-                <span className="text-xs text-gray-500 ml-1">Stars</span>
+                <span className="text-xs text-gray-500 ml-1">({restaurant.avgRating.toFixed(1)})</span>
               </div>
 
               <div className="flex items-center gap-1 text-sm">
                 <CircleIcon className="h-4 w-4" />
-                <span>Exact Review #</span>
+                <span>{restaurant.totalReviews} reviews</span>
               </div>
 
               <div className="flex items-center gap-1 text-sm">
                 <DollarIcon className="h-4 w-4" />
-                <span>$$</span>
+                <span>{restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'}</span>
               </div>
 
               <div className="flex items-center gap-1 text-sm">
                 <ForkKnifeIcon className="h-4 w-4" />
-                <span>Cuisine</span>
-              </div>
-
-              <div className="flex items-center gap-1 text-sm">
-                <MapPin className="h-4 w-4" />
-                <span>Region</span>
+                <span>{restaurant.cuisine}</span>
               </div>
             </div>
 
-            <div className="text-sm mt-2">Booked 20 times today</div>
+            <div className="text-sm mt-2">Booked {restaurant.bookedToday} times today</div>
 
             <div className="mt-6 border-t pt-4">
               <h2 className="text-lg font-medium text-red-500">About</h2>
               <p className="mt-2 text-sm">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat.
+                {restaurant.description}
               </p>
-              <button className="text-red-500 text-sm mt-1">See more</button>
             </div>
 
             <div className="mt-4 grid gap-2">
               <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" />
-                <span className="font-medium">Email:</span>
-                <span>email@email.com</span>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4" />
                 <span className="font-medium">Call:</span>
-                <span>Ph #</span>
+                <span>{restaurant.contact}</span>
               </div>
             </div>
 
@@ -98,29 +148,45 @@ export default function RestaurantDetails() {
                 </button>
               </div>
 
-              <div className="mt-4 border-b pb-4">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">Reviewer Name</h3>
-                  <span className="text-sm text-gray-500">Date</span>
-                </div>
+              {restaurant.reviews.map((review) => (
+                <div key={review.id} className="mt-4 border-b pb-4">
+                  <div className="flex justify-between">
+                    <h3 className="font-medium">Anonymous User</h3>
+                    <span className="text-sm text-gray-500">
+                      {new Date(review.date).toLocaleDateString()}
+                    </span>
+                  </div>
 
-                <div className="flex text-red-500 mt-1">
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <span className="text-xs text-gray-500 ml-1">Stars</span>
-                </div>
+                  <div className="flex text-red-500 mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIcon 
+                        key={i} 
+                        className={`h-4 w-4 ${i < review.rating ? 'fill-current' : 'stroke-current fill-none'}`} 
+                      />
+                    ))}
+                  </div>
 
-                <p className="mt-2 text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-              </div>
+                  {review.comments && (
+                    <p className="mt-2 text-sm">{review.comments}</p>
+                  )}
 
-              <div className="mt-4">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">Reviewer Name</h3>
+                  {review.photos && review.photos.length > 0 && (
+                    <div className="flex gap-2 mt-2">
+                      {review.photos.map((photo, index) => (
+                        <div key={index} className="w-20 h-20 rounded overflow-hidden">
+                          <Image
+                            src={photo}
+                            alt={`Review photo ${index + 1}`}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -153,14 +219,6 @@ export default function RestaurantDetails() {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-6">
-                <h3 className="text-sm font-medium mb-2">Select a Time</h3>
-                <div className="flex gap-2">
-                  <button className="bg-[#f8f5f0] px-4 py-2 rounded text-sm">Time</button>
-                  <button className="bg-[#f8f5f0] px-4 py-2 rounded text-sm">Time</button>
-                </div>
-              </div>
             </div>
 
             <div className="border rounded-md p-4 mt-6">
@@ -169,14 +227,21 @@ export default function RestaurantDetails() {
                 <h3 className="font-medium">Address Details</h3>
               </div>
 
+              <div className="text-sm mb-4">
+                <p>{restaurant.street}</p>
+                <p>{restaurant.city}, {restaurant.state} {restaurant.zipCode}</p>
+              </div>
+
               <div className="bg-gray-100 rounded-md overflow-hidden h-48 relative">
-                <Image
-                  src="/placeholder.svg?height=200&width=300"
-                  alt="Map"
-                  width={300}
-                  height={200}
-                  className="w-full h-full object-cover"
-                />
+                <iframe
+                  src={restaurant.googleMapsEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </div>
             </div>
           </div>
@@ -191,7 +256,11 @@ export default function RestaurantDetails() {
         </div>
       </footer>
 
-      <ReviewModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} restaurantName="Restaurant" />
+      <ReviewModal 
+        isOpen={isReviewModalOpen} 
+        onClose={() => setIsReviewModalOpen(false)} 
+        restaurantName={restaurant.name} 
+      />
     </div>
   )
 }

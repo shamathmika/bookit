@@ -10,12 +10,16 @@ import { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export function Header() {
+  
   const router = useRouter();
   const pathname = usePathname();
+
+
   // New state for login status
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
   // Existing state
   const [date, setDate] = useState(new Date());
@@ -24,11 +28,7 @@ export function Header() {
   const [guestCount, setGuestCount] = useState(2);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // On mount, check for a saved token
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  },[pathname]);
+  const { isLoggedIn, logout } = useAuth();
 
   // Call this after a successful sign-in: e.g. in your sign-in page,
   // save `localStorage.setItem("authToken", token)` then router.push back here.
@@ -53,26 +53,23 @@ export function Header() {
 
   const handleSearchSubmit = async () => {
     try {
-      const queryParams = new URLSearchParams();
-      if (searchQuery) queryParams.append("name", searchQuery);
-      if (location) queryParams.append("location", location);
-      if (guestCount) queryParams.append("people", guestCount.toString());
+      const params = new URLSearchParams();
+      if (searchQuery) params.append("name", searchQuery);
+      if (location) params.append("location", location);
+      if (guestCount) params.append("people", guestCount);
+      const combined = new Date(
+        date.getFullYear(), date.getMonth(), date.getDate(),
+        time.getHours(), time.getMinutes()
+      );
+      params.append("datetime", combined.toISOString());
 
-      if (date && time) {
-        const combined = new Date(
-          date.getFullYear(), date.getMonth(), date.getDate(),
-          time.getHours(), time.getMinutes()
-        );
-        queryParams.append("datetime", combined.toISOString());
-      }
+      const url = `http://localhost:8080/api/restaurants/search?${params.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Search failed");
 
-      const url = `/api/restaurants/search?${queryParams.toString()}`;
-      const response = await fetch(`http://localhost:8080${url}`);
-      if (!response.ok) throw new Error("Search failed");
-
-      router.push(`/search?${queryParams.toString()}`);
-    } catch (error) {
-      console.error("Search error:", error);
+      router.push(`/search?${params.toString()}`);
+    } catch (err) {
+      console.error("Search error:", err);
     }
   };
 
@@ -162,17 +159,17 @@ export function Header() {
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
             <button
-              onClick={handleLogout}
+              onClick={() => {
+                logout();
+                router.push("/login");
+              }}
               className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
             >
               Logout
             </button>
           ) : (
-            <Link href="/signup">
-              <button
-                onClick={() => {}}
-                className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
-              >
+            <Link href="/login">
+              <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded">
                 Sign In
               </button>
             </Link>
