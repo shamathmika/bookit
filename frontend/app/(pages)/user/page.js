@@ -1,17 +1,51 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Pencil, Github, Twitter } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
 
 export default function UserProfile() {
+  const { user } = useAuth()
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [formData, setFormData] = useState({
-    name: "First Last",
-    phone: "(987) 654-3210",
-    email: "email@gmail.com",
-    password: "••••••••••",
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
   })
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data')
+        }
+        
+        const data = await response.json()
+        setFormData({
+          name: data.name,
+          phone: data.phoneNumber,
+          email: data.email,
+          password: "••••••••••"
+        })
+      } catch (err) {
+        setError(err.message)
+      }
+    }
+
+    if (user?.id) {
+      fetchUserData()
+    }
+  }, [user])
 
   const handleInputChange = (field, value) => {
     setFormData({
@@ -20,9 +54,33 @@ export default function UserProfile() {
     })
   }
 
-  const handleUpdate = () => {
-    // Handle update logic here
-    alert("Profile updated successfully!")
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phoneNumber: formData.phone,
+          email: formData.email,
+          password: formData.password === "••••••••••" ? undefined : formData.password
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to update profile')
+      }
+
+      setSuccess('Profile updated successfully!')
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (err) {
+      setError(err.message)
+      setTimeout(() => setError(''), 3000)
+    }
   }
 
   const handleDeleteAccount = () => {
@@ -128,6 +186,8 @@ export default function UserProfile() {
           </div>
 
           <div className="space-y-4">
+            {error && <div className="text-red-600 text-sm text-center">{error}</div>}
+            {success && <div className="text-green-600 text-sm text-center">{success}</div>}
             <button onClick={handleUpdate} className="w-full py-3 bg-[#8B2615] text-white rounded-md font-medium">
               Update
             </button>

@@ -16,7 +16,7 @@ export function Header() {
   
   const router = useRouter();
   const pathname = usePathname();
-
+  const [userRole, setUserRole] = useState(null);
 
   // New state for login status
 
@@ -30,14 +30,32 @@ export function Header() {
 
   const { isLoggedIn, logout } = useAuth();
 
-  // Call this after a successful sign-in: e.g. in your sign-in page,
-  // save `localStorage.setItem("authToken", token)` then router.push back here.
-  // ...
+  useEffect(() => {
+    if (isLoggedIn) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const payload = JSON.parse(jsonPayload);
+          setUserRole(payload.role);
+        } catch (error) {
+          console.error("Error parsing token:", error);
+        }
+      }
+    } else {
+      setUserRole(null);
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    router.push("/home");   // or wherever you want
+    logout();
+    setUserRole(null);
+    router.push("/home");
   };
 
   const handleSearch = (e) => {
@@ -158,15 +176,28 @@ export function Header() {
         {/* Auth controls */}
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
-            <button
-              onClick={() => {
-                logout();
-                router.push("/login");
-              }}
-              className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
-            >
-              Logout
-            </button>
+            <>
+              {userRole === "ROLE_CUSTOMER" && (
+                <Link href="/user">
+                  <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
+                    Profile
+                  </button>
+                </Link>
+              )}
+              {userRole === "ROLE_MANAGER" && (
+                <Link href="/manage">
+                  <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
+                    Manage
+                  </button>
+                </Link>
+              )}
+              <button
+                onClick={handleLogout}
+                className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <Link href="/login">
               <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded">

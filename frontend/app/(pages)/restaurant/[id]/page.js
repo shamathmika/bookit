@@ -5,13 +5,36 @@ import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github
 import Image from "next/image"
 import ReviewModal from "../reviews/page"
 import { useParams } from "next/navigation"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { useAuth } from "@/context/AuthContext"
 
 export default function RestaurantDetails() {
+  const { user } = useAuth()
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
   const [restaurant, setRestaurant] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [reservationSuccess, setReservationSuccess] = useState(false)
   const params = useParams()
+
+  // Reservation form state
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedTime, setSelectedTime] = useState("19:00")
+  const [selectedPeople, setSelectedPeople] = useState(2)
+  const [showPeopleDropdown, setShowPeopleDropdown] = useState(false)
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false)
+
+  // Available times
+  const availableTimes = [
+    "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
+    "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+    "17:00", "17:30", "18:00", "18:30", "19:00", "19:30",
+    "20:00", "20:30", "21:00", "21:30", "22:00"
+  ]
+
+  // People options
+  const peopleOptions = Array.from({ length: 10 }, (_, i) => i + 1)
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -31,6 +54,43 @@ export default function RestaurantDetails() {
 
     fetchRestaurantDetails()
   }, [params.id])
+
+  const handleReservation = async () => {
+    try {
+      // Combine date and time
+      const [hours, minutes] = selectedTime.split(":")
+      const reservationDate = new Date(selectedDate)
+      reservationDate.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+
+      const reservationData = {
+        restaurantID: params.id,
+        tableID: "60a1f2e8e3b1f001a5d4c2c", // This should come from available tables API
+        userID: user.id,
+        dateTime: reservationDate.toISOString(),
+        totalCustomers: selectedPeople,
+        status: "pending"
+      }
+
+      const response = await fetch("http://localhost:8080/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(reservationData)
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to make reservation")
+      }
+
+      setReservationSuccess(true)
+      setTimeout(() => setReservationSuccess(false), 3000)
+    } catch (err) {
+      setError(err.message)
+      setTimeout(() => setError(null), 3000)
+    }
+  }
 
   if (loading) {
     return (
@@ -195,29 +255,106 @@ export default function RestaurantDetails() {
               <h2 className="text-xl font-medium text-red-500 text-center mb-4">Reserve a Table</h2>
 
               <div className="grid gap-4">
+                {/* People Selector */}
                 <div className="relative">
-                  <div className="flex items-center border rounded overflow-hidden">
+                  <button
+                    className="w-full flex items-center border rounded overflow-hidden p-2"
+                    onClick={() => setShowPeopleDropdown(!showPeopleDropdown)}
+                  >
                     <User className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2"># People</span>
+                    <span className="px-2">{selectedPeople} People</span>
                     <ChevronDown className="ml-auto mr-2 h-4 w-4" />
-                  </div>
+                  </button>
+                  
+                  {showPeopleDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+                      {peopleOptions.map((num) => (
+                        <button
+                          key={num}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            setSelectedPeople(num)
+                            setShowPeopleDropdown(false)
+                          }}
+                        >
+                          {num} {num === 1 ? 'Person' : 'People'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
+                {/* Date Picker */}
                 <div className="relative">
-                  <div className="flex items-center border rounded overflow-hidden">
-                    <Calendar className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2">Date</span>
-                    <ChevronDown className="ml-auto mr-2 h-4 w-4" />
-                  </div>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => setSelectedDate(date)}
+                    minDate={new Date()}
+                    className="w-full p-2 border rounded"
+                    dateFormat="MMMM d, yyyy"
+                    customInput={
+                      <button className="w-full flex items-center">
+                        <Calendar className="ml-2 h-4 w-4 text-gray-500" />
+                        <span className="px-2">
+                          {selectedDate.toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </button>
+                    }
+                  />
                 </div>
 
+                {/* Time Selector */}
                 <div className="relative">
-                  <div className="flex items-center border rounded overflow-hidden">
+                  <button
+                    className="w-full flex items-center border rounded overflow-hidden p-2"
+                    onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                  >
                     <Clock className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2">Time</span>
+                    <span className="px-2">{selectedTime}</span>
                     <ChevronDown className="ml-auto mr-2 h-4 w-4" />
-                  </div>
+                  </button>
+
+                  {showTimeDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                      {availableTimes.map((time) => (
+                        <button
+                          key={time}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            setSelectedTime(time)
+                            setShowTimeDropdown(false)
+                          }}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+                {/* Reserve Button */}
+                <button
+                  onClick={handleReservation}
+                  className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"
+                >
+                  Reserve Now
+                </button>
+
+                {/* Success/Error Messages */}
+                {reservationSuccess && (
+                  <div className="text-green-500 text-center text-sm">
+                    Reservation successful!
+                  </div>
+                )}
+                {error && (
+                  <div className="text-red-500 text-center text-sm">
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
 
