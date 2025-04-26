@@ -12,6 +12,7 @@ export default function Signup() {
   const [phone, setPhone] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [role, setRole] = useState("ROLE_CUSTOMER")
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -33,7 +34,7 @@ export default function Signup() {
           name,
           email,
           password,
-          role: "ROLE_CUSTOMER",
+          role,
         }),
       })
 
@@ -64,6 +65,18 @@ export default function Signup() {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select
+                className="w-full px-4 py-3 border rounded-md outline-none"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="ROLE_CUSTOMER">Customer</option>
+                <option value="ROLE_MANAGER">Manager</option>
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
               <input
