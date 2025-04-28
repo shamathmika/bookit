@@ -1,7 +1,7 @@
 
 import { Header } from "@/components/common/Header";
 import "./globals.css";
-
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({ children }) {
   return (
@@ -10,8 +10,10 @@ export default function RootLayout({ children }) {
         className={` antialiased`}
         suppressHydrationWarning
       >
-
+        <AuthProvider>
+          
         {children}
+        </AuthProvider>
       </body>
     </html>
   );

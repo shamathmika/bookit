@@ -12,6 +12,7 @@ import {
   Star,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { RestaurantCard } from "@/components/common/RestaurantCard";
 import { StarIcon } from "@/components/common/StarIcon";
@@ -77,7 +78,11 @@ export default function Component() {
         <h1 className="text-4xl font-bold mb-6">Currently Available Tables</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {availableRestaurants.map((restaurant, index) => (
-            <div key={index} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <Link 
+              key={restaurant.restaurantId} 
+              href={`/restaurant/${restaurant.restaurantId}`}
+              className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            >
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2">{restaurant.restaurantName}</h2>
                 <div className="flex items-center mb-2">
@@ -113,7 +118,7 @@ export default function Component() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

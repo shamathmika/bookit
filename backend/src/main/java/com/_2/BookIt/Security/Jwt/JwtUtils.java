@@ -46,6 +46,11 @@ public class JwtUtils {
 		
 		return Jwts.builder()
 				.subject((userPrincipal.getUsername()))     // Returns the email
+				.claim("userId", userPrincipal.getId())
+				.claim("role", userPrincipal.getAuthorities().stream()
+						.findFirst()
+						.map(grantedAuthority -> grantedAuthority.getAuthority())
+						.orElse("ROLE_USER"))
 				.issuedAt(new Date())
 				.expiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(key(), SignatureAlgorithm.HS512)
@@ -74,6 +79,36 @@ public class JwtUtils {
 				.parseSignedClaims(token)
 				.getPayload()
 				.getSubject();
+	}
+	
+	/**
+	 * Extract the userId from the given JWT token.
+	 *
+	 * @param token The JWT token.
+	 * @return The userId extracted from the token.
+	 */
+	public Long getUserIdFromJwtToken(String token) {
+		return Jwts.parser()
+				.verifyWith(key())
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.get("userId", Long.class);
+	}
+	
+	/**
+	 * Extract the role from the given JWT token.
+	 *
+	 * @param token The JWT token.
+	 * @return The role extracted from the token.
+	 */
+	public String getRoleFromJwtToken(String token) {
+		return Jwts.parser()
+				.verifyWith(key())
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.get("role", String.class);
 	}
 	
 	/**

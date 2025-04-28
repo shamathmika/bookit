@@ -3,13 +3,13 @@ package com._2.BookIt.Dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.*;
+import java.util.List;
 
-// --- DTO ---
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AvailableRestaurantResponse {
+    private String restaurantId;      // ← new
     private String restaurantName;
     private String cuisine;
     private int costRating;
