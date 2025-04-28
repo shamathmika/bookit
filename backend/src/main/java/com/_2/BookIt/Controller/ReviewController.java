@@ -2,11 +2,13 @@ package com._2.BookIt.Controller;
 
 import com._2.BookIt.Model.Review;
 import com._2.BookIt.Repository.ReviewRepository;
+import com._2.BookIt.Security.SecurityUtil;
 import com._2.BookIt.Service.ReviewService;
 import jakarta.validation.Valid;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,14 +36,21 @@ public class ReviewController {
     }
 
     @GetMapping("/user/{customerID}")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Review>> getByCustomer(@PathVariable String customerID) {
+        String currentUserId = SecurityUtil.getCurrentUserId();
+        boolean isAdmin = SecurityUtil.hasRole("ADMIN");
+
+        // Customers can only access their own reviews
+        if (!isAdmin && !currentUserId.equals(customerID)) {
+            throw new AccessDeniedException("You are not authorized to view reviews of other users.");
+        }
+
         ObjectId objId = new ObjectId(customerID);
-        System.out.println("👉 Querying for ObjectId: " + objId);
         List<Review> results = reviewService.getReviewsByCustomer(objId);
-        System.out.println("✅ Found " + results.size() + " reviews");
         return ResponseEntity.ok(results);
     }
+
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

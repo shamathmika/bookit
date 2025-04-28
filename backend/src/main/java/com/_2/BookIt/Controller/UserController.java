@@ -1,17 +1,14 @@
 package com._2.BookIt.Controller;
-import com._2.BookIt.Dto.AvailableRestaurantResponse;
 import com._2.BookIt.Model.Booking;
 import com._2.BookIt.Model.Review;
 import com._2.BookIt.Model.User;
 import com._2.BookIt.Service.BookingService;
-import com._2.BookIt.Service.RestaurantService;
 
 // Spring packages
 import com._2.BookIt.Service.ReviewService;
 import com._2.BookIt.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
