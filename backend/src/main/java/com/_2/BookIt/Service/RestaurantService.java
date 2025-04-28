@@ -57,9 +57,9 @@ public class RestaurantService {
 
         for (Booking b : bookings) {
             ObjectId rid = b.getRestaurantID();
-            if (b.getDateTime().equals(now)) {
+            if (b.getDateTime().toInstant().equals(now.atZone(ZoneId.systemDefault()).toInstant())) {
                 bookedNow.computeIfAbsent(rid, k -> new HashSet<>()).add(b.getTableID());
-            } else if (b.getDateTime().equals(nowPlus30)) {
+            } else if (b.getDateTime().toInstant().equals(nowPlus30.atZone(ZoneId.systemDefault()).toInstant())) {
                 booked30.computeIfAbsent(rid, k -> new HashSet<>()).add(b.getTableID());
             }
         }
@@ -89,15 +89,16 @@ public class RestaurantService {
 
             if (hasNow || has30) {
                 List<String> times = new ArrayList<>();
-                if (hasNow) times.add("NOW");
-                if (has30) times.add("NOW + 30 MIN");
+                if (hasNow) times.add(formatTime(now));
+                if (has30) times.add(formatTime(nowPlus30));
 
                 result.add(new AvailableRestaurantResponse(
-                        restId.toHexString(),          // ← pass ID as String
+                        restId.toHexString(),
                         r.getName(),
                         r.getCuisine(),
                         r.getCostRating(),
                         r.getAvgStarRating(),
+                        r.getPhotos(),
                         reviewCountMap.getOrDefault(restId, 0L),
                         bookedTodayMap.getOrDefault(restId, 0L),
                         times
@@ -106,9 +107,16 @@ public class RestaurantService {
         }
 
         return result.stream()
-                     .sorted(Comparator.comparingDouble(AvailableRestaurantResponse::getAvgRating).reversed())
-                     .limit(10)
-                     .toList();
+                .sorted(Comparator.comparingDouble(AvailableRestaurantResponse::getAvgRating).reversed())
+                .limit(10)
+                .toList();
+    }
+
+    private String formatTime(LocalDateTime time) {
+        return time.atZone(ZoneId.systemDefault())
+                .toLocalTime()
+                .truncatedTo(ChronoUnit.MINUTES)
+                .toString();
     }
 
     private Date toDate(LocalDateTime ldt) {

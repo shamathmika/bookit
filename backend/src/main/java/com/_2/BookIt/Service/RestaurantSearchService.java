@@ -132,6 +132,7 @@ public class RestaurantSearchService {
                         r.getCuisine(),
                         r.getCostRating(),
                         r.getAvgStarRating(),
+                        r.getPhotos(),
                         reviewCountMap.getOrDefault(restId, 0L),
                         bookedTodayMap.getOrDefault(restId, 0L),
                         availableAt
