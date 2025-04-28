@@ -188,6 +188,7 @@ public class RestaurantSearchService {
                 r.getAddress().getZipCode(),
                 coords,
                 mapsUrl,
+                r.getPhotos(),
                 reviews
         );
     }
