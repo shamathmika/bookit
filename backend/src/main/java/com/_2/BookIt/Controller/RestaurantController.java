@@ -3,6 +3,7 @@ package com._2.BookIt.Controller;
 //Project packages
 
 import com._2.BookIt.Dto.AvailableRestaurantResponse;
+import com._2.BookIt.Dto.CategoriesResponse;
 import com._2.BookIt.Service.RestaurantService;
 
 // Spring packages
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,9 +27,10 @@ import java.util.List;
 @RequestMapping ("/api/restaurants")
 @RequiredArgsConstructor
 public class RestaurantController {
-
-    @Autowired
+	
+	@Autowired
 	private final RestaurantService RestaurantService;
+	
 	// ---------------------------------------------- CUSTOMER + PUBLIC ------------------------------------------------
 	@GetMapping ("/")
 	public String searchRestaurants () {
@@ -41,20 +44,21 @@ public class RestaurantController {
 		return "Manager - restaurant";
 	}
 	
-	// ---------------------------------------------------- ADMIN ------------------------------------------------------
-	@GetMapping ("/admin")
-	@PreAuthorize ("hasRole('ROLE_ADMIN')")
-	public String approveRestaurant () {
-		return "Admin - restaurant";
-	}
-
 	//Available Tables now
-	@GetMapping("/available-tables")
-	public ResponseEntity<List<AvailableRestaurantResponse>> getAvailableTables(
-			@RequestParam(defaultValue = "San Jose") String location
+	@GetMapping ("/available-tables")
+	public ResponseEntity<List<AvailableRestaurantResponse>> getAvailableTables (
+			@RequestParam (defaultValue = "San Jose") String location
 	) {
 		List<AvailableRestaurantResponse> response = RestaurantService.getAvailableTables(location);
 		return ResponseEntity.ok(response);
 	}
 	
+	// Categories - Top Rated, Top Booked Today, Near You
+	@GetMapping ("/categories")
+	public ResponseEntity<CategoriesResponse> getTopRatedRestaurants (
+			@RequestParam (defaultValue = "San Jose") String location
+	) {
+		CategoriesResponse response = RestaurantService.getCategories(location);
+		return ResponseEntity.ok(response);
+	}
 }
