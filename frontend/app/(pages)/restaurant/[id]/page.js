@@ -21,18 +21,13 @@ export default function RestaurantDetails() {
 
   // Reservation form state
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [selectedTime, setSelectedTime] = useState("19:00")
+  const [selectedTime, setSelectedTime] = useState(null)
   const [selectedPeople, setSelectedPeople] = useState(2)
   const [showPeopleDropdown, setShowPeopleDropdown] = useState(false)
   const [showTimeDropdown, setShowTimeDropdown] = useState(false)
 
   // Available times
-  const availableTimes = [
-    "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-    "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-    "17:00", "17:30", "18:00", "18:30", "19:00", "19:30",
-    "20:00", "20:30", "21:00", "21:30", "22:00"
-  ]
+  const [availableTimes, setAvailableTimes] = useState([])
 
   // People options
   const peopleOptions = Array.from({ length: 10 }, (_, i) => i + 1)
@@ -48,6 +43,20 @@ export default function RestaurantDetails() {
         }
         const data = await response.json()
         setRestaurant(data)
+
+        // Fetch available times using search API
+        const searchResponse = await fetch(`http://localhost:8080/api/restaurants/search?name=${encodeURIComponent(data.name)}`)
+        if (!searchResponse.ok) {
+          throw new Error('Failed to fetch available times')
+        }
+        const searchData = await searchResponse.json()
+        const restaurantWithTimes = searchData.find(r => r.restaurantId === params.id)
+        if (restaurantWithTimes && restaurantWithTimes.availableTimes) {
+          setAvailableTimes(restaurantWithTimes.availableTimes)
+          if (restaurantWithTimes.availableTimes.length > 0) {
+            setSelectedTime(restaurantWithTimes.availableTimes[0])
+          }
+        }
       } catch (err) {
         setError(err.message)
       } finally {
@@ -396,48 +405,32 @@ export default function RestaurantDetails() {
                 </div>
 
                 {/* Time Selector */}
-                <div className="relative">
-                  <button
-                    className="w-full flex items-center border rounded overflow-hidden p-2"
-                    onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-                  >
-                    <Clock className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2">{selectedTime}</span>
-                    <ChevronDown className="ml-auto mr-2 h-4 w-4" />
-                  </button>
-
-                  {showTimeDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
-                      {(() => {
-                        const now = new Date();
-                        const times = [
-                          new Date(now.getTime() - 30 * 60000), // -30 minutes
-                          now,                                  // current time
-                          new Date(now.getTime() + 30 * 60000)  // +30 minutes
-                        ];
-                        
-                        return times.map((time) => {
-                          const timeString = time.toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: true
-                          });
-                          return (
-                            <button
-                              key={timeString}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                setSelectedTime(timeString);
-                                setShowTimeDropdown(false);
-                              }}
-                            >
-                              {timeString}
-                            </button>
-                          );
-                        });
-                      })()}
-                    </div>
-                  )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm font-medium">Select Time</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {availableTimes.map((time) => {
+                      const isSelected = time === selectedTime;
+                      return (
+                        <button
+                          key={time}
+                          className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                            isSelected 
+                              ? 'bg-[#8B2615] text-white' 
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                          onClick={() => setSelectedTime(time)}
+                        >
+                          {time}
+                        </button>
+                      );
+                    })}
+                    {availableTimes.length === 0 && !loading && (
+                      <p className="text-sm text-gray-500">No available times</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Reserve Button */}
