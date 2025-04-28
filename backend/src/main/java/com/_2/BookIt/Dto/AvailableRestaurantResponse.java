@@ -14,6 +14,7 @@ public class AvailableRestaurantResponse {
     private String cuisine;
     private int costRating;
     private double avgRating;
+    private List<String> photos;
     private long totalReviews;
     private long bookedToday;
     private List<String> availableTimes;
