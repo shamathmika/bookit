@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter } from "lucide-react"
+import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter, X, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import ReviewModal from "../reviews/page"
 import { useParams } from "next/navigation"
@@ -16,6 +16,7 @@ export default function RestaurantDetails() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [reservationSuccess, setReservationSuccess] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null)
   const params = useParams()
 
   // Reservation form state
@@ -35,6 +36,8 @@ export default function RestaurantDetails() {
 
   // People options
   const peopleOptions = Array.from({ length: 10 }, (_, i) => i + 1)
+
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -92,6 +95,26 @@ export default function RestaurantDetails() {
     }
   }
 
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl)
+  }
+
+  const nextPhoto = () => {
+    if (restaurant?.photos) {
+      setCurrentPhotoIndex((prev) => 
+        prev === restaurant.photos.length - 1 ? 0 : prev + 1
+      )
+    }
+  }
+
+  const prevPhoto = () => {
+    if (restaurant?.photos) {
+      setCurrentPhotoIndex((prev) => 
+        prev === 0 ? restaurant.photos.length - 1 : prev - 1
+      )
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-white">
@@ -137,14 +160,79 @@ export default function RestaurantDetails() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <main className="flex-1 container mx-auto px-4 py-0">
-        <div className="w-full h-64 md:h-80 bg-gray-100 overflow-hidden">
-          <Image
-              src="https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop"
-              alt="Restaurant banner"
-            width={1000}
-            height={320}
-            className="w-full object-cover"
-          />
+        {/* Main Photo Gallery Banner */}
+        <div className="w-full h-64 md:h-80 bg-gray-100 overflow-hidden relative group">
+          {restaurant?.photos && restaurant.photos.length > 0 ? (
+            <>
+              <div 
+                className="flex h-full transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${currentPhotoIndex * 100}%)` }}
+              >
+                {restaurant.photos.map((photo, index) => (
+                  <div
+                    key={index}
+                    className="w-full h-full flex-shrink-0 cursor-pointer"
+                    onClick={() => handleImageClick(photo)}
+                  >
+                    <Image
+                      src={photo}
+                      alt={`${restaurant.name} photo ${index + 1}`}
+                      width={1200}
+                      height={800}
+                      className="w-full h-full object-cover"
+                      priority={index === 0}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Navigation Arrows */}
+              {restaurant.photos.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      prevPhoto()
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      nextPhoto()
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+
+                  {/* Photo Indicators */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {restaurant.photos.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setCurrentPhotoIndex(index)
+                        }}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          currentPhotoIndex === index 
+                            ? 'bg-white w-4' 
+                            : 'bg-white/50 hover:bg-white/80'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-400">No photos available</span>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mt-6">
@@ -320,18 +408,34 @@ export default function RestaurantDetails() {
 
                   {showTimeDropdown && (
                     <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
-                      {availableTimes.map((time) => (
-                        <button
-                          key={time}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                          onClick={() => {
-                            setSelectedTime(time)
-                            setShowTimeDropdown(false)
-                          }}
-                        >
-                          {time}
-                        </button>
-                      ))}
+                      {(() => {
+                        const now = new Date();
+                        const times = [
+                          new Date(now.getTime() - 30 * 60000), // -30 minutes
+                          now,                                  // current time
+                          new Date(now.getTime() + 30 * 60000)  // +30 minutes
+                        ];
+                        
+                        return times.map((time) => {
+                          const timeString = time.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          });
+                          return (
+                            <button
+                              key={timeString}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setSelectedTime(timeString);
+                                setShowTimeDropdown(false);
+                              }}
+                            >
+                              {timeString}
+                            </button>
+                          );
+                        });
+                      })()}
                     </div>
                   )}
                 </div>
@@ -398,6 +502,31 @@ export default function RestaurantDetails() {
         onClose={() => setIsReviewModalOpen(false)} 
         restaurantName={restaurant.name} 
       />
+
+      {/* Image Preview Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <Image
+              src={selectedImage}
+              alt="Restaurant photo"
+              width={1200}
+              height={800}
+              className="object-contain max-h-full rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
