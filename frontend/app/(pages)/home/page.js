@@ -81,8 +81,28 @@ export default function Component() {
             <Link 
               key={restaurant.restaurantId} 
               href={`/restaurant/${restaurant.restaurantId}`}
-              className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              className="block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white border"
             >
+              <div className="relative h-48 overflow-hidden">
+                {restaurant.photos && restaurant.photos.length > 0 ? (
+                  <Image
+                    src={restaurant.photos[0]}
+                    alt={restaurant.restaurantName}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-400">No photo available</span>
+                  </div>
+                )}
+                {restaurant.photos && restaurant.photos.length > 1 && (
+                  <div className="absolute bottom-2 right-2 bg-black/50 px-2 py-1 rounded-md">
+                    <span className="text-white text-xs">+{restaurant.photos.length - 1} photos</span>
+                  </div>
+                )}
+              </div>
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2">{restaurant.restaurantName}</h2>
                 <div className="flex items-center mb-2">
@@ -110,7 +130,7 @@ export default function Component() {
                     {restaurant.availableTimes.map((time, timeIndex) => (
                       <span 
                         key={timeIndex}
-                        className="px-3 py-1 bg-[#8B2615] text-white text-sm rounded-full"
+                        className="px-3 py-1 bg-[#8B2615] text-white text-sm rounded-full hover:bg-[#a13425] transition-colors"
                       >
                         {time}
                       </span>
@@ -196,24 +216,32 @@ function CategorySection({ category }) {
   }
 
   return (
-    <div className="border rounded-md p-4">
+    <div className="border rounded-xl p-4">
       <h2 className="text-xl text-[#8B2615] font-medium mb-4">{category.name}</h2>
-
       {restaurants.map((restaurant) => (
-        <div key={restaurant.id} className="flex gap-3 py-3 border-t">
-          <div className="flex-shrink-0">
-            <Image
-              src={restaurant.imageUrl || "https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop"}
-              alt="Restaurant Image"
-              width={60}
-              height={60}
-              className="rounded"
-            />
+        <Link 
+          key={restaurant.restaurantId} 
+          href={`/restaurant/${restaurant.restaurantId}`}
+          className="flex gap-3 py-3 border-t group hover:bg-gray-50 transition-colors"
+        >
+          <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+            {restaurant.photos && restaurant.photos.length > 0 ? (
+              <Image
+                src={restaurant.photos[0]}
+                alt={restaurant.name}
+                width={80}
+                height={80}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-400 text-xs">No photo</span>
+              </div>
+            )}
           </div>
-
-          <div>
-            <h3 className="font-medium">{restaurant.name}</h3>
-            <div className="flex items-center text-sm">
+          <div className="flex-1">
+            <h3 className="font-medium group-hover:text-[#8B2615] transition-colors">{restaurant.name}</h3>
+            <div className="flex items-center text-sm text-gray-600">
               <div className="flex text-yellow-400">
                 {[...Array(5)].map((_, i) => (
                   <Star 
@@ -222,16 +250,13 @@ function CategorySection({ category }) {
                   />
                 ))}
               </div>
-              <span className="text-xs text-gray-500 ml-1">
-                ({restaurant.avgRating})
-              </span>
+              <span className="ml-1">({restaurant.avgRating.toFixed(1)})</span>
             </div>
-
-            <div className="text-xs text-gray-500">
-              {restaurant.cuisine} | {restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'} | {restaurant.region}
-            </div>
+            <p className="text-sm text-gray-600">
+              {restaurant.cuisine} • {restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'}
+            </p>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

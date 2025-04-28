@@ -97,7 +97,7 @@ export function Header() {
         {/* Logo */}
         <Link href="/home">
           <span className="text-[#A31D1D] text-xl font-medium cursor-pointer">
-            SiteName
+            BookIt
           </span>
         </Link>
 
