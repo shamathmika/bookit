@@ -25,5 +25,6 @@ public class RestaurantDetailsResponse {
     private String zipCode;
     private double[] coordinates;     // [lng, lat]
     private String googleMapsEmbedUrl;
+    private List<String> photos;
     private List<Review> reviews;
 }
