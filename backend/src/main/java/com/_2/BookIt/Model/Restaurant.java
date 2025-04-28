@@ -2,6 +2,7 @@ package com._2.BookIt.Model;
 
 // Project packages
 
+import com._2.BookIt.Enum.ApprovalStatus;
 import com._2.BookIt.Enum.RestaurantStatus;
 
 // JSON packages
@@ -46,8 +47,8 @@ public class Restaurant {
 	private String name;
 	
 	private String description;
-	
-	private List<@Valid PhotoUrl> photos; // If photos list is present, the String must not be ""
+
+	private List<@NotBlank @Pattern(regexp = "https?://.+", message = "Photo must be a valid HTTP/HTTPS URL") String> photos;
 	
 	@NotNull (message = "Address is required")
 	@Valid
@@ -76,19 +77,9 @@ public class Restaurant {
 	
 	@NotBlank (message = "Closing time is required")
 	private String closingTime;
-	
-	/**
-	 * Nested class for Photo URL.
-	 */
-	@Getter
-	@Setter
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class PhotoUrl {
-		@NotBlank (message = "Photo URL cannot be blank")
-		@Pattern (regexp = "https?://.+", message = "Photo must be a valid HTTP/HTTPS URL")
-		private String url;
-	}
+
+	@NotNull(message = "Approval status is required")
+	private ApprovalStatus approvalStatus;
 	
 	/**
 	 * Nested class for Address.
@@ -133,7 +124,7 @@ public class Restaurant {
 	}
 	
 	// Constructor
-	public Restaurant (String name, String description, List<PhotoUrl> photos, Address address, String contact, String cuisine, Integer costRating, Double avgStarRating, RestaurantStatus status, String openingTime, String closingTime) {
+	public Restaurant (String name, String description, List<String> photos, Address address, String contact, String cuisine, Integer costRating, Double avgStarRating, RestaurantStatus status, String openingTime, String closingTime, ApprovalStatus approvalStatus) {
 		this.name = name;
 		this.description = description;
 		this.photos = photos;
@@ -145,5 +136,6 @@ public class Restaurant {
 		this.status = status;
 		this.openingTime = openingTime;
 		this.closingTime = closingTime;
+		this.approvalStatus = approvalStatus;
 	}
 }

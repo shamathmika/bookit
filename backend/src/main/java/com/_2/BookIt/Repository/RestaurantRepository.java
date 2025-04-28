@@ -2,6 +2,7 @@ package com._2.BookIt.Repository;
 
 // Project packages
 
+import com._2.BookIt.Enum.ApprovalStatus;
 import com._2.BookIt.Enum.RestaurantStatus;
 import com._2.BookIt.Model.Restaurant;
 
@@ -31,4 +32,8 @@ public interface RestaurantRepository extends MongoRepository<Restaurant, Object
 	long countByStatus(String status);
 
 	List<Restaurant> findByAddress_CityAndStatus(String city, String status);
+
+	List<Restaurant> findByApprovalStatus(ApprovalStatus status);
+
+	long countByApprovalStatus(ApprovalStatus status);
 }

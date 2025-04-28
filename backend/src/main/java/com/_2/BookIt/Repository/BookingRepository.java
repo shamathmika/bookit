@@ -23,4 +23,10 @@ public interface BookingRepository extends MongoRepository<Booking, ObjectId> {
             "{ '$group': { '_id': '$restaurantID', 'count': { '$sum': 1 } } }"
     })
     List<BookingCount> countConfirmedTodayByRestaurant(List<ObjectId> restaurantIds, Date start, Date end);
+
+    @Aggregation(pipeline = {
+            "{ '$match': { 'dateTime': { '$gte': { $dateSubtract: { startDate: '$$NOW', unit: 'month', amount: 1 } } } } }",
+            "{ '$count': 'count' }"
+    })
+    Long countBookingsLastMonth();
 }
