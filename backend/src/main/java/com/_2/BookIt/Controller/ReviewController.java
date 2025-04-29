@@ -1,5 +1,7 @@
 package com._2.BookIt.Controller;
 
+import com._2.BookIt.Dto.ReviewResponse;
+import com._2.BookIt.Dto.StandaloneReviewRequest;
 import com._2.BookIt.Model.Review;
 import com._2.BookIt.Repository.ReviewRepository;
 import com._2.BookIt.Security.SecurityUtil;
@@ -12,6 +14,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -31,8 +34,9 @@ public class ReviewController {
 
     @GetMapping("/restaurant/{restaurantId}")
     @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_MANAGER')")
-    public ResponseEntity<List<Review>> getByRestaurant(@PathVariable String restaurantId) {
-        return ResponseEntity.ok(reviewService.getReviewsByRestaurant(new ObjectId(restaurantId)));
+    public ResponseEntity<List<ReviewResponse>> getReviewsByRestaurant(@PathVariable String restaurantId) {
+        List<ReviewResponse> response = reviewService.getReviewsByRestaurant(new ObjectId(restaurantId));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/{customerID}")
@@ -88,4 +92,21 @@ public class ReviewController {
         reviews.forEach(r -> System.out.println("📄 Review: " + r));
         return reviews;
     }
+
+    @PostMapping("/reviews/standalone")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    public ResponseEntity<Review> postStandaloneReview(@RequestBody @Valid StandaloneReviewRequest request) {
+        Review review = Review.builder()
+                .restaurantID(new ObjectId(request.getRestaurantID()))
+                .customerID(new ObjectId(request.getCustomerID()))
+                .rating(request.getRating())
+                .comments(request.getComments())
+                .photos(request.getPhotos())
+                .date(request.getDate() != null ? request.getDate() : new Date())
+                .build();
+
+        Review saved = reviewRepository.save(review);
+        return ResponseEntity.ok(saved);
+    }
+
 }

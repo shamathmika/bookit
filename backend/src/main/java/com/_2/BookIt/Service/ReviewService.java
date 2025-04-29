@@ -1,13 +1,17 @@
 package com._2.BookIt.Service;
 
+import com._2.BookIt.Dto.ReviewResponse;
 import com._2.BookIt.Model.Review;
+import com._2.BookIt.Model.User;
 import com._2.BookIt.Repository.ReviewRepository;
+import com._2.BookIt.Repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +21,9 @@ public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public Review createReview(Review review) {
         return reviewRepository.save(review);
@@ -30,8 +37,18 @@ public class ReviewService {
         return reviewRepository.findByCustomerID(customerID);
     }
 
-    public List<Review> getReviewsByRestaurant(ObjectId restaurantId) {
-        return reviewRepository.findByRestaurantID(restaurantId);
+    public List<ReviewResponse> getReviewsByRestaurant(ObjectId restaurantId) {
+        List<Review> reviews = reviewRepository.findByRestaurantID(restaurantId);
+        List<ReviewResponse> result = new ArrayList<>();
+
+        for (Review review : reviews) {
+            String customerName = userRepository.findById(review.getCustomerID().toHexString())
+                    .map(User::getName)
+                    .orElse("Unknown");
+            result.add(new ReviewResponse(review, customerName));
+        }
+
+        return result;
     }
 
     public void deleteReview(ObjectId id) {
