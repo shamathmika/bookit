@@ -2,7 +2,9 @@ package com._2.BookIt.Service;
 
 import com._2.BookIt.Dto.AvailableRestaurantResponse;
 import com._2.BookIt.Dto.BookingCount;
+import com._2.BookIt.Dto.CategoriesResponse;
 import com._2.BookIt.Dto.ReviewCount;
+import com._2.BookIt.Enum.RestaurantStatus;
 import com._2.BookIt.Model.Booking;
 import com._2.BookIt.Model.Restaurant;
 import com._2.BookIt.Model.Table;
@@ -12,7 +14,15 @@ import com._2.BookIt.Repository.ReviewRepository;
 import com._2.BookIt.Repository.TableRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
+
+import org.bson.types.ObjectId;
+
+import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -122,4 +132,65 @@ public class RestaurantService {
     private Date toDate(LocalDateTime ldt) {
         return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
     }
+  
+  public CategoriesResponse getCategories (String location) {
+		List<Restaurant> topRatedRestaurants = findTopRatedRestaurants(location);
+		List<Restaurant> topBookedTodayRestaurants = findTopBookedTodayRestaurants(location);
+		List<Restaurant> nearYouRestaurants = findRestaurantsNear(location);
+		
+		return new CategoriesResponse(
+				topRatedRestaurants,
+				topBookedTodayRestaurants,
+				nearYouRestaurants
+		);
+	}
+	
+	public List<Restaurant> findTopRatedRestaurants (String location) {
+		return restaurantRepo.findByAddress_CityIgnoreCaseAndStatusOrderByAvgStarRatingDesc(location, RestaurantStatus.ACTIVE)
+				.stream()
+				.limit(5)
+				.toList();
+	}
+	
+	public List<Restaurant> findTopBookedTodayRestaurants (String location) {
+		LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+		LocalDateTime endOfDay = startOfDay.plusDays(1).minusSeconds(1);
+		
+		List<ObjectId> restaurantIds = restaurantRepo.findByAddress_CityIgnoreCaseAndStatus(location, RestaurantStatus.ACTIVE)
+				.stream()
+				.map(Restaurant::getId)
+				.toList();
+		
+		List<BookingCount> bookingCounts = bookingRepo.countConfirmedTodayByRestaurant(
+				restaurantIds,
+				toDate(startOfDay),
+				toDate(endOfDay)
+		);
+		
+		List<ObjectId> topRestaurantIds = bookingCounts.stream()
+				.sorted(Comparator.comparingLong(BookingCount::getCount).reversed())
+				.limit(5)
+				.map(BookingCount::getId)
+				.toList();
+		
+		return restaurantRepo.findAllById(topRestaurantIds);
+	}
+	
+	public List<Restaurant> findRestaurantsNear (String city) {
+		List<Restaurant> allRestaurants = restaurantRepo.findByAddress_CityIgnoreCaseAndStatus(city, RestaurantStatus.ACTIVE);
+		
+		if (allRestaurants.isEmpty()) {
+			return List.of();
+		}
+		
+		Restaurant base = allRestaurants.get(0); // Use one restaurant as base location
+		
+		double longitude = base.getAddress().getLocation().getCoordinates()[0];
+		double latitude = base.getAddress().getLocation().getCoordinates()[1];
+		
+		return restaurantRepo.findNearbyApprovedActiveRestaurants(longitude, latitude, 3218.69) // 2 miles
+				.stream()
+				.limit(5)
+				.toList();
+	}
 }
