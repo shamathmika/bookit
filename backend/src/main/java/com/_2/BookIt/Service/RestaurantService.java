@@ -14,7 +14,9 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,10 +89,25 @@ public class RestaurantService {
             boolean hasNow = tables.stream().anyMatch(t -> !bn.contains(t.getId()));
             boolean has30 = tables.stream().anyMatch(t -> !b30.contains(t.getId()));
 
-            if (hasNow || has30) {
+            // 🌟 NEW: Parse restaurant open and close time
+            LocalTime opening = LocalTime.parse(r.getOpeningTime().toUpperCase(), DateTimeFormatter.ofPattern("h:mm a"));
+            LocalTime closing = LocalTime.parse(r.getClosingTime().toUpperCase(), DateTimeFormatter.ofPattern("h:mm a"));
+
+
+            LocalTime nowTime = now.toLocalTime();
+            LocalTime nowPlus30Time = nowPlus30.toLocalTime();
+
+            boolean openNow = !nowTime.isBefore(opening) && nowTime.isBefore(closing);
+            boolean openNowPlus30 = !nowPlus30Time.isBefore(opening) && nowPlus30Time.isBefore(closing);
+
+            if ((hasNow && openNow) || (has30 && openNowPlus30)) {
                 List<String> times = new ArrayList<>();
-                if (hasNow) times.add(formatTime(now));
-                if (has30) times.add(formatTime(nowPlus30));
+                if (hasNow && openNow) {
+                    times.add(formatTime(now));
+                }
+                if (has30 && openNowPlus30) {
+                    times.add(formatTime(nowPlus30));
+                }
 
                 result.add(new AvailableRestaurantResponse(
                         restId.toHexString(),
@@ -111,6 +128,7 @@ public class RestaurantService {
                 .limit(10)
                 .toList();
     }
+
 
     private String formatTime(LocalDateTime time) {
         return time.atZone(ZoneId.systemDefault())
