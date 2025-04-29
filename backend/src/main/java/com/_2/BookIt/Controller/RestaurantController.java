@@ -8,14 +8,14 @@ import com._2.BookIt.Service.RestaurantService;
 
 // Spring packages
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -60,5 +60,16 @@ public class RestaurantController {
 	) {
 		CategoriesResponse response = RestaurantService.getCategories(location);
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping ("/{restaurantId}/available-times")
+	public ResponseEntity<List<String>> getAvailableTimeSlots (
+			@PathVariable String restaurantId,
+			@RequestParam @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate date,
+			@RequestParam int people
+	) {
+		return ResponseEntity.ok(
+				RestaurantService.getAvailableTimeSlots(new ObjectId(restaurantId), date, people)
+		);
 	}
 }

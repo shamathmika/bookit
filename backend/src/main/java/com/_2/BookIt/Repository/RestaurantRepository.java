@@ -20,6 +20,7 @@ import java.util.List;
  * Repository interface for Restaurants.
  */
 public interface RestaurantRepository extends MongoRepository<Restaurant, ObjectId> {
+	
 	List<Restaurant> findByNameContainingIgnoreCase (String name);
 	
 	List<Restaurant> findByStatus (RestaurantStatus status);

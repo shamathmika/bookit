@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 
@@ -210,5 +212,81 @@ public class RestaurantService {
 				.stream()
 				.limit(5)
 				.toList();
+	}
+	
+	public List<String> getAvailableTimeSlots (ObjectId restaurantId, LocalDate date, int people) {
+		Restaurant restaurant = restaurantRepo.findById(restaurantId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
+		
+		boolean isToday = date.equals(LocalDate.now());
+		
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
+
+    // Normalize stored time strings
+		String normalizedOpen = restaurant.getOpeningTime().replaceAll("\\s+", " ").trim();
+		String normalizedClose = restaurant.getClosingTime().replaceAll("\\s+", " ").trim();
+		
+		LocalTime open = LocalTime.parse(normalizedOpen, fmt);
+		LocalTime close = LocalTime.parse(normalizedClose, fmt);
+		
+		LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+		LocalDateTime nowDateTime = LocalDateTime.of(date, now);
+		LocalDateTime openDateTime = LocalDateTime.of(date, open);
+		LocalDateTime closeDateTime = LocalDateTime.of(date, close);
+		
+		// Check if the current time is outside the booking window
+		if (date.equals(LocalDate.now()) && (nowDateTime.isBefore(openDateTime) || nowDateTime.isAfter(closeDateTime.minusMinutes(30)))) {
+			return List.of(); // Too early or too late to book
+		}
+		
+		LocalTime start = date.equals(LocalDate.now()) ? now.plusMinutes(1) : open;
+		
+		List<LocalTime> slots = new ArrayList<>();
+		for (LocalTime time = start; !time.isAfter(close.minusMinutes(30)); time = time.plusMinutes(30)) {
+			slots.add(time);
+		}
+		
+		// Find tables by capacity
+		List<Table> tables = tableRepo.findByRestaurantIDAndCapacityGreaterThanEqual(restaurantId, people);
+		if (tables.isEmpty()) return List.of();
+		
+		List<ObjectId> tableIds = tables.stream().map(t -> new ObjectId(t.getId())).toList();
+		
+		LocalDateTime startDateTime;
+		LocalDateTime endDateTime;
+		
+		if (isToday) {
+			startDateTime = LocalDateTime.of(date, now.plusMinutes(1));
+		} else {
+			startDateTime = open.atDate(date);
+		}
+		endDateTime = close.atDate(date);
+		
+		Date startDate = Date.from(startDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date endDate = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		
+		List<Booking> bookings = bookingRepo.findByTableIDInAndDateTimeBetweenAndStatusIn(tableIds, startDate, endDate, List.of("confirmed", "pending"));
+		
+		// Map of slot -> tableIds already booked at that time
+		Map<LocalTime, Set<ObjectId>> bookedMap = new HashMap<>();
+		for (Booking b : bookings) {
+			LocalTime slotTime = b.getDateTime().toInstant()
+					.atZone(ZoneId.systemDefault())
+					.toLocalTime()
+					.truncatedTo(ChronoUnit.MINUTES);
+			bookedMap.computeIfAbsent(slotTime, k -> new HashSet<>()).add(b.getTableID());
+		}
+		
+		// Check which slots have any free table
+		List<String> availableTimes = new ArrayList<>();
+		for (LocalTime slot : slots) {
+			Set<ObjectId> booked = bookedMap.getOrDefault(slot, Set.of());
+			boolean anyAvailable = tables.stream().anyMatch(t -> !booked.contains(t.getId()));
+			if (anyAvailable) {
+				availableTimes.add(slot.toString());
+			}
+		}
+		
+		return availableTimes;
 	}
 }
