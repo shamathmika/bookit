@@ -10,12 +10,16 @@ import { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export function Header() {
+  
   const router = useRouter();
   const pathname = usePathname();
+  const [userRole, setUserRole] = useState(null);
+
   // New state for login status
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
   // Existing state
   const [date, setDate] = useState(new Date());
@@ -24,20 +28,34 @@ export function Header() {
   const [guestCount, setGuestCount] = useState(2);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // On mount, check for a saved token
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  },[pathname]);
+  const { isLoggedIn, logout } = useAuth();
 
-  // Call this after a successful sign-in: e.g. in your sign-in page,
-  // save `localStorage.setItem("authToken", token)` then router.push back here.
-  // ...
+  useEffect(() => {
+    if (isLoggedIn) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const payload = JSON.parse(jsonPayload);
+          setUserRole(payload.role);
+        } catch (error) {
+          console.error("Error parsing token:", error);
+        }
+      }
+    } else {
+      setUserRole(null);
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    router.push("/home");   // or wherever you want
+    logout();
+    setUserRole(null);
+    router.push("/home");
   };
 
   const handleSearch = (e) => {
@@ -53,26 +71,23 @@ export function Header() {
 
   const handleSearchSubmit = async () => {
     try {
-      const queryParams = new URLSearchParams();
-      if (searchQuery) queryParams.append("name", searchQuery);
-      if (location) queryParams.append("location", location);
-      if (guestCount) queryParams.append("people", guestCount.toString());
+      const params = new URLSearchParams();
+      if (searchQuery) params.append("name", searchQuery);
+      if (location) params.append("location", location);
+      if (guestCount) params.append("people", guestCount);
+      const combined = new Date(
+        date.getFullYear(), date.getMonth(), date.getDate(),
+        time.getHours(), time.getMinutes()
+      );
+      params.append("datetime", combined.toISOString());
 
-      if (date && time) {
-        const combined = new Date(
-          date.getFullYear(), date.getMonth(), date.getDate(),
-          time.getHours(), time.getMinutes()
-        );
-        queryParams.append("datetime", combined.toISOString());
-      }
+      const url = `http://localhost:8080/api/restaurants/search?${params.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Search failed");
 
-      const url = `/api/restaurants/search?${queryParams.toString()}`;
-      const response = await fetch(`http://localhost:8080${url}`);
-      if (!response.ok) throw new Error("Search failed");
-
-      router.push(`/search?${queryParams.toString()}`);
-    } catch (error) {
-      console.error("Search error:", error);
+      router.push(`/search?${params.toString()}`);
+    } catch (err) {
+      console.error("Search error:", err);
     }
   };
 
@@ -82,7 +97,7 @@ export function Header() {
         {/* Logo */}
         <Link href="/home">
           <span className="text-[#A31D1D] text-xl font-medium cursor-pointer">
-            SiteName
+            BookIt
           </span>
         </Link>
 
@@ -161,18 +176,31 @@ export function Header() {
         {/* Auth controls */}
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
-            >
-              Logout
-            </button>
-          ) : (
-            <Link href="/signup">
+            <>
+              {userRole === "ROLE_CUSTOMER" && (
+                <Link href="/user">
+                  <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
+                    Profile
+                  </button>
+                </Link>
+              )}
+              {userRole === "ROLE_MANAGER" && (
+                <Link href="/manage">
+                  <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
+                    Manage
+                  </button>
+                </Link>
+              )}
               <button
-                onClick={() => {}}
+                onClick={handleLogout}
                 className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
               >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link href="/login">
+              <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded">
                 Sign In
               </button>
             </Link>

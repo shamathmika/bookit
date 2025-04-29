@@ -14,8 +14,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         
         // Allow all origins in development
-        config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOriginPattern("*");
         
         // Allow all methods
         config.addAllowedMethod("*");
@@ -25,6 +24,13 @@ public class CorsConfig {
         
         // Allow credentials
         config.setAllowCredentials(true);
+        
+        // Expose headers
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Content-Type");
+        
+        // Set max age
+        config.setMaxAge(3600L);
         
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);

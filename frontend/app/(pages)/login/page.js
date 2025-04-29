@@ -1,72 +1,58 @@
 "use client"
 
+
 import { useState } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Mail, Phone, Github, Twitter } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [contactMethod, setContactMethod] = useState("email") // Default to email since backend only accepts email
-  const [contact, setContact] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
+  const [contact, setContact] = useState("");
+  const [password, setPassword] = useState("");
+  const [contactMethod, setContactMethod] = useState("email");
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/signin", {
+      const res = await fetch("http://localhost:8080/api/auth/signin", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: contact,
-          password: password
+          password,
         }),
-      })
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        setError(errorData?.message || "Login failed. Please try again.")
-        return
+      if (!res.ok) {
+        const err = await res.json();
+        setError(err.message || "Login failed");
+        return;
       }
 
-      const data = await response.json()
-      console.log("Login success:", data)
+      const data = await res.json();
+      // { id, name, email, phoneNumber, role, token }
+      login(data);
 
-      // Store user data in localStorage
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("user", JSON.stringify({
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        role: data.role
-      }))
-
-      // Set Authorization header for future requests
-      localStorage.setItem("authHeader", `Bearer ${data.token}`)
-
-      // Redirect based on role
+      // redirect by role
       if (data.role === "ROLE_ADMIN") {
-        router.push("/admin")
+        router.push("/admin");
       } else if (data.role === "ROLE_MANAGER") {
-        router.push("/manager")
+        router.push("/manager");
       } else {
-        router.push("/home")
+        router.push("/home");
       }
-
-    } catch (err) {
-      console.error("Login error:", err)
-      setError("Network error. Please try again later.")
+    } catch (e) {
+      console.error("Login error:", e);
+      setError("Network error");
     }
-  }
-
+  };
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">

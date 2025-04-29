@@ -1,46 +1,135 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { User, Calendar, Clock, Github, Twitter } from "lucide-react"
+import { User, Calendar, Clock } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
 
 export default function UserReservations() {
-  const [reservations, setReservations] = useState([
-    {
-      id: 1,
-      restaurant: "Restaurant",
-      people: "2",
-      date: "Full Date",
-      time: "Time",
-      status: "active",
-    },
-    {
-      id: 2,
-      restaurant: "Restaurant",
-      people: "4",
-      date: "Full Date",
-      time: "Time",
-      status: "cancelled",
-    },
-  ])
-
+  const { user } = useAuth()
+  const [reservations, setReservations] = useState([])
+  const [restaurants, setRestaurants] = useState({})
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [showCancelledModal, setShowCancelledModal] = useState(false)
   const [selectedReservation, setSelectedReservation] = useState(null)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchReservations()
+    }
+  }, [user])
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token')
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  }
+
+  const fetchReservations = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${user.id}/reservations`, {
+        headers: getAuthHeaders()
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please log in again to view your reservations')
+          return
+        }
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      // Log the response for debugging
+      console.log('API Response:', data)
+      
+      // Check if data is an array
+      if (!Array.isArray(data)) {
+        console.error('API response is not an array:', data)
+        setError('Invalid response format from server')
+        setReservations([])
+        return
+      }
+      
+      setReservations(data)
+      setError(null)
+      
+      // Fetch restaurant details for each unique restaurantID
+      const uniqueRestaurantIds = [...new Set(data.map(r => r.restaurantID))]
+      const restaurantDetails = {}
+      
+      try {
+        await Promise.all(uniqueRestaurantIds.map(async (id) => {
+          const response = await fetch(`http://localhost:8080/api/restaurants/${id}`, {
+            headers: getAuthHeaders()
+          })
+          if (!response.ok) {
+            throw new Error(`Failed to fetch restaurant details: ${response.status}`)
+          }
+          const restaurant = await response.json()
+          restaurantDetails[id] = {
+            name: restaurant.name,
+            cuisine: restaurant.cuisine,
+            address: `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}`
+          }
+        }))
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error)
+      }
+      
+      setRestaurants(restaurantDetails)
+    } catch (error) {
+      console.error("Error fetching reservations:", error)
+      setError('Failed to fetch reservations')
+      setReservations([])
+    }
+  }
 
   const handleCancelClick = (reservation) => {
     setSelectedReservation(reservation)
     setShowCancelModal(true)
   }
 
-  const handleCancelConfirm = () => {
-    // Update the reservation status to cancelled
-    setReservations(
-      reservations.map((res) => (res.id === selectedReservation.id ? { ...res, status: "cancelled" } : res)),
-    )
-    setShowCancelModal(false)
-    setShowCancelledModal(true)
+  const handleCancelConfirm = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/reservations/${selectedReservation.id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: 'cancelled' })
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please log in again to cancel your reservation')
+          return
+        }
+        throw new Error(`Failed to cancel reservation: ${response.status}`)
+      }
+
+      if (response.ok) {
+        setReservations(reservations.map(res => 
+          res.id === selectedReservation.id ? { ...res, status: 'cancelled' } : res
+        ))
+        setShowCancelModal(false)
+        setShowCancelledModal(true)
+      }
+    } catch (error) {
+      console.error("Error cancelling reservation:", error)
+      setError('Failed to cancel reservation')
+    }
+  }
+
+  const formatDateTime = (dateTimeStr) => {
+    const date = new Date(dateTimeStr)
+    return {
+      date: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    }
   }
 
   return (
@@ -72,53 +161,66 @@ export default function UserReservations() {
       <div className="flex-1 p-8">
         <h1 className="text-3xl font-bold mb-8">My Reservations</h1>
 
-        <div className="space-y-6">
-          {reservations.map((reservation) => (
-            <div key={reservation.id} className="border rounded-lg p-6 max-w-3xl">
-              <div className="flex items-center">
-                <div className="flex-shrink-0 mr-4">
-                  <Image
-                    src="/placeholder.svg?height=100&width=100"
-                    alt="Restaurant"
-                    width={100}
-                    height={100}
-                    className="rounded-md"
-                  />
-                </div>
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+        )}
 
-                <div className="flex-1">
-                  <h2 className="text-xl font-bold mb-2">{reservation.restaurant}</h2>
-                  <div className="flex flex-wrap gap-4 mb-2">
-                    <div className="flex items-center">
-                      <User className="h-5 w-5 mr-1" />
-                      <span># {reservation.people}</span>
+        <div className="space-y-6">
+          {Array.isArray(reservations) && reservations.length > 0 ? (
+            reservations.map((reservation) => {
+              const { date, time } = formatDateTime(reservation.dateTime)
+              const restaurant = restaurants[reservation.restaurantID]
+              
+              return (
+                <div key={reservation.id} className="border rounded-lg p-6 max-w-3xl">
+                  <div className="flex items-center">
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold mb-2">{restaurant?.name || 'Loading...'}</h2>
+                      {restaurant?.cuisine && (
+                        <p className="text-gray-600 text-sm mb-2">{restaurant.cuisine} Cuisine</p>
+                      )}
+                      {restaurant?.address && (
+                        <p className="text-gray-600 text-sm mb-4">{restaurant.address}</p>
+                      )}
+                      <div className="flex flex-wrap gap-4 mb-2">
+                        <div className="flex items-center">
+                          <User className="h-5 w-5 mr-1" />
+                          <span># {reservation.totalCustomers}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Calendar className="h-5 w-5 mr-1" />
+                          <span>{date}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="h-5 w-5 mr-1" />
+                          <span>{time}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center">
-                      <Calendar className="h-5 w-5 mr-1" />
-                      <span>{reservation.date}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-5 w-5 mr-1" />
-                      <span>{reservation.time}</span>
+
+                    <div className="ml-auto">
+                      {reservation.status === "confirmed" ? (
+                        <button
+                          onClick={() => handleCancelClick(reservation)}
+                          className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded-md hover:bg-[#8B2615] hover:text-white transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      ) : (
+                        <div className="border px-4 py-2 rounded-md text-gray-500">Cancelled</div>
+                      )}
                     </div>
                   </div>
                 </div>
-
-                <div className="ml-auto">
-                  {reservation.status === "active" ? (
-                    <button
-                      onClick={() => handleCancelClick(reservation)}
-                      className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded-md"
-                    >
-                      Cancel
-                    </button>
-                  ) : (
-                    <div className="border px-4 py-2 rounded-md text-gray-500">Cancelled</div>
-                  )}
-                </div>
-              </div>
+              )
+            })
+          ) : (
+            <div className="text-gray-500 text-center py-8">
+              {error ? 'Failed to load reservations' : 'No reservations found'}
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -134,29 +236,20 @@ export default function UserReservations() {
             </div>
 
             <div className="flex items-center mb-6">
-              <div className="flex-shrink-0 mr-4">
-                <Image
-                  src="/placeholder.svg?height=80&width=80"
-                  alt="Restaurant"
-                  width={80}
-                  height={80}
-                  className="rounded-md"
-                />
-              </div>
               <div>
-                <h3 className="text-xl font-bold">{selectedReservation.restaurant}</h3>
+                <h3 className="text-xl font-bold">{restaurants[selectedReservation.restaurantID]?.name || 'Restaurant'}</h3>
                 <div className="flex flex-wrap gap-4 mt-2">
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
-                    <span># {selectedReservation.people}</span>
+                    <span># {selectedReservation.totalCustomers}</span>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
-                    <span>{selectedReservation.date}</span>
+                    <span>{formatDateTime(selectedReservation.dateTime).date}</span>
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-1" />
-                    <span>{selectedReservation.time}</span>
+                    <span>{formatDateTime(selectedReservation.dateTime).time}</span>
                   </div>
                 </div>
               </div>
@@ -191,44 +284,36 @@ export default function UserReservations() {
             </div>
 
             <div className="flex items-center mb-6">
-              <div className="flex-shrink-0 mr-4">
-                <Image
-                  src="/placeholder.svg?height=80&width=80"
-                  alt="Restaurant"
-                  width={80}
-                  height={80}
-                  className="rounded-md"
-                />
-              </div>
               <div>
-                <h3 className="text-xl font-bold">{selectedReservation.restaurant}</h3>
+                <h3 className="text-xl font-bold">{restaurants[selectedReservation.restaurantID]?.name || 'Restaurant'}</h3>
                 <div className="flex flex-wrap gap-4 mt-2">
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
-                    <span># {selectedReservation.people}</span>
+                    <span># {selectedReservation.totalCustomers}</span>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
-                    <span>{selectedReservation.date}</span>
+                    <span>{formatDateTime(selectedReservation.dateTime).date}</span>
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-1" />
-                    <span>{selectedReservation.time}</span>
+                    <span>{formatDateTime(selectedReservation.dateTime).time}</span>
                   </div>
                 </div>
               </div>
             </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowCancelledModal(false)}
+                className="bg-[#8B2615] text-white px-6 py-2 rounded-md font-medium"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-
-      <footer className="text-center py-4 text-sm text-gray-600 border-t absolute bottom-0 w-full">
-        <div>(C) 2025 Maverick, Inc</div>
-        <div className="flex justify-center gap-4 mt-2">
-          <Github size={16} />
-          <Twitter size={16} />
-        </div>
-      </footer>
     </div>
   )
 }
@@ -246,8 +331,8 @@ function XIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   )
 }
@@ -266,7 +351,7 @@ function CheckIcon({ className }) {
       strokeLinejoin="round"
       className={className}
     >
-      <polyline points="20 6 9 17 4 12"></polyline>
+      <polyline points="20 6 9 17 4 12" />
     </svg>
   )
 }

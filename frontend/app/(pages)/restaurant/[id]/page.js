@@ -1,89 +1,296 @@
 "use client"
 
-import { useState } from "react"
-import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter, X, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import ReviewModal from "../reviews/page"
+import { useParams } from "next/navigation"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { useAuth } from "@/context/AuthContext"
 
 export default function RestaurantDetails() {
+  const { user } = useAuth()
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
+  const [restaurant, setRestaurant] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [reservationSuccess, setReservationSuccess] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null)
+  const params = useParams()
+
+  // Reservation form state
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedTime, setSelectedTime] = useState(null)
+  const [selectedPeople, setSelectedPeople] = useState(2)
+  const [showPeopleDropdown, setShowPeopleDropdown] = useState(false)
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false)
+
+  // Available times
+  const [availableTimes, setAvailableTimes] = useState([])
+
+  // People options
+  const peopleOptions = Array.from({ length: 10 }, (_, i) => i + 1)
+
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
+
+  useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/restaurants/${params.id}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch restaurant details')
+        }
+        const data = await response.json()
+        setRestaurant(data)
+
+        // Fetch available times using search API
+        const searchResponse = await fetch(`http://localhost:8080/api/restaurants/search?name=${encodeURIComponent(data.name)}`)
+        if (!searchResponse.ok) {
+          throw new Error('Failed to fetch available times')
+        }
+        const searchData = await searchResponse.json()
+        const restaurantWithTimes = searchData.find(r => r.restaurantId === params.id)
+        if (restaurantWithTimes && restaurantWithTimes.availableTimes) {
+          setAvailableTimes(restaurantWithTimes.availableTimes)
+          if (restaurantWithTimes.availableTimes.length > 0) {
+            setSelectedTime(restaurantWithTimes.availableTimes[0])
+          }
+        }
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRestaurantDetails()
+  }, [params.id])
+
+  const handleReservation = async () => {
+    try {
+      // Combine date and time
+      const [hours, minutes] = selectedTime.split(":")
+      const reservationDate = new Date(selectedDate)
+      reservationDate.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+
+      const reservationData = {
+        restaurantID: params.id,
+        tableID: "60a1f2e8e3b1f001a5d4c2c", // This should come from available tables API
+        userID: user.id,
+        dateTime: reservationDate.toISOString(),
+        totalCustomers: selectedPeople,
+        status: "pending"
+      }
+
+      const response = await fetch("http://localhost:8080/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(reservationData)
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to make reservation")
+      }
+
+      setReservationSuccess(true)
+      setTimeout(() => setReservationSuccess(false), 3000)
+    } catch (err) {
+      setError(err.message)
+      setTimeout(() => setError(null), 3000)
+    }
+  }
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl)
+  }
+
+  const nextPhoto = () => {
+    if (restaurant?.photos) {
+      setCurrentPhotoIndex((prev) => 
+        prev === restaurant.photos.length - 1 ? 0 : prev + 1
+      )
+    }
+  }
+
+  const prevPhoto = () => {
+    if (restaurant?.photos) {
+      setCurrentPhotoIndex((prev) => 
+        prev === 0 ? restaurant.photos.length - 1 : prev - 1
+      )
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <main className="flex-1 container mx-auto px-4 py-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
+            <div className="h-64 bg-gray-200 rounded mb-6"></div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2">
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+              </div>
+              <div className="md:col-span-1">
+                <div className="h-48 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <main className="flex-1 container mx-auto px-4 py-6">
+          <div className="text-red-500">Error: {error}</div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!restaurant) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <main className="flex-1 container mx-auto px-4 py-6">
+          <div>Restaurant not found</div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-
-  
-
       <main className="flex-1 container mx-auto px-4 py-0">
-        <div className="w-full h-64 md:h-80 bg-gray-100 overflow-hidden">
-          <Image
-              src="https://plus.unsplash.com/premium_photo-1675344317686-118cc9f89f8a?q=80&w=2940&auto=format&fit=crop"
-              alt="Restaurant banner"
-            width={1000}
-            height={320}
-            className="w-full object-cover"
-          />
+        {/* Main Photo Gallery Banner */}
+        <div className="w-full h-64 md:h-80 bg-gray-100 overflow-hidden relative group">
+          {restaurant?.photos && restaurant.photos.length > 0 ? (
+            <>
+              <div 
+                className="flex h-full transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${currentPhotoIndex * 100}%)` }}
+              >
+                {restaurant.photos.map((photo, index) => (
+                  <div
+                    key={index}
+                    className="w-full h-full flex-shrink-0 cursor-pointer"
+                    onClick={() => handleImageClick(photo)}
+                  >
+                    <Image
+                      src={photo}
+                      alt={`${restaurant.name} photo ${index + 1}`}
+                      width={1200}
+                      height={800}
+                      className="w-full h-full object-cover"
+                      priority={index === 0}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Navigation Arrows */}
+              {restaurant.photos.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      prevPhoto()
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      nextPhoto()
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+
+                  {/* Photo Indicators */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {restaurant.photos.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setCurrentPhotoIndex(index)
+                        }}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          currentPhotoIndex === index 
+                            ? 'bg-white w-4' 
+                            : 'bg-white/50 hover:bg-white/80'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-400">No photos available</span>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mt-6">
           <div className="md:col-span-2">
-            <h1 className="text-2xl font-bold">Restaurant</h1>
+            <h1 className="text-2xl font-bold">{restaurant.name}</h1>
 
             <div className="flex flex-wrap items-center gap-4 mt-2">
               <div className="flex items-center">
                 <div className="flex text-red-500">
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 fill-current" />
-                  <StarIcon className="h-5 w-5 stroke-current fill-none" />
+                  {[...Array(5)].map((_, i) => (
+                    <StarIcon 
+                      key={i} 
+                      className={`h-5 w-5 ${i < Math.floor(restaurant.avgRating) ? 'fill-current' : 'stroke-current fill-none'}`} 
+                    />
+                  ))}
                 </div>
-                <span className="text-xs text-gray-500 ml-1">Stars</span>
+                <span className="text-xs text-gray-500 ml-1">({restaurant.avgRating.toFixed(1)})</span>
               </div>
 
               <div className="flex items-center gap-1 text-sm">
                 <CircleIcon className="h-4 w-4" />
-                <span>Exact Review #</span>
+                <span>{restaurant.totalReviews} reviews</span>
               </div>
 
               <div className="flex items-center gap-1 text-sm">
                 <DollarIcon className="h-4 w-4" />
-                <span>$$</span>
+                <span>{restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'}</span>
               </div>
 
               <div className="flex items-center gap-1 text-sm">
                 <ForkKnifeIcon className="h-4 w-4" />
-                <span>Cuisine</span>
-              </div>
-
-              <div className="flex items-center gap-1 text-sm">
-                <MapPin className="h-4 w-4" />
-                <span>Region</span>
+                <span>{restaurant.cuisine}</span>
               </div>
             </div>
 
-            <div className="text-sm mt-2">Booked 20 times today</div>
+            <div className="text-sm mt-2">Booked {restaurant.bookedToday} times today</div>
 
             <div className="mt-6 border-t pt-4">
               <h2 className="text-lg font-medium text-red-500">About</h2>
               <p className="mt-2 text-sm">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat.
+                {restaurant.description}
               </p>
-              <button className="text-red-500 text-sm mt-1">See more</button>
             </div>
 
             <div className="mt-4 grid gap-2">
               <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" />
-                <span className="font-medium">Email:</span>
-                <span>email@email.com</span>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4" />
                 <span className="font-medium">Call:</span>
-                <span>Ph #</span>
+                <span>{restaurant.contact}</span>
               </div>
             </div>
 
@@ -98,29 +305,45 @@ export default function RestaurantDetails() {
                 </button>
               </div>
 
-              <div className="mt-4 border-b pb-4">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">Reviewer Name</h3>
-                  <span className="text-sm text-gray-500">Date</span>
-                </div>
+              {restaurant.reviews.map((review) => (
+                <div key={review.id} className="mt-4 border-b pb-4">
+                  <div className="flex justify-between">
+                    <h3 className="font-medium">Anonymous User</h3>
+                    <span className="text-sm text-gray-500">
+                      {new Date(review.date).toLocaleDateString()}
+                    </span>
+                  </div>
 
-                <div className="flex text-red-500 mt-1">
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <StarIcon className="h-4 w-4 fill-current" />
-                  <span className="text-xs text-gray-500 ml-1">Stars</span>
-                </div>
+                  <div className="flex text-red-500 mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIcon 
+                        key={i} 
+                        className={`h-4 w-4 ${i < review.rating ? 'fill-current' : 'stroke-current fill-none'}`} 
+                      />
+                    ))}
+                  </div>
 
-                <p className="mt-2 text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-              </div>
+                  {review.comments && (
+                    <p className="mt-2 text-sm">{review.comments}</p>
+                  )}
 
-              <div className="mt-4">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">Reviewer Name</h3>
+                  {review.photos && review.photos.length > 0 && (
+                    <div className="flex gap-2 mt-2">
+                      {review.photos.map((photo, index) => (
+                        <div key={index} className="w-20 h-20 rounded overflow-hidden">
+                          <Image
+                            src={photo}
+                            alt={`Review photo ${index + 1}`}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -129,37 +352,106 @@ export default function RestaurantDetails() {
               <h2 className="text-xl font-medium text-red-500 text-center mb-4">Reserve a Table</h2>
 
               <div className="grid gap-4">
+                {/* People Selector */}
                 <div className="relative">
-                  <div className="flex items-center border rounded overflow-hidden">
+                  <button
+                    className="w-full flex items-center border rounded overflow-hidden p-2"
+                    onClick={() => setShowPeopleDropdown(!showPeopleDropdown)}
+                  >
                     <User className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2"># People</span>
+                    <span className="px-2">{selectedPeople} People</span>
                     <ChevronDown className="ml-auto mr-2 h-4 w-4" />
-                  </div>
+                  </button>
+                  
+                  {showPeopleDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+                      {peopleOptions.map((num) => (
+                        <button
+                          key={num}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            setSelectedPeople(num)
+                            setShowPeopleDropdown(false)
+                          }}
+                        >
+                          {num} {num === 1 ? 'Person' : 'People'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
+                {/* Date Picker */}
                 <div className="relative">
-                  <div className="flex items-center border rounded overflow-hidden">
-                    <Calendar className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2">Date</span>
-                    <ChevronDown className="ml-auto mr-2 h-4 w-4" />
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => setSelectedDate(date)}
+                    minDate={new Date()}
+                    className="w-full p-2 border rounded"
+                    dateFormat="MMMM d, yyyy"
+                    customInput={
+                      <button className="w-full flex items-center">
+                        <Calendar className="ml-2 h-4 w-4 text-gray-500" />
+                        <span className="px-2">
+                          {selectedDate.toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </button>
+                    }
+                  />
+                </div>
+
+                {/* Time Selector */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm font-medium">Select Time</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {availableTimes.map((time) => {
+                      const isSelected = time === selectedTime;
+                      return (
+                        <button
+                          key={time}
+                          className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                            isSelected 
+                              ? 'bg-[#8B2615] text-white' 
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                          onClick={() => setSelectedTime(time)}
+                        >
+                          {time}
+                        </button>
+                      );
+                    })}
+                    {availableTimes.length === 0 && !loading && (
+                      <p className="text-sm text-gray-500">No available times</p>
+                    )}
                   </div>
                 </div>
 
-                <div className="relative">
-                  <div className="flex items-center border rounded overflow-hidden">
-                    <Clock className="ml-2 h-4 w-4 text-gray-500" />
-                    <span className="px-2">Time</span>
-                    <ChevronDown className="ml-auto mr-2 h-4 w-4" />
-                  </div>
-                </div>
-              </div>
+                {/* Reserve Button */}
+                <button
+                  onClick={handleReservation}
+                  className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"
+                >
+                  Reserve Now
+                </button>
 
-              <div className="mt-6">
-                <h3 className="text-sm font-medium mb-2">Select a Time</h3>
-                <div className="flex gap-2">
-                  <button className="bg-[#f8f5f0] px-4 py-2 rounded text-sm">Time</button>
-                  <button className="bg-[#f8f5f0] px-4 py-2 rounded text-sm">Time</button>
-                </div>
+                {/* Success/Error Messages */}
+                {reservationSuccess && (
+                  <div className="text-green-500 text-center text-sm">
+                    Reservation successful!
+                  </div>
+                )}
+                {error && (
+                  <div className="text-red-500 text-center text-sm">
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -169,14 +461,21 @@ export default function RestaurantDetails() {
                 <h3 className="font-medium">Address Details</h3>
               </div>
 
+              <div className="text-sm mb-4">
+                <p>{restaurant.street}</p>
+                <p>{restaurant.city}, {restaurant.state} {restaurant.zipCode}</p>
+              </div>
+
               <div className="bg-gray-100 rounded-md overflow-hidden h-48 relative">
-                <Image
-                  src="/placeholder.svg?height=200&width=300"
-                  alt="Map"
-                  width={300}
-                  height={200}
-                  className="w-full h-full object-cover"
-                />
+                <iframe
+                  src={restaurant.googleMapsEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </div>
             </div>
           </div>
@@ -191,7 +490,36 @@ export default function RestaurantDetails() {
         </div>
       </footer>
 
-      <ReviewModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} restaurantName="Restaurant" />
+      <ReviewModal 
+        isOpen={isReviewModalOpen} 
+        onClose={() => setIsReviewModalOpen(false)} 
+        restaurantName={restaurant.name} 
+      />
+
+      {/* Image Preview Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <Image
+              src={selectedImage}
+              alt="Restaurant photo"
+              width={1200}
+              height={800}
+              className="object-contain max-h-full rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
