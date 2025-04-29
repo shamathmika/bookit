@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter, X, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import ReviewModal from "../reviews/page"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useAuth } from "@/context/AuthContext"
@@ -18,6 +18,7 @@ export default function RestaurantDetails() {
   const [reservationSuccess, setReservationSuccess] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
   const params = useParams()
+  const router = useRouter()
 
   // Reservation form state
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -34,36 +35,40 @@ export default function RestaurantDetails() {
 
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
-  useEffect(() => {
-    const fetchRestaurantDetails = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/api/restaurants/${params.id}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch restaurant details')
-        }
-        const data = await response.json()
-        setRestaurant(data)
-
-        // Fetch available times using search API
-        const searchResponse = await fetch(`http://localhost:8080/api/restaurants/search?name=${encodeURIComponent(data.name)}`)
-        if (!searchResponse.ok) {
-          throw new Error('Failed to fetch available times')
-        }
-        const searchData = await searchResponse.json()
-        const restaurantWithTimes = searchData.find(r => r.restaurantId === params.id)
-        if (restaurantWithTimes && restaurantWithTimes.availableTimes) {
-          setAvailableTimes(restaurantWithTimes.availableTimes)
-          if (restaurantWithTimes.availableTimes.length > 0) {
-            setSelectedTime(restaurantWithTimes.availableTimes[0])
-          }
-        }
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
+  const fetchRestaurantDetails = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/restaurants/${params.id}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch restaurant details')
       }
-    }
+      const data = await response.json()
+      setRestaurant(data)
 
+      // Get current date in YYYY-MM-DD format
+      const today = new Date()
+      const formattedDate = today.toISOString().split('T')[0]
+      
+      const searchResponse = await fetch(
+        `http://localhost:8080/api/restaurants/${params.id}/available-times?date=${formattedDate}&people=1`
+      )
+      if (!searchResponse.ok) {
+        throw new Error('Failed to fetch available times')
+      }
+      const availableTimes = await searchResponse.json()
+      // Take only the first 3 times
+      const limitedTimes = availableTimes.slice(0, 3)
+      setAvailableTimes(limitedTimes)
+      if (limitedTimes.length > 0) {
+        setSelectedTime(limitedTimes[0])
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchRestaurantDetails()
   }, [params.id])
 
@@ -74,30 +79,16 @@ export default function RestaurantDetails() {
       const reservationDate = new Date(selectedDate)
       reservationDate.setHours(parseInt(hours), parseInt(minutes), 0, 0)
 
-      const reservationData = {
-        restaurantID: params.id,
-        tableID: "60a1f2e8e3b1f001a5d4c2c", // This should come from available tables API
-        userID: user.id,
+      // Create the query parameters
+      const queryParams = new URLSearchParams({
+        restaurantId: params.id,
+        userId: user.id,
         dateTime: reservationDate.toISOString(),
-        totalCustomers: selectedPeople,
-        status: "pending"
-      }
+        people: selectedPeople.toString()
+      }).toString()
 
-      const response = await fetch("http://localhost:8080/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(reservationData)
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to make reservation")
-      }
-
-      setReservationSuccess(true)
-      setTimeout(() => setReservationSuccess(false), 3000)
+      // Navigate to booking page with query parameters
+      router.push(`/booking?${queryParams}`)
     } catch (err) {
       setError(err.message)
       setTimeout(() => setError(null), 3000)
@@ -493,7 +484,9 @@ export default function RestaurantDetails() {
       <ReviewModal 
         isOpen={isReviewModalOpen} 
         onClose={() => setIsReviewModalOpen(false)} 
-        restaurantName={restaurant.name} 
+        restaurantName={restaurant.name}
+        restaurantId={params.id}
+        onReviewSubmitted={fetchRestaurantDetails}
       />
 
       {/* Image Preview Modal */}
