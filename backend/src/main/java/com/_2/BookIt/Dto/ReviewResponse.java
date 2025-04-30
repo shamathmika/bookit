@@ -14,7 +14,7 @@ public class ReviewResponse {
     private String restaurantID;
     private String customerID;
     private String customerName;
-    private Object bookingID;
+    private String bookingID;
     private int rating;
     private String comments;
     private List<String> photos;
@@ -25,7 +25,7 @@ public class ReviewResponse {
         this.restaurantID = review.getRestaurantID().toHexString();
         this.customerID = review.getCustomerID().toHexString();
         this.customerName = customerName;
-        this.bookingID = review.getBookingID().toHexString(); // or use Object if you're returning full booking data
+        this.bookingID = review.getBookingID() != null ? review.getBookingID().toHexString() : null;// or use Object if you're returning full booking data
         this.rating = review.getRating();
         this.comments = review.getComments();
         this.photos = review.getPhotos();

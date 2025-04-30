@@ -1,5 +1,6 @@
 package com._2.BookIt.Model;
 
+import com.mongodb.lang.Nullable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -35,7 +36,7 @@ public class Review {
     @Schema(type = "string", description = "MongoDB ObjectId")
     private ObjectId customerID;
 
-    @NotNull(message = "bookingID is required")
+    @Nullable
     @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId bookingID;
 

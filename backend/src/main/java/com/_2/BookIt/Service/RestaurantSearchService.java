@@ -1,17 +1,8 @@
 package com._2.BookIt.Service;
 
-import com._2.BookIt.Dto.BookingCount;
-import com._2.BookIt.Dto.RestaurantDetailsResponse;
-import com._2.BookIt.Dto.RestaurantSearchResponse;
-import com._2.BookIt.Dto.ReviewCount;
-import com._2.BookIt.Model.Booking;
-import com._2.BookIt.Model.Restaurant;
-import com._2.BookIt.Model.Review;
-import com._2.BookIt.Model.Table;
-import com._2.BookIt.Repository.BookingRepository;
-import com._2.BookIt.Repository.RestaurantRepository;
-import com._2.BookIt.Repository.ReviewRepository;
-import com._2.BookIt.Repository.TableRepository;
+import com._2.BookIt.Dto.*;
+import com._2.BookIt.Model.*;
+import com._2.BookIt.Repository.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +31,9 @@ public class RestaurantSearchService {
 
     @Autowired
     private ReviewRepository reviewRepo;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
 
@@ -169,6 +163,14 @@ public class RestaurantSearchService {
         Restaurant r = restaurantRepo.findById(objectId).orElseThrow();
         List<Review> reviews = reviewRepo.findByRestaurantID(objectId);
 
+        // ✅ Enrich reviews with customer names
+        List<ReviewResponse> enrichedReviews = reviews.stream().map(review -> {
+            String customerName = userRepository.findById(review.getCustomerID().toHexString())
+                    .map(User::getName)
+                    .orElse("Unknown");
+            return new ReviewResponse(review, customerName);
+        }).toList();
+
         Date now = new Date();
         Date startOfDay = Date.from(now.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -209,7 +211,7 @@ public class RestaurantSearchService {
                 coords,
                 mapsUrl,
                 r.getPhotos(),
-                reviews
+                enrichedReviews
         );
     }
 

@@ -33,7 +33,6 @@ public class ReviewController {
     }
 
     @GetMapping("/restaurant/{restaurantId}")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_MANAGER')")
     public ResponseEntity<List<ReviewResponse>> getReviewsByRestaurant(@PathVariable String restaurantId) {
         List<ReviewResponse> response = reviewService.getReviewsByRestaurant(new ObjectId(restaurantId));
         return ResponseEntity.ok(response);
