@@ -39,16 +39,16 @@ import java.util.List;
 public class Restaurant {
 	@Id
 	@Setter (AccessLevel.NONE)
-	@JsonSerialize(using = ObjectIdSerializer.class)
-	@Schema(type = "string", description = "MongoDB ObjectId")
+	@JsonSerialize (using = ObjectIdSerializer.class)
+	@Schema (type = "string", description = "MongoDB ObjectId")
 	private ObjectId id;
 	
 	@NotBlank (message = "Name is required")
 	private String name;
 	
 	private String description;
-
-	private List<@NotBlank @Pattern(regexp = "https?://.+", message = "Photo must be a valid HTTP/HTTPS URL") String> photos;
+	
+	private List<@NotBlank @Pattern (regexp = "https?://.+", message = "Photo must be a valid HTTP/HTTPS URL") String> photos;
 	
 	@NotNull (message = "Address is required")
 	@Valid
@@ -77,8 +77,8 @@ public class Restaurant {
 	
 	@NotBlank (message = "Closing time is required")
 	private String closingTime;
-
-	@NotNull(message = "Approval status is required")
+	
+	@NotNull (message = "Approval status is required")
 	private ApprovalStatus approvalStatus;
 	
 	/**
@@ -104,6 +104,10 @@ public class Restaurant {
 		@NotNull (message = "Geo location is required")
 		@Valid
 		private GeoLocation location;
+		
+		public String getFullAddress () {
+			return street + ", " + city + ", " + state + " " + zipCode;
+		}
 	}
 	
 	/**
