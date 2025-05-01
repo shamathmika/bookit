@@ -74,19 +74,42 @@ export default function RestaurantDetails() {
 
   const handleReservation = async () => {
     try {
+      console.log('Selected Time:', selectedTime) // Debug log
+      
       // Combine date and time
       const [hours, minutes] = selectedTime.split(":")
+      console.log('Split Time:', { hours, minutes }) // Debug log
+      
       const reservationDate = new Date(selectedDate)
+      console.log('Before setting time:', reservationDate) // Debug log
+      
+      // Set the time directly in 24-hour format
       reservationDate.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+      console.log('After setting time:', reservationDate) // Debug log
 
+      function formatLocalDateTime(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+      
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+      }
+      
+      const localDateTime = formatLocalDateTime(reservationDate);
+    
       // Create the query parameters
       const queryParams = new URLSearchParams({
         restaurantId: params.id,
-        userId: user.id,
-        dateTime: reservationDate.toISOString(),
+        dateTime: localDateTime,
         people: selectedPeople.toString()
       }).toString()
 
+      console.log('Final query params:', queryParams) // Debug log
+      
       // Navigate to booking page with query parameters
       router.push(`/booking?${queryParams}`)
     } catch (err) {
@@ -413,6 +436,7 @@ export default function RestaurantDetails() {
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                           }`}
                           onClick={() => setSelectedTime(time)}
+                          
                         >
                           {time}
                         </button>
