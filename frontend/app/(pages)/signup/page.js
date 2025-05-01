@@ -87,15 +87,7 @@ export default function Signup() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-              <input
-                type="tel"
-                className="w-full px-4 py-3 bg-gray-100 rounded-md outline-none"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
+
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
