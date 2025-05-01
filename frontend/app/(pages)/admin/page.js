@@ -1,7 +1,43 @@
 "use client"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { useAuth } from "@/context/AuthContext"
 
 export default function AdminDashboard() {
+  const { user, isLoggedIn } = useAuth()
+  const [dashboardData, setDashboardData] = useState({
+    totalRestaurants: 0,
+    pendingApprovals: 0,
+    totalBookingsLastMonth: 0
+  })
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!isLoggedIn || !user?.token) return
+
+      try {
+        const response = await fetch('http://localhost:8080/api/admin/restaurants/dashboard', {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        const data = await response.json()
+        setDashboardData(data)
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      }
+    }
+
+    fetchDashboardData()
+  }, [isLoggedIn, user])
+
+  if (!isLoggedIn) {
+    return <div className="flex min-h-screen items-center justify-center">
+      <p>Please sign in to access the admin dashboard</p>
+    </div>
+  }
+
   return (
     <div className="flex min-h-screen bg-white">
       {/* Sidebar */}
@@ -29,17 +65,17 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="bg-gray-200 rounded-lg p-6">
               <h2 className="text-lg font-medium mb-4 text-center">Total reservations</h2>
-              <p className="text-5xl font-bold text-center">5943</p>
+              <p className="text-5xl font-bold text-center">{dashboardData.totalBookingsLastMonth}</p>
             </div>
 
             <div className="bg-gray-200 rounded-lg p-6">
               <h2 className="text-lg font-medium mb-4 text-center">Restaurants</h2>
-              <p className="text-5xl font-bold text-center">388</p>
+              <p className="text-5xl font-bold text-center">{dashboardData.totalRestaurants}</p>
             </div>
 
             <div className="bg-gray-200 rounded-lg p-6">
               <h2 className="text-lg font-medium mb-4 text-center">Pending approvals</h2>
-              <p className="text-5xl font-bold text-center">15</p>
+              <p className="text-5xl font-bold text-center">{dashboardData.pendingApprovals}</p>
             </div>
           </div>
 
