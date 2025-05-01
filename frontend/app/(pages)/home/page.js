@@ -25,6 +25,11 @@ export default function Component() {
   const [availableRestaurants, setAvailableRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState({
+    topRated: [],
+    topBookedToday: [],
+    nearYou: []
+  });
 
   useEffect(() => {
     const fetchAvailableRestaurants = async () => {
@@ -42,7 +47,21 @@ export default function Component() {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/restaurants/categories?location=San%20Jose');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
     fetchAvailableRestaurants();
+    fetchCategories();
   }, []);
 
   if (loading) {
@@ -143,13 +162,156 @@ export default function Component() {
         </div>
 
         <div className="text-4xl font-bold mb-6 mt-12">
-          Categories
+          Top Rated
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Categories.map((category) => (
-            <CategorySection key={category.id} category={category} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {categories.topRated.map((restaurant) => (
+            <Link 
+              key={restaurant.id} 
+              href={`/restaurant/${restaurant.id}`}
+              className="block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white border p-4"
+            >
+              <div className="flex gap-4">
+                <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                  {restaurant.photos && restaurant.photos.length > 0 ? (
+                    <Image
+                      src={restaurant.photos[0]}
+                      alt={restaurant.name}
+                      width={96}
+                      height={96}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">No photo</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#8B2615]">{restaurant.name}</h3>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`h-4 w-4 ${i < Math.floor(restaurant.avgStarRating) ? 'fill-current' : ''}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="ml-1">({restaurant.avgStarRating.toFixed(1)})</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {restaurant.cuisine} • {restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'}
+                  </p>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
+
+        {categories.topBookedToday.length > 0 && (
+          <>
+            <div className="text-4xl font-bold mb-6 mt-12">
+              Top Booked Today
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {categories.topBookedToday.map((restaurant) => (
+                <Link 
+                  key={restaurant.id} 
+                  href={`/restaurant/${restaurant.id}`}
+                  className="block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white border p-4"
+                >
+                  <div className="flex gap-4">
+                    <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                      {restaurant.photos && restaurant.photos.length > 0 ? (
+                        <Image
+                          src={restaurant.photos[0]}
+                          alt={restaurant.name}
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-400 text-xs">No photo</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-[#8B2615]">{restaurant.name}</h3>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              className={`h-4 w-4 ${i < Math.floor(restaurant.avgStarRating) ? 'fill-current' : ''}`}
+                            />
+                          ))}
+                        </div>
+                        <span className="ml-1">({restaurant.avgStarRating.toFixed(1)})</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {restaurant.cuisine} • {restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {categories.nearYou.length > 0 && (
+          <>
+            <div className="text-4xl font-bold mb-6 mt-12">
+              Near You
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {categories.nearYou.map((restaurant) => (
+                <Link 
+                  key={restaurant.id} 
+                  href={`/restaurant/${restaurant.id}`}
+                  className="block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white border p-4"
+                >
+                  <div className="flex gap-4">
+                    <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                      {restaurant.photos && restaurant.photos.length > 0 ? (
+                        <Image
+                          src={restaurant.photos[0]}
+                          alt={restaurant.name}
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-400 text-xs">No photo</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-[#8B2615]">{restaurant.name}</h3>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              className={`h-4 w-4 ${i < Math.floor(restaurant.avgStarRating) ? 'fill-current' : ''}`}
+                            />
+                          ))}
+                        </div>
+                        <span className="ml-1">({restaurant.avgStarRating.toFixed(1)})</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {restaurant.cuisine} • {restaurant.costRating === 1 ? '$' : restaurant.costRating === 2 ? '$$' : '$$$'}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </main>
 
       <footer className="text-center py-4 text-sm text-gray-600 border-t">
