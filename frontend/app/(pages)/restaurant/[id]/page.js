@@ -299,7 +299,7 @@ export default function RestaurantDetails() {
               {restaurant.reviews.map((review) => (
                 <div key={review.id} className="mt-4 border-b pb-4">
                   <div className="flex justify-between">
-                    <h3 className="font-medium">Anonymous User</h3>
+                    <h3 className="font-medium">{review.customerName}</h3>
                     <span className="text-sm text-gray-500">
                       {new Date(review.date).toLocaleDateString()}
                     </span>
