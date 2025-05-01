@@ -131,7 +131,7 @@ public class RestaurantSearchService {
                 LocalTime opening = LocalTime.parse(r.getOpeningTime(), TIME_FORMATTER);
                 LocalTime closing = LocalTime.parse(r.getClosingTime(), TIME_FORMATTER);
 
-                boolean open = !slotTime.isBefore(opening) && slotTime.isBefore(closing);
+                boolean open = !slotTime.isBefore(opening) && !slotTime.isAfter(closing);
 
                 if (tables.stream().anyMatch(t -> !busy.contains(t.getId())) && open) {
                     availableAt.add(format(slot));
@@ -226,4 +226,6 @@ public class RestaurantSearchService {
                 .truncatedTo(ChronoUnit.MINUTES)
                 .toString();
     }
+
+
 }
