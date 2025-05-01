@@ -31,6 +31,15 @@ export function Header() {
   const { isLoggedIn, logout } = useAuth();
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000); // Update every second
+  
+    return () => clearInterval(interval);
+  }, []);
+  
+
+  useEffect(() => {
     if (isLoggedIn) {
       const token = localStorage.getItem("token");
       if (token) {
@@ -114,6 +123,7 @@ export function Header() {
               <option value="los-angeles">Los Angeles</option>
               <option value="chicago">Chicago</option>
               <option value="houston">Houston</option>
+              <option value="miami">Miami</option>
             </select>
           </button>
 

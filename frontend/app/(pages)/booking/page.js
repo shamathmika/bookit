@@ -1,12 +1,15 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Star, Calendar, User, Clock, X, Check } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+
 
 export default function BookingPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { user } = useAuth()
   const [booking, setBooking] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -15,48 +18,63 @@ export default function BookingPage() {
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [showCancelledModal, setShowCancelledModal] = useState(false)
   const [cancelLoading, setCancelLoading] = useState(false)
+  const didCreate = useRef(false)
 
   useEffect(() => {
+    let isMounted = true
+
+    // Don’t even try until we have a logged-in user
+    if (!user?.id) return
+
+    // Only ever run once
+    if (didCreate.current) return
+    didCreate.current = true
+
     const createBooking = async () => {
       try {
         const restaurantId = searchParams.get('restaurantId')
-        const userId = searchParams.get('userId')
-        const dateTime = searchParams.get('dateTime')
-        const people = searchParams.get('people')
+        const dateTime     = searchParams.get('dateTime')
+        const people       = searchParams.get('people')
 
-        if (!restaurantId || !userId || !dateTime || !people) {
+        if (!restaurantId || !dateTime || !people) {
           throw new Error('Missing required parameters')
         }
 
-        const response = await fetch(
-          `http://localhost:8080/api/bookings/create?restaurantId=${restaurantId}&userId=${userId}&dateTime=${dateTime}&people=${people}`,
+        const res = await fetch(
+          `http://localhost:8080/api/bookings/create?restaurantId=${restaurantId}&userId=${user.id}&dateTime=${dateTime}&people=${people}`,
           {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           }
         )
 
-        if (!response.ok) {
+        if (!res.ok) {
           throw new Error('Failed to create booking')
         }
 
-        const data = await response.json()
-        setBooking(data)
+        const data = await res.json()
+        if (isMounted) setBooking(data)
       } catch (err) {
-        setError(err.message)
+        if (isMounted) setError(err.message)
       } finally {
-        setLoading(false)
+        if (isMounted) setLoading(false)
       }
     }
 
     createBooking()
-  }, [searchParams])
+
+    return () => {
+      isMounted = true
+    }
+  }, [searchParams, user?.id])
+
+
 
   const handleConfirmBooking = async () => {
     try {
       setConfirmationLoading(true)
+      setError(null)
+
       const response = await fetch(
         `http://localhost:8080/api/bookings/${booking.id}/confirm?type=EMAIL`,
         {
@@ -123,6 +141,7 @@ export default function BookingPage() {
 
   const formatDateTime = (dateTimeStr) => {
     const date = new Date(dateTimeStr)
+    
     return {
       date: date.toLocaleDateString('en-US', {
         weekday: 'long',
@@ -131,8 +150,9 @@ export default function BookingPage() {
         day: 'numeric'
       }),
       time: date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit'
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
       })
     }
   }

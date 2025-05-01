@@ -1,31 +1,103 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useAuth } from "@/context/AuthContext"
 
 export default function AdminRestaurants() {
-  const [restaurants, setRestaurants] = useState([
-    { id: 1, name: "Restaurant", location: "city", status: "pending" },
-    { id: 2, name: "Restaurant", location: "city", status: "pending" },
-    { id: 3, name: "Restaurant", location: "city", status: "pending" },
-    { id: 4, name: "Restaurant", location: "city", status: "pending" },
-    { id: 5, name: "Restaurant", location: "city", status: "pending" },
-    { id: 6, name: "Restaurant", location: "city", status: "pending" },
-    { id: 7, name: "Restaurant", location: "city", status: "Approved" },
-  ])
+  const { user, isLoggedIn } = useAuth()
+  const [restaurants, setRestaurants] = useState([])
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const handleApprove = (id) => {
-    setRestaurants(
-      restaurants.map((restaurant) => (restaurant.id === id ? { ...restaurant, status: "Approved" } : restaurant)),
-    )
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchPendingRestaurants()
+    }
+  }, [isLoggedIn])
+
+  const getAuthHeaders = () => {
+    return {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    }
   }
 
-  const handleReject = (id) => {
-    setRestaurants(restaurants.filter((restaurant) => restaurant.id !== id))
+  const fetchPendingRestaurants = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/restaurants/pending', {
+        headers: getAuthHeaders()
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please log in again to view pending restaurants')
+          return
+        }
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setRestaurants(data)
+      setError(null)
+    } catch (error) {
+      console.error("Error fetching pending restaurants:", error)
+      setError('Failed to fetch pending restaurants')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleRemove = (id) => {
-    setRestaurants(restaurants.filter((restaurant) => restaurant.id !== id))
+  const handleApprove = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/admin/restaurants/${id}/approve`, {
+        method: 'PUT',
+        headers: getAuthHeaders()
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please log in again to approve restaurants')
+          return
+        }
+        throw new Error(`Failed to approve restaurant: ${response.status}`)
+      }
+
+      // Remove the approved restaurant from the list
+      setRestaurants(restaurants.filter(restaurant => restaurant.id !== id))
+    } catch (error) {
+      console.error("Error approving restaurant:", error)
+      setError('Failed to approve restaurant')
+    }
+  }
+
+  const handleReject = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/admin/restaurants/${id}/reject`, {
+        method: 'PUT',
+        headers: getAuthHeaders()
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please log in again to reject restaurants')
+          return
+        }
+        throw new Error(`Failed to reject restaurant: ${response.status}`)
+      }
+
+      // Remove the rejected restaurant from the list
+      setRestaurants(restaurants.filter(restaurant => restaurant.id !== id))
+    } catch (error) {
+      console.error("Error rejecting restaurant:", error)
+      setError('Failed to reject restaurant')
+    }
+  }
+
+  if (!isLoggedIn) {
+    return <div className="flex min-h-screen items-center justify-center">
+      <p>Please sign in to access the admin dashboard</p>
+    </div>
   }
 
   return (
@@ -49,51 +121,52 @@ export default function AdminRestaurants() {
       {/* Main content */}
       <div className="flex-1 overflow-auto">
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-8">Requests</h1>
+          <h1 className="text-3xl font-bold mb-8">Pending Restaurant Requests</h1>
 
-          <div className="bg-gray-200 rounded-lg overflow-hidden">
-            {/* Table header */}
-            <div className="grid grid-cols-4 gap-4 bg-gray-600 text-white p-4">
-              <div className="font-medium">Name</div>
-              <div className="font-medium">Location</div>
-              <div className="font-medium">status</div>
-              <div className="font-medium">action</div>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
             </div>
+          )}
 
-            {/* Table rows */}
-            {restaurants.map((restaurant) => (
-              <div key={restaurant.id} className="grid grid-cols-4 gap-4 p-4 border-b border-gray-300">
-                <div>{restaurant.name}</div>
-                <div>{restaurant.location}</div>
-                <div>{restaurant.status}</div>
-                <div className="flex gap-2">
-                  {restaurant.status === "pending" ? (
-                    <>
-                      <button
-                        onClick={() => handleApprove(restaurant.id)}
-                        className="bg-[#8B2615] text-white px-3 py-1 rounded text-sm"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(restaurant.id)}
-                        className="bg-[#8B2615] text-white px-3 py-1 rounded text-sm"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  ) : (
+          {loading ? (
+            <div className="text-center py-8">Loading...</div>
+          ) : restaurants.length === 0 ? (
+            <div className="text-center py-8">No pending restaurant requests</div>
+          ) : (
+            <div className="bg-gray-200 rounded-lg overflow-hidden">
+              {/* Table header */}
+              <div className="grid grid-cols-4 gap-4 bg-gray-600 text-white p-4">
+                <div className="font-medium">Name</div>
+                <div className="font-medium">Location</div>
+                <div className="font-medium">Status</div>
+                <div className="font-medium">Action</div>
+              </div>
+
+              {/* Table rows */}
+              {restaurants.map((restaurant) => (
+                <div key={restaurant.id} className="grid grid-cols-4 gap-4 p-4 border-b border-gray-300">
+                  <div>{restaurant.name}</div>
+                  <div>{`${restaurant.address.city}, ${restaurant.address.state}`}</div>
+                  <div>{restaurant.approvalStatus}</div>
+                  <div className="flex gap-2">
                     <button
-                      onClick={() => handleRemove(restaurant.id)}
+                      onClick={() => handleApprove(restaurant.id)}
                       className="bg-[#8B2615] text-white px-3 py-1 rounded text-sm"
                     >
-                      Remove
+                      Approve
                     </button>
-                  )}
+                    <button
+                      onClick={() => handleReject(restaurant.id)}
+                      className="bg-[#8B2615] text-white px-3 py-1 rounded text-sm"
+                    >
+                      Reject
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

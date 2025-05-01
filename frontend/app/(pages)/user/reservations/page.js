@@ -97,10 +97,9 @@ export default function UserReservations() {
 
   const handleCancelConfirm = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/reservations/${selectedReservation.id}`, {
-        method: 'PATCH',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status: 'cancelled' })
+      const response = await fetch(`http://localhost:8080/api/bookings/${selectedReservation.id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
       })
 
       if (!response.ok) {
@@ -111,13 +110,15 @@ export default function UserReservations() {
         throw new Error(`Failed to cancel reservation: ${response.status}`)
       }
 
-      if (response.ok) {
-        setReservations(reservations.map(res => 
-          res.id === selectedReservation.id ? { ...res, status: 'cancelled' } : res
-        ))
-        setShowCancelModal(false)
-        setShowCancelledModal(true)
-      }
+      // Update the local state to show the reservation as cancelled
+      setReservations(reservations.map(res => 
+        res.id === selectedReservation.id ? { ...res, status: 'cancelled' } : res
+      ))
+      setShowCancelModal(false)
+      setShowCancelledModal(true)
+
+      // Refresh the reservations list after cancellation
+      fetchReservations()
     } catch (error) {
       console.error("Error cancelling reservation:", error)
       setError('Failed to cancel reservation')
@@ -169,7 +170,7 @@ export default function UserReservations() {
 
         <div className="space-y-6">
           {Array.isArray(reservations) && reservations.length > 0 ? (
-            reservations.map((reservation) => {
+            [...reservations].reverse().map((reservation) => {
               const { date, time } = formatDateTime(reservation.dateTime)
               const restaurant = restaurants[reservation.restaurantID]
               
