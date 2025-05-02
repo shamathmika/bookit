@@ -3,6 +3,9 @@
 # Exit on error
 set -e
 
+# Disable BuildKit
+export DOCKER_BUILDKIT=0
+
 # Load environment variables
 if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | xargs)
