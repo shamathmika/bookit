@@ -27,16 +27,19 @@ export function Header() {
   const [location, setLocation] = useState("");
   const [guestCount, setGuestCount] = useState(2);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
 
   const { isLoggedIn, logout } = useAuth();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date());
-    }, 1000); // Update every second
-  
-    return () => clearInterval(interval);
-  }, []);
+    if (!isTimePickerOpen) {
+      const interval = setInterval(() => {
+        setTime(new Date());
+      }, 60000); // Update every min
+    
+      return () => clearInterval(interval);
+    }
+  }, [isTimePickerOpen]);
   
 
   useEffect(() => {
@@ -166,6 +169,8 @@ export function Header() {
             <DatePicker
               selected={time}
               onChange={(t) => setTime(t)}
+              onCalendarOpen={() => setIsTimePickerOpen(true)}
+              onCalendarClose={() => setIsTimePickerOpen(false)}
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={15}
