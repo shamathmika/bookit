@@ -121,6 +121,7 @@ public class WebSecurityConfig {
 						.requestMatchers(URLConstants.TEST_URLS).permitAll() // Allow test-related API routes
 						.requestMatchers(URLConstants.SWAGGER_URLS).permitAll() // Allow Swagger API routes. TODO: Allow this only for admin roles
 						.requestMatchers(URLConstants.PUBLIC_URLS).permitAll()
+						.requestMatchers("/actuator/health").permitAll()  // ✅ Add this line
 
 						.anyRequest().authenticated()); // Require authentication for all
 		
