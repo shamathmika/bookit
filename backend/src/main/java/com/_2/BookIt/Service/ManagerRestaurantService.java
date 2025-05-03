@@ -1,5 +1,7 @@
 package com._2.BookIt.Service;
 
+// Project packages
+
 import com._2.BookIt.Enum.ApprovalStatus;
 import com._2.BookIt.Enum.RestaurantStatus;
 import com._2.BookIt.Model.Restaurant;
@@ -7,13 +9,17 @@ import com._2.BookIt.Repository.RestaurantRepository;
 import com._2.BookIt.Dto.AddRestaurantRequest;
 import com._2.BookIt.Repository.UserRepository;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+// Java packages
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * Service class for restaurant managers
+ */
 @Service
 public class ManagerRestaurantService {
 	
@@ -75,5 +81,11 @@ public class ManagerRestaurantService {
 		});
 		
 		return restaurant;
+	}
+	
+	public List<Restaurant> getRestaurantsByManager (String managerId) {
+		return userRepository.findById(managerId)
+				.map(user -> restaurantRepository.findAllById(user.getRestaurantIDs()))
+				.orElse(Collections.emptyList());
 	}
 }
