@@ -1,44 +1,111 @@
 "use client";
-import React, { useState } from "react";
-import { useRestaurantContext } from "../context/RestaurantContext";
-import { uuid } from "../utils/uuid";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 const AddTablesPage = () => {
-  const { restaurants, addTables } = useRestaurantContext();
+  const { user } = useAuth();
   const router = useRouter();
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [form, setForm] = useState({
-    restaurantId: restaurants[0]?.id || "",
+    restaurantId: "",
     count: 1,
     seats: 4,
-    location: "Indoor",
   });
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch restaurants");
+        }
+
+        const data = await response.json();
+        setRestaurants(data);
+        if (data.length > 0) {
+          setForm(f => ({ ...f, restaurantId: data[0].id }));
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.id) {
+      fetchRestaurants();
+    }
+  }, [user?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.restaurantId) return;
-    const rest = restaurants.find((r) => r.id === form.restaurantId);
-    const nextNumber = rest ? rest.tables.length + 1 : 1;
-    const tables = Array.from({ length: Number(form.count) }, (_, i) => ({
-      id: uuid(),
-      number: nextNumber + i,
-      seats: Number(form.seats),
-      timeslot: "11:00 AM - 1:00 PM",
-      occupied: false,
-      location: form.location,
-    }));
-    addTables(form.restaurantId, tables);
-    setForm((f) => ({ ...f, count: 1 }));
+    setError("");
+    setSuccess("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:8080/api/manager/tables/${form.restaurantId}/add-tables`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            numberOfTables: Number(form.count),
+            tableSize: Number(form.seats),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to add tables");
+      }
+
+      setSuccess("Tables added successfully!");
+      setTimeout(() => {
+        router.push("/manager/dashboard");
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  if (loading) {
+    return <div className="text-slate-500">Loading restaurants...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Add Tables</h1>
+      {success && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {success}
+        </div>
+      )}
       <form className="bg-white rounded-xl p-8 max-w-xl" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Select Restaurant</label>
@@ -77,18 +144,6 @@ const AddTablesPage = () => {
             {[2, 4, 6, 8].map((n) => (
               <option key={n} value={n}>{n} Seats</option>
             ))}
-          </select>
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Table Location</label>
-          <select
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="Indoor">Indoor</option>
-            <option value="Outdoor">Outdoor</option>
           </select>
         </div>
         <div className="flex gap-4 mt-8">
