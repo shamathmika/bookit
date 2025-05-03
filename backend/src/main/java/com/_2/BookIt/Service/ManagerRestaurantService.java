@@ -2,6 +2,7 @@ package com._2.BookIt.Service;
 
 // Project packages
 
+import com._2.BookIt.Dto.UpdateRestaurantRequest;
 import com._2.BookIt.Enum.ApprovalStatus;
 import com._2.BookIt.Enum.RestaurantStatus;
 import com._2.BookIt.Model.Restaurant;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 // Java packages
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +29,13 @@ public class ManagerRestaurantService {
 	private final UserRepository userRepository;
 	private final S3Service s3Service;
 	
+	// TODO: Get the right location based on address - or remove this from db
+	// Default location for the restaurant if no location is provided in the request - San Jose.
+	Restaurant.GeoLocation location = new Restaurant.GeoLocation(
+			"Point",
+			new double[]{ -121.8863, 37.3382 }
+	);
+	
 	public ManagerRestaurantService (RestaurantRepository restaurantRepository, UserRepository userRepository, S3Service s3Service) {
 		this.restaurantRepository = restaurantRepository;
 		this.userRepository = userRepository;
@@ -37,12 +46,6 @@ public class ManagerRestaurantService {
 		
 		List<String> uploadedUrls = s3Service.uploadImages(images);
 		
-		// TODO: Get the right location based on address - or remove this from db
-		// Default location for the restaurant if no location is provided in the request - San Jose.
-		Restaurant.GeoLocation location = new Restaurant.GeoLocation(
-				"Point",
-				new double[]{ -121.8863, 37.3382 }
-		);
 		
 		Restaurant.Address address = new Restaurant.Address(
 				request.getAddress().getStreet(),
@@ -87,5 +90,55 @@ public class ManagerRestaurantService {
 		return userRepository.findById(managerId)
 				.map(user -> restaurantRepository.findAllById(user.getRestaurantIDs()))
 				.orElse(Collections.emptyList());
+	}
+	
+	public void deleteRestaurantById (String restaurantId) {
+		restaurantRepository.deleteById(new ObjectId(restaurantId));
+	}
+	
+	public void deleteRestaurantsByManagerId (String managerId) {
+		List<Restaurant> restaurants = getRestaurantsByManager(managerId);
+		for (Restaurant restaurant : restaurants) {
+			restaurantRepository.deleteById(restaurant.getId());
+		}
+	}
+	
+	public Restaurant updateRestaurant (UpdateRestaurantRequest request, List<MultipartFile> newImages) throws IOException {
+		Restaurant restaurant = restaurantRepository.findById(new ObjectId(request.getRestaurantId()))
+				.orElseThrow(() -> new RuntimeException("Restaurant not found"));
+		
+		restaurant.setName(request.getName());
+		restaurant.setDescription(request.getDescription());
+		restaurant.setContact(request.getPhoneNumber());
+		restaurant.setCuisine(request.getCuisine());
+		restaurant.setCostRating(request.getCostRating());
+		restaurant.setOpeningTime(request.getOpeningTime());
+		restaurant.setClosingTime(request.getClosingTime());
+		restaurant.setAddress(new Restaurant.Address(
+				request.getAddress().getStreet(),
+				request.getAddress().getCity(),
+				request.getAddress().getState(),
+				request.getAddress().getZipCode(),
+				location
+		));
+		
+		List<String> currentImages = restaurant.getPhotos() != null ? restaurant.getPhotos() : new ArrayList<>();
+		List<String> retained = request.getRetainedImageUrls() != null ? request.getRetainedImageUrls() : new ArrayList<>();
+		
+		for (String imageUrl : currentImages) {
+			if (!retained.contains(imageUrl)) {
+				s3Service.deleteImage(imageUrl);
+			}
+		}
+		
+		List<String> finalImageUrls = new ArrayList<>(retained);
+		if (newImages != null) {
+			List<String> newUrls = s3Service.uploadImages(newImages);
+			finalImageUrls.addAll(newUrls);
+		}
+		
+		restaurant.setPhotos(finalImageUrls);
+		
+		return restaurantRepository.save(restaurant);
 	}
 }
