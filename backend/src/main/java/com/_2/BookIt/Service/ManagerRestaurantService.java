@@ -44,7 +44,7 @@ public class ManagerRestaurantService {
 	
 	public Restaurant addRestaurant (AddRestaurantRequest request, List<MultipartFile> images) throws IOException {
 		
-		List<String> uploadedUrls = s3Service.uploadImages(images);
+		List<String> uploadedUrls = s3Service.uploadImages("restaurant", images);
 		
 		
 		Restaurant.Address address = new Restaurant.Address(
@@ -103,7 +103,7 @@ public class ManagerRestaurantService {
 		}
 	}
 	
-	public Restaurant updateRestaurant (UpdateRestaurantRequest request, List<MultipartFile> newImages) throws IOException {
+	public Restaurant updateRestaurant (UpdateRestaurantRequest request, List<MultipartFile> newImages) {
 		Restaurant restaurant = restaurantRepository.findById(new ObjectId(request.getRestaurantId()))
 				.orElseThrow(() -> new RuntimeException("Restaurant not found"));
 		
@@ -133,7 +133,7 @@ public class ManagerRestaurantService {
 		
 		List<String> finalImageUrls = new ArrayList<>(retained);
 		if (newImages != null) {
-			List<String> newUrls = s3Service.uploadImages(newImages);
+			List<String> newUrls = s3Service.uploadImages("restaurant", newImages);
 			finalImageUrls.addAll(newUrls);
 		}
 		

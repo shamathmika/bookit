@@ -109,13 +109,15 @@ public class BookingService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
 		
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm A");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 		
 		String formattedDate = booking.getDateTime().toInstant()
 				.atZone(ZoneId.systemDefault()).toLocalDate().format(dateFormatter);
 		
 		String formattedTime = booking.getDateTime().toInstant()
-				.atZone(ZoneId.systemDefault()).toLocalTime().format(timeFormatter);
+				.atZone(ZoneId.systemDefault()).toLocalTime().format(timeFormatter).toUpperCase();
+		
+		String bookingId = booking.getId().toHexString();
 		
 		String htmlBody = """
 				<!DOCTYPE html>
@@ -212,7 +214,7 @@ public class BookingService {
 				      <strong>Confirmation Number:</strong> %s
 				    </div>
 				
-				    <div class="footer">© 2025 BookIt, Inc.<br>All rights reserved.</div>
+				    <div class="footer">© 2025 BookIt, Inc. All rights reserved.</div>
 				  </div>
 				</body>
 				</html>
@@ -223,7 +225,7 @@ public class BookingService {
 				formattedTime,
 				restaurant.getAddress().getFullAddress(),
 				user.getName(),
-				booking.getId().toHexString()
+				"BKIT" + bookingId.substring(bookingId.length() - 4)
 		);
 		
 		
