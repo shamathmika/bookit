@@ -3,41 +3,27 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useAuth } from "@/context/AuthContext"
+import { useRouter } from "next/navigation"
+import { getPendingRestaurants, approveRestaurant, rejectRestaurant } from "@/constants/apis"
 
 export default function AdminRestaurants() {
   const { user, isLoggedIn } = useAuth()
+  const router = useRouter()
   const [restaurants, setRestaurants] = useState([])
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchPendingRestaurants()
+    if (!isLoggedIn || !user) {
+      router.push('/login')
+      return
     }
-  }, [isLoggedIn])
-
-  const getAuthHeaders = () => {
-    return {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      'Content-Type': 'application/json'
-    }
-  }
+    fetchPendingRestaurants()
+  }, [isLoggedIn, user, router])
 
   const fetchPendingRestaurants = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/restaurants/pending', {
-        headers: getAuthHeaders()
-      })
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError('Please log in again to view pending restaurants')
-          return
-        }
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = await getPendingRestaurants()
       setRestaurants(data)
       setError(null)
     } catch (error) {
@@ -50,19 +36,7 @@ export default function AdminRestaurants() {
 
   const handleApprove = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/restaurants/${id}/approve`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      })
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError('Please log in again to approve restaurants')
-          return
-        }
-        throw new Error(`Failed to approve restaurant: ${response.status}`)
-      }
-
+      await approveRestaurant(id)
       // Remove the approved restaurant from the list
       setRestaurants(restaurants.filter(restaurant => restaurant.id !== id))
     } catch (error) {
@@ -73,19 +47,7 @@ export default function AdminRestaurants() {
 
   const handleReject = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/restaurants/${id}/reject`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      })
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError('Please log in again to reject restaurants')
-          return
-        }
-        throw new Error(`Failed to reject restaurant: ${response.status}`)
-      }
-
+      await rejectRestaurant(id)
       // Remove the rejected restaurant from the list
       setRestaurants(restaurants.filter(restaurant => restaurant.id !== id))
     } catch (error) {

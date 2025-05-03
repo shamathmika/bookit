@@ -2,9 +2,19 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/context/AuthContext"
+import { useRouter } from "next/navigation"
+import { 
+  getAdminDashboardData,
+  getPopularBookingSlots,
+  getMonthlyBookingStats,
+  getPendingRestaurants,
+  approveRestaurant,
+  rejectRestaurant
+} from "@/constants/apis"
 
 export default function AdminDashboard() {
   const { user, isLoggedIn } = useAuth()
+  const router = useRouter()
   const [dashboardData, setDashboardData] = useState({
     totalRestaurants: 0,
     pendingApprovals: 0,
@@ -13,50 +23,28 @@ export default function AdminDashboard() {
   const [bookingStats, setBookingStats] = useState([])
   const [popularSlots, setPopularSlots] = useState({})
   const [monthlyStats, setMonthlyStats] = useState([])
+  const [restaurants, setRestaurants] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!isLoggedIn || !user?.token) return
+    if (!isLoggedIn || !user) {
+      router.push('/login')
+      return
+    }
 
+    const fetchDashboardData = async () => {
       try {
         // Fetch main dashboard data
-        const dashboardResponse = await fetch('http://localhost:8080/api/admin/restaurants/dashboard', {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        const dashboardData = await dashboardResponse.json()
+        const dashboardData = await getAdminDashboardData()
         setDashboardData(dashboardData)
 
-        // Fetch booking stats
-        const bookingStatsResponse = await fetch('http://localhost:8080/api/booking-stats', {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        const bookingStatsData = await bookingStatsResponse.json()
-        setBookingStats(bookingStatsData)
-
         // Fetch popular slots
-        const popularSlotsResponse = await fetch('http://localhost:8080/api/booking-stats/analytics/popular-slots', {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        const popularSlotsData = await popularSlotsResponse.json()
+        const popularSlotsData = await getPopularBookingSlots()
         setPopularSlots(popularSlotsData)
 
         // Fetch monthly stats
-        const monthlyStatsResponse = await fetch('http://localhost:8080/api/booking-stats/analytics/monthly', {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        const monthlyStatsData = await monthlyStatsResponse.json()
+        const monthlyStatsData = await getMonthlyBookingStats()
         setMonthlyStats(monthlyStatsData)
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
@@ -64,7 +52,52 @@ export default function AdminDashboard() {
     }
 
     fetchDashboardData()
-  }, [isLoggedIn, user])
+  }, [isLoggedIn, user, router])
+
+  useEffect(() => {
+    if (!isLoggedIn || !user) {
+      router.push('/login')
+      return
+    }
+
+    const fetchRestaurants = async () => {
+      try {
+        const data = await getPendingRestaurants()
+        setRestaurants(data)
+      } catch (err) {
+        console.error('Error fetching restaurants:', err)
+        setError('Failed to load restaurants. Please try again later.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRestaurants()
+  }, [user, isLoggedIn, router])
+
+  const handleApprove = async (restaurantId) => {
+    try {
+      await approveRestaurant(restaurantId)
+      // Refresh the list
+      const updatedData = await getPendingRestaurants()
+      setRestaurants(updatedData)
+    } catch (err) {
+      console.error('Error approving restaurant:', err)
+      setError('Failed to approve restaurant. Please try again later.')
+    }
+  }
+
+  const handleReject = async (restaurantId) => {
+    try {
+      await rejectRestaurant(restaurantId)
+      // Refresh the list
+      const updatedData = await getPendingRestaurants()
+      setRestaurants(updatedData)
+    } catch (err) {
+      console.error('Error rejecting restaurant:', err)
+      setError('Failed to reject restaurant. Please try again later.')
+    }
+  }
 
   if (!isLoggedIn) {
     return <div className="flex min-h-screen items-center justify-center">
@@ -172,19 +205,37 @@ export default function AdminDashboard() {
 }
 
 function MonthlyReservationsChart({ data }) {
-  const months = data.map(stat => stat._id.split('-')[1])
-  const bookings = data.map(stat => stat.totalBookings)
-  const cancellations = data.map(stat => stat.totalCancellations)
+  // Ensure data is an array, default to empty array if not
+  const safeData = Array.isArray(data) ? data : [];
+  
+  const months = safeData.map(stat => {
+    if (!stat?._id) return '';
+    return stat._id.split('-')[1];
+  });
+  
+  const bookings = safeData.map(stat => stat?.totalBookings || 0);
+  const cancellations = safeData.map(stat => stat?.totalCancellations || 0);
+
+  // If no data, show a message
+  if (safeData.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <p className="text-gray-500">No data available</p>
+      </div>
+    );
+  }
+
+  const maxBookings = Math.max(...bookings, 1); // Ensure at least 1 to avoid division by zero
 
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-1 relative">
         {/* Y-axis labels */}
         <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs">
-          <span>{Math.max(...bookings) + 5}</span>
-          <span>{Math.round((Math.max(...bookings) + 5) * 0.75)}</span>
-          <span>{Math.round((Math.max(...bookings) + 5) * 0.5)}</span>
-          <span>{Math.round((Math.max(...bookings) + 5) * 0.25)}</span>
+          <span>{maxBookings}</span>
+          <span>{Math.round(maxBookings * 0.75)}</span>
+          <span>{Math.round(maxBookings * 0.5)}</span>
+          <span>{Math.round(maxBookings * 0.25)}</span>
           <span>0</span>
         </div>
 
@@ -200,8 +251,14 @@ function MonthlyReservationsChart({ data }) {
             <div className="flex-1 flex justify-around items-end">
               {bookings.map((value, index) => (
                 <div key={index} className="flex flex-col items-center">
-                  <div className="w-8 bg-blue-500" style={{ height: `${(value / Math.max(...bookings)) * 100}%` }}></div>
-                  <div className="w-8 bg-red-500 mt-1" style={{ height: `${(cancellations[index] / Math.max(...bookings)) * 100}%` }}></div>
+                  <div 
+                    className="w-8 bg-blue-500" 
+                    style={{ height: `${(value / maxBookings) * 100}%` }}
+                  ></div>
+                  <div 
+                    className="w-8 bg-red-500 mt-1" 
+                    style={{ height: `${(cancellations[index] / maxBookings) * 100}%` }}
+                  ></div>
                 </div>
               ))}
             </div>
@@ -218,7 +275,7 @@ function MonthlyReservationsChart({ data }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function PopularTimeSlotsChart({ data }) {

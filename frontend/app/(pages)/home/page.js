@@ -1,12 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-  Search,
-  User,
-  Calendar,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
   Github,
   Twitter,
   Star,
@@ -14,12 +8,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-import { RestaurantCard } from "@/components/common/RestaurantCard";
-import { StarIcon } from "@/components/common/StarIcon";
 
-import { Restaurants } from "@/constants/constants";
-
-import { Categories } from "@/constants/constants";
 
 export default function Component() {
   const [availableRestaurants, setAvailableRestaurants] = useState([]);

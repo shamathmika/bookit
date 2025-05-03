@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { Users } from "lucide-react";
 import PropTypes from "prop-types";
 
 const timeSlots = [
@@ -10,40 +11,30 @@ const timeSlots = [
   "7:00 PM - 9:00 PM",
 ];
 
-const TableCard = ({ table, onToggle, isOccupiedSection }) => (
-  <div
-    className={`rounded-xl border p-5 flex flex-col gap-2 shadow bg-white ${
-      isOccupiedSection
-        ? "border-rose-200/25 bg-rose-50"
-        : "border-green-200/25 bg-green-50"
-    }`}
-  >
-    <div className="font-bold text-lg">Table #{table.number}</div>
-    <div className="text-slate-600 text-sm">{table.seats} Seats</div>
-    <div className="text-slate-600 text-sm">Time Slot:</div>
-    <select
-      className="border rounded px-2 py-1 text-sm"
-      value={table.timeslot}
-      disabled
-    >
-      {timeSlots.map((slot) => (
-        <option key={slot} value={slot}>
-          {slot}
-        </option>
-      ))}
-    </select>
-    <button
-      className={`mt-3 rounded-md px-4 py-2 font-medium transition-colors ${
-        isOccupiedSection
-          ? "bg-rose-700 hover:bg-rose-800 text-white"
-          : "bg-blue-600 hover:bg-blue-700 text-white"
-      }`}
-      onClick={onToggle}
-    >
-      {isOccupiedSection ? "Mark as Available" : "Mark as Occupied"}
-    </button>
-  </div>
-);
+const TableCard = ({ table }) => {
+  const { tableNumber, capacity, status } = table;
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-4 border border-slate-200">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold">Table {tableNumber}</span>
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            status === 'AVAILABLE' 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-red-100 text-red-800'
+          }`}>
+            {status}
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 text-slate-600">
+        <Users className="w-4 h-4" />
+        <span>{capacity} seats</span>
+      </div>
+    </div>
+  );
+};
 
 TableCard.propTypes = {
   table: PropTypes.shape({
@@ -53,8 +44,6 @@ TableCard.propTypes = {
     timeslot: PropTypes.string.isRequired,
     occupied: PropTypes.bool.isRequired,
   }).isRequired,
-  onToggle: PropTypes.func.isRequired,
-  isOccupiedSection: PropTypes.bool.isRequired,
 };
 
 export default TableCard; 
