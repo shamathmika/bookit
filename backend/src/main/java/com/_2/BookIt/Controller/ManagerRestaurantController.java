@@ -3,6 +3,7 @@ package com._2.BookIt.Controller;
 // Project packages
 
 import com._2.BookIt.Dto.AddRestaurantRequest;
+import com._2.BookIt.Dto.UpdateRestaurantRequest;
 import com._2.BookIt.Model.Restaurant;
 import com._2.BookIt.Service.ManagerRestaurantService;
 import jakarta.validation.Valid;
@@ -40,5 +41,26 @@ public class ManagerRestaurantController {
 	public ResponseEntity<List<Restaurant>> getRestaurantsByManager (@PathVariable String managerId) {
 		List<Restaurant> restaurants = managerRestaurantService.getRestaurantsByManager(managerId);
 		return ResponseEntity.ok(restaurants);
+	}
+	
+	@DeleteMapping ("/{restaurantId}")
+	public ResponseEntity<Void> deleteRestaurantById (@PathVariable String restaurantId) {
+		managerRestaurantService.deleteRestaurantById(restaurantId);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@DeleteMapping ("/restaurants-by-manager/{managerId}/delete-all")
+	public ResponseEntity<Void> deleteRestaurantsByManagerId (@PathVariable String managerId) {
+		managerRestaurantService.deleteRestaurantsByManagerId(managerId);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PutMapping (value = "/update-restaurant", consumes = { "multipart/form-data" })
+	public ResponseEntity<Restaurant> updateRestaurant (
+			@RequestPart ("request") @Valid UpdateRestaurantRequest request,
+			@RequestPart (value = "images", required = false) List<MultipartFile> newImages) throws IOException {
+		
+		Restaurant updated = managerRestaurantService.updateRestaurant(request, newImages);
+		return ResponseEntity.ok(updated);
 	}
 }

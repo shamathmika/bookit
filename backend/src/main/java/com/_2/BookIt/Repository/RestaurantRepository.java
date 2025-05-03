@@ -43,4 +43,5 @@ public interface RestaurantRepository extends MongoRepository<Restaurant, Object
 	
 	@Query ("{'address.location': {$near: {$geometry: { type: 'Point', coordinates: [?0, ?1] },$maxDistance: ?2 } },'status': 'ACTIVE','approvalStatus': 'APPROVED' }")
 	List<Restaurant> findNearbyApprovedActiveRestaurants (double longitude, double latitude, double maxDistanceInMeters);
+	
 }
