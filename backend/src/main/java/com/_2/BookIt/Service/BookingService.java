@@ -97,6 +97,7 @@ public class BookingService {
 		switch (type) {
 			case EMAIL -> sendEmailConfirmation(booking);
 			case SMS -> sendSmsConfirmation(booking);
+			case MANAGER -> sendManagerConfirmation(booking);
 		}
 	}
 	
@@ -241,6 +242,10 @@ public class BookingService {
 	private void sendSmsConfirmation (Booking booking) {
 		// TODO: Integrate real SMS API
 		System.out.println("Sending SMS to user: " + booking.getUserID());
+	}
+	
+	private void sendManagerConfirmation (Booking booking) {
+		System.out.println("Nothing to do. Booking successfully confirmed by manager");
 	}
 	
 	// ✅ Get all bookings (admin/debug)
