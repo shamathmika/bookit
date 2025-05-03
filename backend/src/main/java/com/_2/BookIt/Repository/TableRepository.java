@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 
 // Spring packages
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 // Java packages
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Optional;
 /**
  * Repository for Tables.
  */
+@Repository
 public interface TableRepository extends MongoRepository<Table, String> {
 	List<Table> findByRestaurantID (ObjectId restaurantID);
 	
@@ -34,4 +36,5 @@ public interface TableRepository extends MongoRepository<Table, String> {
 	
 	List<Table> findByRestaurantIDAndCapacityGreaterThanEqual (ObjectId restaurantId, int capacity);
 	
+	void deleteByRestaurantID (ObjectId objectId);
 }
