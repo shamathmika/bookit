@@ -10,6 +10,7 @@ const ManageTablesPage = () => {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Fetch restaurants
   useEffect(() => {
@@ -76,11 +77,39 @@ const ManageTablesPage = () => {
     fetchTables();
   }, [selectedRestaurantId]);
 
-  const handleTableStatusChange = async (tableId) => {
+  const handleDeleteTable = async (tableId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8080/api/manager/tables/${selectedRestaurantId}/toggle-status/${tableId}`,
+        `http://localhost:8080/api/manager/tables/${selectedRestaurantId}/delete-many`,
+        {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([tableId]),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete table");
+      }
+
+      // Remove the deleted table from the state
+      setTables(tables.filter(table => table.id !== tableId));
+      setSuccessMessage("Table deleted successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  };
+
+  const handleUpdateTable = async (tableId, seats) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:8080/api/manager/tables/${tableId}/update?seats=${seats}`,
         {
           method: "PUT",
           headers: {
@@ -90,22 +119,17 @@ const ManageTablesPage = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update table status");
+        throw new Error("Failed to update table");
       }
 
-      // Refresh tables after status change
-      const updatedTables = await fetch(
-        `http://localhost:8080/api/manager/tables/${selectedRestaurantId}`,
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        }
-      ).then(res => res.json());
-
-      setTables(updatedTables);
+      // Update the table in the state
+      setTables(tables.map(table => 
+        table.id === tableId ? { ...table, capacity: seats } : table
+      ));
+      setSuccessMessage("Table updated successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
-      setError(err.message);
+      throw new Error(err.message);
     }
   };
 
@@ -121,12 +145,14 @@ const ManageTablesPage = () => {
     return <div className="text-slate-500">No restaurants found. Add one first.</div>;
   }
 
-  const availableTables = tables.filter((t) => t.status === "AVAILABLE");
-  const occupiedTables = tables.filter((t) => t.status === "OCCUPIED");
-
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Manage Tables</h1>
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {successMessage}
+        </div>
+      )}
       <div className="mb-8">
         <label className="block text-sm font-medium mb-1">Select Restaurant</label>
         <select
@@ -139,45 +165,22 @@ const ManageTablesPage = () => {
           ))}
         </select>
       </div>
-      <div className="mb-10">
-        <h2 className="text-xl font-semibold mb-4">Available Tables</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {availableTables.length === 0 ? (
-            <div className="text-slate-400 col-span-full">No available tables.</div>
-          ) : (
-            availableTables.map((table) => (
-              <TableCard
-                key={table.id}
-                table={{
-                  id: table.id,
-                  number: table.tableNumber,
-                  seats: table.capacity,
-                  status: table.status
-                }}
-                isOccupiedSection={false}
-                onToggle={() => handleTableStatusChange(table.id)}
-              />
-            ))
-          )}
-        </div>
-      </div>
       <div>
-        <h2 className="text-xl font-semibold mb-4">Occupied Tables</h2>
+        <h2 className="text-xl font-semibold mb-4">Tables</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {occupiedTables.length === 0 ? (
-            <div className="text-slate-400 col-span-full">No occupied tables.</div>
+          {tables.length === 0 ? (
+            <div className="text-slate-400 col-span-full">No tables found.</div>
           ) : (
-            occupiedTables.map((table) => (
+            tables.map((table) => (
               <TableCard
                 key={table.id}
                 table={{
                   id: table.id,
                   number: table.tableNumber,
-                  seats: table.capacity,
-                  status: table.status
+                  seats: table.capacity
                 }}
-                isOccupiedSection={true}
-                onToggle={() => handleTableStatusChange(table.id)}
+                onDelete={handleDeleteTable}
+                onUpdate={handleUpdateTable}
               />
             ))
           )}
