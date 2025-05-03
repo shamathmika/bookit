@@ -1,32 +1,128 @@
 "use client";
-import React, { useState } from "react";
-import { useRestaurantContext } from "../context/RestaurantContext";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import TableCard from "../components/TableCard";
 
 const ManageTablesPage = () => {
-  const {
-    restaurants,
-    selectedRestaurantId,
-    setSelectedRestaurant,
-    toggleTableOccupied,
-  } = useRestaurantContext();
-  const [timeslot, setTimeslot] = useState({});
+  const { user } = useAuth();
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState("");
+  const [tables, setTables] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const selected =
-    restaurants.find((r) => r.id === selectedRestaurantId) || restaurants[0];
+  // Fetch restaurants
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
+        );
 
-  React.useEffect(() => {
-    if (restaurants.length && !selectedRestaurantId) {
-      setSelectedRestaurant(restaurants[0].id);
+        if (!response.ok) {
+          throw new Error("Failed to fetch restaurants");
+        }
+
+        const data = await response.json();
+        setRestaurants(data);
+        if (data.length > 0) {
+          setSelectedRestaurantId(data[0].id);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.id) {
+      fetchRestaurants();
     }
-  }, [restaurants, selectedRestaurantId, setSelectedRestaurant]);
+  }, [user?.id]);
+
+  // Fetch tables when restaurant is selected
+  useEffect(() => {
+    const fetchTables = async () => {
+      if (!selectedRestaurantId) return;
+
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:8080/api/manager/tables/${selectedRestaurantId}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch tables");
+        }
+
+        const data = await response.json();
+        setTables(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchTables();
+  }, [selectedRestaurantId]);
+
+  const handleTableStatusChange = async (tableId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:8080/api/manager/tables/${selectedRestaurantId}/toggle-status/${tableId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update table status");
+      }
+
+      // Refresh tables after status change
+      const updatedTables = await fetch(
+        `http://localhost:8080/api/manager/tables/${selectedRestaurantId}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      ).then(res => res.json());
+
+      setTables(updatedTables);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-slate-500">Loading restaurants...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error: {error}</div>;
+  }
 
   if (!restaurants.length) {
     return <div className="text-slate-500">No restaurants found. Add one first.</div>;
   }
 
-  const availableTables = selected?.tables.filter((t) => !t.occupied) || [];
-  const occupiedTables = selected?.tables.filter((t) => t.occupied) || [];
+  const availableTables = tables.filter((t) => t.status === "AVAILABLE");
+  const occupiedTables = tables.filter((t) => t.status === "OCCUPIED");
 
   return (
     <div>
@@ -35,8 +131,8 @@ const ManageTablesPage = () => {
         <label className="block text-sm font-medium mb-1">Select Restaurant</label>
         <select
           className="border rounded px-3 py-2"
-          value={selected?.id || ""}
-          onChange={(e) => setSelectedRestaurant(e.target.value)}
+          value={selectedRestaurantId}
+          onChange={(e) => setSelectedRestaurantId(e.target.value)}
         >
           {restaurants.map((r) => (
             <option key={r.id} value={r.id}>{r.name}</option>
@@ -52,9 +148,14 @@ const ManageTablesPage = () => {
             availableTables.map((table) => (
               <TableCard
                 key={table.id}
-                table={table}
+                table={{
+                  id: table.id,
+                  number: table.tableNumber,
+                  seats: table.capacity,
+                  status: table.status
+                }}
                 isOccupiedSection={false}
-                onToggle={() => toggleTableOccupied(selected.id, table.id)}
+                onToggle={() => handleTableStatusChange(table.id)}
               />
             ))
           )}
@@ -69,9 +170,14 @@ const ManageTablesPage = () => {
             occupiedTables.map((table) => (
               <TableCard
                 key={table.id}
-                table={table}
+                table={{
+                  id: table.id,
+                  number: table.tableNumber,
+                  seats: table.capacity,
+                  status: table.status
+                }}
                 isOccupiedSection={true}
-                onToggle={() => toggleTableOccupied(selected.id, table.id)}
+                onToggle={() => handleTableStatusChange(table.id)}
               />
             ))
           )}
