@@ -26,6 +26,12 @@ const nextConfig = {
             hostname: 'cdn.site.com',
             port: '',
             pathname: '/**',
+          },
+          {
+            protocol: 'https',
+            hostname: 'mavericks-bookit-uploads.s3.us-east-2.amazonaws.com',
+            port: '',
+            pathname: '/**',
           }
         ],
       },
