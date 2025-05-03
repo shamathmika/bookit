@@ -200,7 +200,7 @@ export function Header() {
                 </Link>
               )}
               {userRole === "ROLE_MANAGER" && (
-                <Link href="/manage">
+                <Link href="/manager/dashboard">
                   <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
                     Manage
                   </button>
