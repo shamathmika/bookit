@@ -5,6 +5,8 @@ import com._2.BookIt.Enum.RestaurantStatus;
 import com._2.BookIt.Model.Restaurant;
 import com._2.BookIt.Repository.RestaurantRepository;
 import com._2.BookIt.Dto.AddRestaurantRequest;
+import com._2.BookIt.Repository.UserRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,10 +18,12 @@ import java.util.List;
 public class ManagerRestaurantService {
 	
 	private final RestaurantRepository restaurantRepository;
+	private final UserRepository userRepository;
 	private final S3Service s3Service;
 	
-	public ManagerRestaurantService (RestaurantRepository restaurantRepository, S3Service s3Service) {
+	public ManagerRestaurantService (RestaurantRepository restaurantRepository, UserRepository userRepository, S3Service s3Service) {
 		this.restaurantRepository = restaurantRepository;
+		this.userRepository = userRepository;
 		this.s3Service = s3Service;
 	}
 	
@@ -57,6 +61,19 @@ public class ManagerRestaurantService {
 				.approvalStatus(ApprovalStatus.PENDING)
 				.build();
 		
-		return restaurantRepository.save(restaurant);
+		restaurant = restaurantRepository.save(restaurant);
+		
+		ObjectId restaurantId = restaurant.getId();
+		userRepository.findById(request.getManagerId()).ifPresent(user -> {
+			List<ObjectId> ids = user.getRestaurantIDs();
+			if (ids != null) {
+				ids.add(restaurantId);
+			} else {
+				user.setRestaurantIDs(List.of(restaurantId));
+			}
+			userRepository.save(user);
+		});
+		
+		return restaurant;
 	}
 }

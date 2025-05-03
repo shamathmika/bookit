@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class AddRestaurantRequest {
+	private String managerId;
 	private String name;
 	private String description;
 	private List<MultipartFile> photos;
