@@ -172,6 +172,15 @@ export default function AdminDashboard() {
 }
 
 function MonthlyReservationsChart({ data }) {
+  // Ensure data is an array before mapping
+  if (!Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <p className="text-gray-500">No data available</p>
+      </div>
+    );
+  }
+
   const months = data.map(stat => stat._id.split('-')[1])
   const bookings = data.map(stat => stat.totalBookings)
   const cancellations = data.map(stat => stat.totalCancellations)
@@ -218,7 +227,7 @@ function MonthlyReservationsChart({ data }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function PopularTimeSlotsChart({ data }) {
