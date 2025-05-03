@@ -58,7 +58,7 @@ public class ManagerRestaurantController {
 	@PutMapping (value = "/update-restaurant", consumes = { "multipart/form-data" })
 	public ResponseEntity<Restaurant> updateRestaurant (
 			@RequestPart ("request") @Valid UpdateRestaurantRequest request,
-			@RequestPart (value = "images", required = false) List<MultipartFile> newImages) throws IOException {
+			@RequestPart (value = "images", required = false) List<MultipartFile> newImages) {
 		
 		Restaurant updated = managerRestaurantService.updateRestaurant(request, newImages);
 		return ResponseEntity.ok(updated);

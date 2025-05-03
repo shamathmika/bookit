@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler (IOException.class)
 	public ResponseEntity<String> handleIOException (IOException ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("An error occurred while uploading images. Please try again.");
+				.body("An IO Exception occurred - image upload/others. Please try again.");
 	}
 	
 	@ExceptionHandler (MaxUploadSizeExceededException.class)

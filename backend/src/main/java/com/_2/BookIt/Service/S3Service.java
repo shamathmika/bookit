@@ -30,7 +30,7 @@ public class S3Service {
 	@Value ("${aws.region}")
 	private String region;
 	
-	public List<String> uploadImages (List<MultipartFile> images) throws IOException {
+	public List<String> uploadImages (String folder, List<MultipartFile> images) {
 		S3Client s3 = S3Client.builder()
 				.region(Region.of(region))
 				.credentialsProvider(StaticCredentialsProvider.create(
@@ -40,7 +40,7 @@ public class S3Service {
 		List<String> urls = new ArrayList<>();
 		for (MultipartFile file : images) {
 			try {
-				String filename = "restaurant/" + Instant.now().getEpochSecond() + "-" + file.getOriginalFilename();
+				String filename = folder + "/" + Instant.now().getEpochSecond() + "-" + file.getOriginalFilename();
 				s3.putObject(
 						PutObjectRequest.builder()
 								.bucket(bucketName)
