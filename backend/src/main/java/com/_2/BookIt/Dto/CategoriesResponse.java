@@ -5,14 +5,12 @@ package com._2.BookIt.Dto;
 import com._2.BookIt.Model.Restaurant;
 
 // Lombok packages
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 // Java packages
 import java.util.List;
 
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
