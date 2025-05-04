@@ -70,7 +70,7 @@ const RestaurantCard = ({ restaurant, onDelete }) => {
           <div className="text-slate-500 text-sm mb-2">{restaurant.address}</div>
           <div className="flex gap-2 mb-4">
             <StatBadge title="Rating" value={restaurant.rating || 0} />
-            <StatBadge title="Cost" value={`$${restaurant.costRating}`} />
+            <StatBadge title="Cost" value={'$'.repeat(restaurant.costRating)} />
             <StatBadge title="Status" value={restaurant.status} />
           </div>
           <div className="text-sm text-slate-500">

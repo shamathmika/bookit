@@ -23,7 +23,7 @@ export default function BookingPage() {
   useEffect(() => {
     let isMounted = true
 
-    // Don’t even try until we have a logged-in user
+    // Don't even try until we have a logged-in user
     if (!user?.id) return
 
     // Only ever run once
@@ -49,7 +49,11 @@ export default function BookingPage() {
         )
 
         if (!res.ok) {
-          throw new Error('Failed to create booking')
+          const errorData = await res.json();
+          if (res.status === 400 && errorData.message?.includes('not available')) {
+            throw new Error('TIME_SLOT_UNAVAILABLE');
+          }
+          throw new Error(errorData.message || 'Failed to create booking');
         }
 
         const data = await res.json()
@@ -174,13 +178,41 @@ export default function BookingPage() {
   }
 
   if (error) {
+    const isTimeSlotUnavailable = error === 'TIME_SLOT_UNAVAILABLE';
+    
     return (
       <div className="min-h-screen bg-white p-8">
         <div className="max-w-2xl mx-auto">
-          <div className="text-red-500">Error: {error}</div>
+          <div className={`${isTimeSlotUnavailable ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'} border rounded-lg p-6`}>
+            <div className="flex items-center gap-2 mb-4">
+              <X className={`h-6 w-6 ${isTimeSlotUnavailable ? 'text-red-500' : 'text-yellow-500'}`} />
+              <h2 className={`text-xl font-semibold ${isTimeSlotUnavailable ? 'text-red-700' : 'text-yellow-700'}`}>
+                {isTimeSlotUnavailable ? 'Time Slot Unavailable' : 'Booking Cannot be Confirmed'}
+              </h2>
+            </div>
+            <p className="text-gray-600 mb-6">
+              {isTimeSlotUnavailable 
+                ? 'The selected time slot is no longer available. Please choose another time slot.'
+                : error}
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => router.push(`/restaurant/${searchParams.get('restaurantId')}`)}
+                className="bg-[#8B2615] text-white px-6 py-2 rounded-md hover:bg-[#a13425] transition-colors"
+              >
+                Choose Another Time
+              </button>
+              <button
+                onClick={() => router.push('/home')}
+                className="border border-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (

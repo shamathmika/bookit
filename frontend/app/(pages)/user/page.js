@@ -32,9 +32,9 @@ export default function UserProfile() {
         
         const data = await response.json()
         setFormData({
-          name: data.name,
-          phone: data.phoneNumber,
-          email: data.email,
+          name: data.name || "",
+          phone: data.phoneNumber || "",
+          email: data.email || "",
           password: "••••••••••"
         })
       } catch (err) {
