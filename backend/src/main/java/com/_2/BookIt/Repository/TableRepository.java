@@ -19,6 +19,7 @@ import java.util.Optional;
  * Repository for Tables.
  */
 public interface TableRepository extends MongoRepository<Table, String> {
+<<<<<<< Updated upstream
 	List<Table> findByRestaurantID(ObjectId restaurantID);
 	List<Table> findByRestaurantIDAndStatus(ObjectId restaurantID, TableStatus status);
 	Optional<Table> findByRestaurantIDAndTableNumber(ObjectId restaurantID, Integer tableNumber);
@@ -29,4 +30,22 @@ public interface TableRepository extends MongoRepository<Table, String> {
 	List<Table> findAllByRestaurantIDIn(List<ObjectId> restaurantIds);
 
 
+=======
+	List<Table> findByRestaurantID (ObjectId restaurantID);
+	
+	List<Table> findByRestaurantIDAndStatus (ObjectId restaurantID, TableStatus status);
+	
+	Optional<Table> findByRestaurantIDAndTableNumber (ObjectId restaurantID, Integer tableNumber);
+	
+	boolean existsByRestaurantIDAndTableNumber (ObjectId restaurantID, Integer tableNumber);
+	
+	long countByRestaurantID (ObjectId restaurantID);
+	
+	
+	List<Table> findAllByRestaurantIDIn (List<ObjectId> restaurantIds);
+	
+	List<Table> findByRestaurantIDAndCapacityGreaterThanEqual (ObjectId restaurantID, int capacity);
+	
+	void deleteByRestaurantID (ObjectId objectId);
+>>>>>>> Stashed changes
 }
