@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 const AddTablesPage = () => {
-  const { user } = useAuth();
+  const { user, isLoggedIn, loading: authLoading } = useAuth();
   const router = useRouter();
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ const AddTablesPage = () => {
           `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -36,7 +36,7 @@ const AddTablesPage = () => {
         const data = await response.json();
         setRestaurants(data);
         if (data.length > 0) {
-          setForm(f => ({ ...f, restaurantId: data[0].id }));
+          setForm((f) => ({ ...f, restaurantId: data[0].id }));
         }
       } catch (err) {
         setError(err.message);
@@ -45,7 +45,7 @@ const AddTablesPage = () => {
       }
     };
 
-    if (user?.id) {
+    if (user?.id && user.role === "ROLE_MANAGER") {
       fetchRestaurants();
     }
   }, [user?.id]);
@@ -67,7 +67,7 @@ const AddTablesPage = () => {
         {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -89,6 +89,20 @@ const AddTablesPage = () => {
       setError(err.message);
     }
   };
+
+  // ⏳ Wait for auth check to finish
+  if (authLoading) {
+    return <div className="text-slate-500">Checking authentication...</div>;
+  }
+
+  // 🔒 Protect route from non-logged-in or non-manager users
+  if (!isLoggedIn || user?.role !== "ROLE_MANAGER") {
+    return (
+      <div className="text-red-600 text-lg font-semibold">
+        Please log in as a manager to access this page.
+      </div>
+    );
+  }
 
   if (loading) {
     return <div className="text-slate-500">Loading restaurants...</div>;
@@ -117,7 +131,9 @@ const AddTablesPage = () => {
             required
           >
             {restaurants.map((r) => (
-              <option key={r.id} value={r.id}>{r.name}</option>
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
             ))}
           </select>
         </div>
@@ -142,17 +158,30 @@ const AddTablesPage = () => {
             className="w-full border rounded px-3 py-2"
           >
             {[2, 4, 6, 8].map((n) => (
-              <option key={n} value={n}>{n} Seats</option>
+              <option key={n} value={n}>
+                {n} Seats
+              </option>
             ))}
           </select>
         </div>
         <div className="flex gap-4 mt-8">
-          <button type="button" onClick={() => router.back()} className="rounded-md px-6 py-2 border border-slate-300">Cancel</button>
-          <button type="submit" className="bg-rose-700 hover:bg-rose-800 rounded-md px-6 py-2 text-white">Add Tables</button>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="rounded-md px-6 py-2 border border-slate-300"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-rose-700 hover:bg-rose-800 rounded-md px-6 py-2 text-white"
+          >
+            Add Tables
+          </button>
         </div>
       </form>
     </div>
   );
 };
 
-export default AddTablesPage; 
+export default AddTablesPage;

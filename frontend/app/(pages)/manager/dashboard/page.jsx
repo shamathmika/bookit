@@ -4,9 +4,9 @@ import { useAuth } from "@/context/AuthContext";
 import RestaurantCard from "../components/RestaurantCard";
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, isLoggedIn, loading } = useAuth(); // include loading for smoother UX
   const [restaurants, setRestaurants] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingRestaurants, setLoadingRestaurants] = useState(true);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -17,7 +17,7 @@ const DashboardPage = () => {
         `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
         {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -31,23 +31,38 @@ const DashboardPage = () => {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setLoadingRestaurants(false);
     }
   };
 
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && user?.role === "ROLE_MANAGER") {
       fetchRestaurants();
     }
   }, [user?.id]);
 
   const handleDelete = (deletedRestaurantId) => {
-    setRestaurants(restaurants.filter(r => r.id !== deletedRestaurantId));
+    setRestaurants(restaurants.filter((r) => r.id !== deletedRestaurantId));
     setSuccessMessage("Restaurant deleted successfully!");
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
+  // ⏳ Show nothing while auth state is loading
   if (loading) {
+    return <div className="text-slate-500">Checking authentication...</div>;
+  }
+
+  // 🔒 Block if not logged in or not a manager
+  if (!isLoggedIn || user?.role !== "ROLE_MANAGER") {
+    return (
+      <div className="text-red-600 text-lg font-semibold">
+        Please log in as a manager to access the dashboard.
+      </div>
+    );
+  }
+
+  // 🌀 Show while fetching data
+  if (loadingRestaurants) {
     return <div className="text-slate-500">Loading restaurants...</div>;
   }
 
@@ -64,17 +79,19 @@ const DashboardPage = () => {
         </div>
       )}
       {restaurants.length === 0 ? (
-        <div className="text-slate-500">No restaurants yet. Add one to get started!</div>
+        <div className="text-slate-500">
+          No restaurants yet. Add one to get started!
+        </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
           {restaurants.map((r) => (
-            <RestaurantCard 
-              key={r.id} 
+            <RestaurantCard
+              key={r.id}
               restaurant={{
                 id: r.id,
                 name: r.name,
                 description: r.description,
-                image: r.photos[0], // Using first photo as main image
+                image: r.photos[0],
                 address: r.address.fullAddress,
                 phone: r.contact,
                 cuisine: r.cuisine,
@@ -83,7 +100,7 @@ const DashboardPage = () => {
                 status: r.status,
                 openingTime: r.openingTime,
                 closingTime: r.closingTime,
-                approvalStatus: r.approvalStatus
+                approvalStatus: r.approvalStatus,
               }}
               onDelete={handleDelete}
             />
@@ -94,4 +111,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage; 
+export default DashboardPage;

@@ -14,8 +14,9 @@ function to12HourFormat(time24) {
 }
 
 const AddRestaurantPage = () => {
-  const { user } = useAuth();
+  const { user, isLoggedIn, loading: authLoading } = useAuth();
   const router = useRouter();
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -24,7 +25,7 @@ const AddRestaurantPage = () => {
       street: "",
       city: "",
       state: "",
-      zipCode: ""
+      zipCode: "",
     },
     phoneNumber: "",
     cuisine: "",
@@ -42,7 +43,7 @@ const AddRestaurantPage = () => {
       reader.onload = (ev) => {
         setForm((f) => ({
           ...f,
-          photos: [...f.photos, ev.target.result]
+          photos: [...f.photos, ev.target.result],
         }));
       };
       reader.readAsDataURL(files[0]);
@@ -50,7 +51,7 @@ const AddRestaurantPage = () => {
       const field = name.split(".")[1];
       setForm((f) => ({
         ...f,
-        address: { ...f.address, [field]: value }
+        address: { ...f.address, [field]: value },
       }));
     } else {
       setForm((f) => ({ ...f, [name]: value }));
@@ -66,7 +67,6 @@ const AddRestaurantPage = () => {
       const token = localStorage.getItem("token");
       const formData = new FormData();
 
-      // Add the request JSON as a Blob
       const restaurantRequest = {
         managerId: user.id,
         name: form.name,
@@ -76,7 +76,7 @@ const AddRestaurantPage = () => {
         cuisine: form.cuisine,
         costRating: form.costRating,
         openingTime: to12HourFormat(form.openingTime),
-        closingTime: to12HourFormat(form.closingTime)
+        closingTime: to12HourFormat(form.closingTime),
       };
 
       const jsonBlob = new Blob([JSON.stringify(restaurantRequest)], {
@@ -84,12 +84,10 @@ const AddRestaurantPage = () => {
       });
       formData.append("request", jsonBlob);
 
-      // Add image files (can be multiple)
       if (form.photos.length > 0) {
         form.photos.forEach((photo, index) => {
-          // Convert base64 to blob
-          const byteString = atob(photo.split(',')[1]);
-          const mimeString = photo.split(',')[0].split(':')[1].split(';')[0];
+          const byteString = atob(photo.split(",")[1]);
+          const mimeString = photo.split(",")[0].split(":")[1].split(";")[0];
           const ab = new ArrayBuffer(byteString.length);
           const ia = new Uint8Array(ab);
           for (let i = 0; i < byteString.length; i++) {
@@ -100,13 +98,16 @@ const AddRestaurantPage = () => {
         });
       }
 
-      const response = await fetch("http://localhost:8080/api/manager/restaurants/add-restaurant", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-        body: formData
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/manager/restaurants/add-restaurant",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       const data = await response.json();
 
@@ -123,6 +124,19 @@ const AddRestaurantPage = () => {
     }
   };
 
+  // 🔐 Protect the page
+  if (authLoading) {
+    return <div className="text-slate-500">Checking authentication...</div>;
+  }
+
+  if (!isLoggedIn || user?.role !== "ROLE_MANAGER") {
+    return (
+      <div className="text-red-600 text-lg font-semibold">
+        Please log in as a manager to access this page.
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Add New Restaurant</h1>
@@ -136,7 +150,12 @@ const AddRestaurantPage = () => {
           {success}
         </div>
       )}
-      <form className="bg-white rounded-xl p-8 max-w-2xl" onSubmit={handleSubmit}>
+      <form
+        className="bg-white rounded-xl p-8 max-w-2xl"
+        onSubmit={handleSubmit}
+      >
+
+        {/* form elements */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium mb-1">Restaurant Name</label>
@@ -208,4 +227,4 @@ const AddRestaurantPage = () => {
   );
 };
 
-export default AddRestaurantPage; 
+export default AddRestaurantPage;

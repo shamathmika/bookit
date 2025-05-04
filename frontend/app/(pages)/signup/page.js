@@ -143,19 +143,19 @@ export default function Signup() {
               Sign Up
             </button>
 
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <div className="flex-1 border-t border-gray-300"></div>
               <span className="px-4 text-gray-500">or</span>
               <div className="flex-1 border-t border-gray-300"></div>
-            </div>
+            </div> */}
 
-            <button
+            {/* <button
               type="button"
               className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-md font-medium"
             >
               <GoogleIcon className="h-5 w-5" />
               <span>Sign In with Google</span>
-            </button>
+            </button> */}
           </form>
         </div>
       </div>
@@ -171,10 +171,10 @@ export default function Signup() {
   )
 }
 
-function GoogleIcon({ className }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className}>
-      {/* same Google path elements as before */}
-    </svg>
-  )
-}
+// function GoogleIcon({ className }) {
+//   return (
+//     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className}>
+//       {/* same Google path elements as before */}
+//     </svg>
+//   )
+// }
