@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-
+import { BASE_URL } from "@/constants/constants";
 // Helper to convert 12-hour AM/PM format to 24-hour time
 function to24HourFormat(time12) {
   const [time, period] = time12.split(" ");
@@ -62,7 +62,7 @@ const EditRestaurantPage = ({ params }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
+          `${BASE_URL}/manager/restaurants/restaurants-by-manager/${user.id}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -176,7 +176,7 @@ const EditRestaurantPage = ({ params }) => {
         });
       }
 
-      const response = await fetch("http://localhost:8080/api/manager/restaurants/update-restaurant", {
+      const response = await fetch(`${BASE_URL}/manager/restaurants/update-restaurant`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

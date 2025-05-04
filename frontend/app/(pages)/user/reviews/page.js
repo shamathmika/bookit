@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Star, Calendar, Clock } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
-
+import { BASE_URL } from "@/constants/constants"
 export default function UserReviews() {
   const { user } = useAuth()
   const [reviews, setReviews] = useState([])
@@ -32,7 +32,7 @@ export default function UserReviews() {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${user.id}/reviews`, {
+      const response = await fetch(`${BASE_URL}/users/${user.id}/reviews`, {
         headers: getAuthHeaders()
       })
 
@@ -66,7 +66,7 @@ export default function UserReviews() {
       
       try {
         await Promise.all(uniqueRestaurantIds.map(async (id) => {
-          const response = await fetch(`http://localhost:8080/api/restaurants/${id}`, {
+          const response = await fetch(`${BASE_URL}/restaurants/${id}`, {
             headers: getAuthHeaders()
           })
           if (!response.ok) {
@@ -98,7 +98,7 @@ export default function UserReviews() {
 
   const handleDeleteConfirm = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/reviews/${selectedReview.id}`, {
+      const response = await fetch(`${BASE_URL}/reviews/${selectedReview.id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })

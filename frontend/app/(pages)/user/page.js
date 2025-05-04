@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Pencil, Github, Twitter } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
-
+import { BASE_URL } from "@/constants/constants"
 export default function UserProfile() {
   const { user } = useAuth()
   const [showConfirmModal, setShowConfirmModal] = useState(false)
@@ -20,7 +20,7 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+        const response = await fetch(`${BASE_URL}/users/${user.id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -56,7 +56,7 @@ export default function UserProfile() {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+      const response = await fetch(`${BASE_URL}/users/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

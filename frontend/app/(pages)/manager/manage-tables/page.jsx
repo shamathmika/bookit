@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import TableCard from "../components/TableCard";
-
+import { BASE_URL } from "@/constants/constants"; // Ensure this path is correct
 const ManageTablesPage = () => {
   const { user, isLoggedIn, loading: authLoading } = useAuth(); // added loading check
   const [restaurants, setRestaurants] = useState([]);
@@ -17,7 +17,7 @@ const ManageTablesPage = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
+          `${BASE_URL}/manager/restaurants/restaurants-by-manager/${user.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ const ManageTablesPage = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://localhost:8080/api/manager/tables/${selectedRestaurantId}`,
+          `${BASE_URL}/manager/tables/${selectedRestaurantId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ const ManageTablesPage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8080/api/manager/tables/${selectedRestaurantId}/delete-many`,
+        `${BASE_URL}/manager/tables/${selectedRestaurantId}/delete-many`,
         {
           method: "DELETE",
           headers: {
@@ -106,7 +106,7 @@ const ManageTablesPage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8080/api/manager/tables/${tableId}/update?seats=${seats}`,
+        `${BASE_URL}/manager/tables/${tableId}/update?seats=${seats}`,
         {
           method: "PUT",
           headers: {

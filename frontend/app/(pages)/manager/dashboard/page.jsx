@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import RestaurantCard from "../components/RestaurantCard";
-
+import { BASE_URL } from "@/constants/constants";
 const DashboardPage = () => {
   const { user, isLoggedIn, loading } = useAuth(); // include loading for smoother UX
   const [restaurants, setRestaurants] = useState([]);
@@ -14,7 +14,7 @@ const DashboardPage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
+        `${BASE_URL}/manager/restaurants/restaurants-by-manager/${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useAuth } from "@/context/AuthContext"
-
+import { BASE_URL } from "@/constants/constants"
 export default function RestaurantDetails() {
   const { user } = useAuth()
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
@@ -37,7 +37,7 @@ export default function RestaurantDetails() {
 
   const fetchRestaurantDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/restaurants/${params.id}`)
+      const response = await fetch(`${BASE_URL}/restaurants/${params.id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch restaurant details')
       }
@@ -49,7 +49,7 @@ export default function RestaurantDetails() {
       const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
       
       const searchResponse = await fetch(
-        `http://localhost:8080/api/restaurants/${params.id}/available-times?date=${formattedDate}&people=1`
+        `${BASE_URL}/restaurants/${params.id}/available-times?date=${formattedDate}&people=1`
       )
       if (!searchResponse.ok) {
         throw new Error('Failed to fetch available times')

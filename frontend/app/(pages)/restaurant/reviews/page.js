@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import { X, Camera, Plus } from "lucide-react"
 import Image from "next/image"
 import { useAuth } from "@/context/AuthContext"
-
+import { BASE_URL } from "@/constants/constants"
 export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaurant", restaurantId, onReviewSubmitted }) {
   const { user } = useAuth()
   const [rating, setRating] = useState(4)
@@ -63,7 +63,7 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
       const jsonBlob = new Blob([JSON.stringify(reviewData)], { type: "application/json" })
       formData.append("request", jsonBlob)
 
-      const response = await fetch('http://localhost:8080/api/reviews/standalone', {
+      const response = await fetch(`${BASE_URL}/reviews/standalone`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

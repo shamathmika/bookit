@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Github, Twitter } from "lucide-react"
-
+import { BASE_URL } from "@/constants/constants"
 export default function Signup() {
   const router = useRouter()
   const [name, setName] = useState("")
@@ -27,7 +27,7 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/signup", {
+      const response = await fetch(`${BASE_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

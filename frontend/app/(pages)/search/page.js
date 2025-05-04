@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
-
+import { BASE_URL } from "@/constants/constants";
 export default function SearchPage() {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ export default function SearchPage() {
           datetime
         });
 
-        const response = await fetch(`http://localhost:8080/api/restaurants/search?${queryParams}`);
+        const response = await fetch(`${BASE_URL}/restaurants/search?${queryParams}`);
         if (!response.ok) {
           throw new Error('Failed to fetch restaurants');
         }

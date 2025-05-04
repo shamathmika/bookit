@@ -11,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-
+import { BASE_URL } from "@/constants/constants";
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
@@ -75,7 +75,7 @@ export function Header() {
       );
       params.append("datetime", combined.toISOString());
 
-      const url = `http://localhost:8080/api/restaurants/search?${params.toString()}`;
+      const url = `${BASE_URL}/restaurants/search?${params.toString()}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Search failed");
 

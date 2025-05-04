@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { User, Calendar, Clock } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
-
+import { BASE_URL } from "@/constants/constants"
 export default function UserReservations() {
   const { user } = useAuth()
   const [reservations, setReservations] = useState([])
@@ -31,7 +31,7 @@ export default function UserReservations() {
 
   const fetchReservations = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${user.id}/reservations`, {
+      const response = await fetch(`${BASE_URL}/users/${user.id}/reservations`, {
         headers: getAuthHeaders()
       })
 
@@ -65,7 +65,7 @@ export default function UserReservations() {
       
       try {
         await Promise.all(uniqueRestaurantIds.map(async (id) => {
-          const response = await fetch(`http://localhost:8080/api/restaurants/${id}`, {
+          const response = await fetch(`${BASE_URL}/restaurants/${id}`, {
             headers: getAuthHeaders()
           })
           if (!response.ok) {
@@ -97,7 +97,7 @@ export default function UserReservations() {
 
   const handleCancelConfirm = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/bookings/${selectedReservation.id}`, {
+      const response = await fetch(`${BASE_URL}/bookings/${selectedReservation.id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
