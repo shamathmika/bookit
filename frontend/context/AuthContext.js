@@ -5,22 +5,24 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
-// Provides: { user, isLoggedIn, login(), logout() }
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
-  // on mount, rehydrate from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem("user");
-      if (stored) setUser(JSON.parse(stored));
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
     } catch (e) {
       console.error("Failed to parse stored user:", e);
+    } finally {
+      setLoading(false); // Mark loading as complete
     }
   }, []);
 
   function login(userData) {
-    // userData = { id, name, email, phoneNumber, role, token }
     localStorage.setItem("token", userData.token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
@@ -39,6 +41,7 @@ export function AuthProvider({ children }) {
         isLoggedIn: !!user,
         login,
         logout,
+        loading, // Expose loading
       }}
     >
       {children}
@@ -46,7 +49,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom hook for consuming auth
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (ctx === undefined) {
