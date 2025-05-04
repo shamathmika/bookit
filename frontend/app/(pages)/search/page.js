@@ -177,18 +177,22 @@ export default function SearchPage() {
               >
                 <div className="flex">
                   <div className="w-48 h-48 relative flex-shrink-0">
-                    {restaurant.photos && restaurant.photos.length > 0 ? (
-                      <Image
-                        src={restaurant.photos[0]}
-                        alt={restaurant.restaurantName}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400">No photo</span>
-                      </div>
-                    )}
+                    <div className="relative h-48 overflow-hidden">
+                      {restaurant.photos && restaurant.photos.length > 0 && restaurant.photos[0] ? (
+                        <Image
+                          src={restaurant.photos[0]}
+                          alt={restaurant.restaurantName}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="p-4 flex-1">
                     <h2 className="text-xl font-semibold mb-2">{restaurant.restaurantName}</h2>
@@ -217,12 +221,20 @@ export default function SearchPage() {
                       <div className="flex gap-2 mb-3 overflow-x-auto">
                         {restaurant.photos.slice(1).map((photo, index) => (
                           <div key={index} className="w-16 h-16 relative flex-shrink-0">
-                            <Image
-                              src={photo}
-                              alt={`${restaurant.restaurantName} photo ${index + 2}`}
-                              fill
-                              className="object-cover rounded-md"
-                            />
+                            {photo ? (
+                              <Image
+                                src={photo}
+                                alt={`${restaurant.restaurantName} photo ${index + 2}`}
+                                fill
+                                className="object-cover rounded-md"
+                              />
+                            ) : (
+                              <div className="absolute inset-0 bg-gray-200 flex items-center justify-center rounded-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

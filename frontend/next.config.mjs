@@ -17,6 +17,12 @@ const nextConfig = {
           },
           {
             protocol: 'https',
+            hostname: 'unsplash.com',
+            port: '',
+            pathname: '/**',
+          },
+          {
+            protocol: 'https',
             hostname: 'tinyurl.com',
             port: '',
             pathname: '/**',

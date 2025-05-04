@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { X, Camera, Plus } from "lucide-react"
 import Image from "next/image"
 import { useAuth } from "@/context/AuthContext"
@@ -9,11 +9,27 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
   const { user } = useAuth()
   const [rating, setRating] = useState(4)
   const [reviewText, setReviewText] = useState("")
-  const [media, setMedia] = useState([])
+  const [media, setMedia] = useState([]) // base64 strings
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const fileInputRef = useRef(null)
 
   if (!isOpen) return null
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files)
+    files.forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        setMedia((prev) => [...prev, ev.target.result])
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleAddImageClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click()
+  }
 
   const handleSubmit = async () => {
     try {
@@ -25,17 +41,34 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
         customerID: user.id,
         rating: rating,
         comments: reviewText,
-        photos: media,
         date: new Date().toISOString()
       }
 
-      const response = await fetch('http://localhost:8080/api/reviews/reviews/standalone', {
+      const formData = new FormData()
+      // Add image files (convert base64 to Blob)
+      if (media.length > 0) {
+        media.forEach((photo, index) => {
+          const byteString = atob(photo.split(',')[1]);
+          const mimeString = photo.split(',')[0].split(':')[1].split(';')[0];
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+          const blob = new Blob([ab], { type: mimeString });
+          formData.append("images", blob, `photo${index}.jpg`);
+        });
+      }
+      // Add the request JSON as a Blob
+      const jsonBlob = new Blob([JSON.stringify(reviewData)], { type: "application/json" })
+      formData.append("request", jsonBlob)
+
+      const response = await fetch('http://localhost:8080/api/reviews/standalone', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(reviewData)
+        body: formData
       })
 
       if (!response.ok) {
@@ -46,8 +79,6 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
       setRating(4)
       setReviewText("")
       setMedia([])
-      
-      // Notify parent and close modal
       onReviewSubmitted && onReviewSubmitted()
       onClose()
     } catch (err) {
@@ -99,7 +130,7 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
 
           <div className="mb-6">
             <label className="block text-base font-medium mb-2">Photos</label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {media.map((src, index) => (
                 <div key={index} className="border rounded-md w-20 h-20 overflow-hidden">
                   <Image
@@ -112,11 +143,22 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
                 </div>
               ))}
               <button 
+                type="button"
                 className="border rounded-md w-20 h-20 flex items-center justify-center text-gray-400"
                 disabled={submitting}
+                onClick={handleAddImageClick}
               >
                 <Plus className="h-8 w-8" />
               </button>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleImageChange}
+                disabled={submitting}
+              />
             </div>
           </div>
 

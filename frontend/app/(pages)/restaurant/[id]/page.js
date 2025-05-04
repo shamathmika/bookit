@@ -56,7 +56,7 @@ export default function RestaurantDetails() {
       }
       const availableTimes = await searchResponse.json()
       // Take only the first 3 times
-      const limitedTimes = availableTimes.slice(0, 3)
+      const limitedTimes = availableTimes.slice(0, 20)
       setAvailableTimes(limitedTimes)
       if (limitedTimes.length > 0) {
         setSelectedTime(limitedTimes[0])
@@ -197,14 +197,22 @@ export default function RestaurantDetails() {
                     className="w-full h-full flex-shrink-0 cursor-pointer"
                     onClick={() => handleImageClick(photo)}
                   >
-                    <Image
-                      src={photo}
-                      alt={`${restaurant.name} photo ${index + 1}`}
-                      width={1200}
-                      height={800}
-                      className="w-full h-full object-cover"
-                      priority={index === 0}
-                    />
+                    {photo ? (
+                      <Image
+                        src={photo}
+                        alt={`${restaurant.name} photo ${index + 1}`}
+                        width={1200}
+                        height={800}
+                        className="w-full h-full object-cover"
+                        priority={index === 0}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -419,33 +427,35 @@ export default function RestaurantDetails() {
                 </div>
 
                 {/* Time Selector */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm font-medium">Select Time</span>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {availableTimes.map((time) => {
-                      const isSelected = time === selectedTime;
-                      return (
-                        <button
-                          key={time}
-                          className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                            isSelected 
-                              ? 'bg-[#8B2615] text-white' 
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                          onClick={() => setSelectedTime(time)}
-                          
-                        >
-                          {time}
-                        </button>
-                      );
-                    })}
-                    {availableTimes.length === 0 && !loading && (
-                      <p className="text-sm text-gray-500">No available times</p>
-                    )}
-                  </div>
+                <div className="relative">
+                  <button
+                    className="w-full flex items-center border rounded overflow-hidden p-2"
+                    onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                  >
+                    <Clock className="ml-2 h-4 w-4 text-gray-500" />
+                    <span className="px-2">{selectedTime ? selectedTime : 'Select Time'}</span>
+                    <ChevronDown className="ml-auto mr-2 h-4 w-4" />
+                  </button>
+                  {showTimeDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {availableTimes.length > 0 ? (
+                        availableTimes.map((time) => (
+                          <button
+                            key={time}
+                            className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${selectedTime === time ? 'bg-gray-200 font-semibold' : ''}`}
+                            onClick={() => {
+                              setSelectedTime(time);
+                              setShowTimeDropdown(false);
+                            }}
+                          >
+                            {time}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-gray-500">No available times</div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Reserve Button */}
@@ -494,6 +504,8 @@ export default function RestaurantDetails() {
               </div>
             </div>
           </div>
+
+          
         </div>
       </main>
 

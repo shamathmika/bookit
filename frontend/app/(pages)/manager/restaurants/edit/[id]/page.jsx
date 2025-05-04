@@ -29,7 +29,7 @@ function to12HourFormat(time24) {
 }
 
 const EditRestaurantPage = ({ params }) => {
-  const { id } = params;
+  const id = React.use(params).id;
   const { user } = useAuth();
   const router = useRouter();
   const [form, setForm] = useState({
