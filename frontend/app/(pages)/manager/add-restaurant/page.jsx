@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-
+import { BASE_URL } from "@/constants/constants";
 // Helper to convert 24-hour time to 12-hour AM/PM format
 function to12HourFormat(time24) {
   let [hour, minute] = time24.split(":");
@@ -99,7 +99,7 @@ const AddRestaurantPage = () => {
       }
 
       const response = await fetch(
-        "http://localhost:8080/api/manager/restaurants/add-restaurant",
+        `${BASE_URL}/manager/restaurants/add-restaurant`,
         {
           method: "POST",
           headers: {

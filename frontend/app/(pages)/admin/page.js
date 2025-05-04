@@ -3,6 +3,8 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/context/AuthContext"
 
+import { BASE_URL } from "@/constants/constants"
+
 export default function AdminDashboard() {
   const { user, isLoggedIn } = useAuth()
   const [dashboardData, setDashboardData] = useState({
@@ -23,7 +25,7 @@ export default function AdminDashboard() {
 
       try {
         // Fetch main dashboard data
-        const dashboardResponse = await fetch('http://localhost:8080/api/admin/restaurants/dashboard', {
+        const dashboardResponse = await fetch(`${BASE_URL}/admin/restaurants/dashboard`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json'
@@ -33,7 +35,7 @@ export default function AdminDashboard() {
         setDashboardData(dashboardData)
 
         // Fetch booking stats
-        const bookingStatsResponse = await fetch('http://localhost:8080/api/booking-stats', {
+        const bookingStatsResponse = await fetch(`${BASE_URL}/booking-stats`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json'
@@ -43,7 +45,7 @@ export default function AdminDashboard() {
         setBookingStats(bookingStatsData)
 
         // Fetch popular slots
-        const popularSlotsResponse = await fetch('http://localhost:8080/api/booking-stats/analytics/popular-slots', {
+        const popularSlotsResponse = await fetch(`${BASE_URL}/booking-stats/analytics/popular-slots`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json'
@@ -53,7 +55,7 @@ export default function AdminDashboard() {
         setPopularSlots(popularSlotsData)
 
         // Fetch monthly stats
-        const monthlyStatsResponse = await fetch('http://localhost:8080/api/booking-stats/analytics/monthly', {
+        const monthlyStatsResponse = await fetch(`${BASE_URL}/booking-stats/analytics/monthly`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json'
@@ -66,7 +68,7 @@ export default function AdminDashboard() {
         const names = {}
         for (const stat of bookingStatsData) {
           try {
-            const restaurantResponse = await fetch(`http://localhost:8080/api/restaurants/${stat.restaurantID}`, {
+            const restaurantResponse = await fetch(`${BASE_URL}/restaurants/${stat.restaurantID}`, {
               headers: {
                 'Authorization': `Bearer ${user.token}`,
                 'Content-Type': 'application/json'

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 // import PropTypes from "prop-types";
-
+import { BASE_URL } from "@/constants/constants";
 const TableCard = ({ table, onDelete, onUpdate }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);

@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Eye, EyeOff, Mail, Phone, Github, Twitter } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext";
-
+import { BASE_URL } from "@/constants/constants";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [contact, setContact] = useState("");
@@ -15,13 +15,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { login } = useAuth();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/signin", {
+      const res = await fetch(`${BASE_URL}/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

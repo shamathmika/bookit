@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Star, Calendar, User, Clock, X, Check } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-
+import { BASE_URL } from '@/constants/constants'
 
 export default function BookingPage() {
   const searchParams = useSearchParams()
@@ -41,7 +41,7 @@ export default function BookingPage() {
         }
 
         const res = await fetch(
-          `http://localhost:8080/api/bookings/create?restaurantId=${restaurantId}&userId=${user.id}&dateTime=${dateTime}&people=${people}`,
+          `${BASE_URL}/bookings/create?restaurantId=${restaurantId}&userId=${user.id}&dateTime=${dateTime}&people=${people}`,
           {
             method: 'POST',
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -80,7 +80,7 @@ export default function BookingPage() {
       setError(null)
 
       const response = await fetch(
-        `http://localhost:8080/api/bookings/${booking.id}/confirm?type=EMAIL`,
+        `${BASE_URL}/bookings/${booking.id}/confirm?type=EMAIL`,
         {
           method: 'PUT',
           headers: {
@@ -116,7 +116,7 @@ export default function BookingPage() {
     try {
       setCancelLoading(true)
       const response = await fetch(
-        `http://localhost:8080/api/bookings/${booking.id}`,
+        `${BASE_URL}/bookings/${booking.id}`,
         {
           method: 'DELETE',
           headers: {

@@ -1,12 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-  Search,
-  User,
-  Calendar,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
   Github,
   Twitter,
   Star,
@@ -14,12 +8,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-import { RestaurantCard } from "@/components/common/RestaurantCard";
-import { StarIcon } from "@/components/common/StarIcon";
 
-import { Restaurants } from "@/constants/constants";
-
-import { Categories } from "@/constants/constants";
+import { BASE_URL } from "@/constants/constants";
 
 export default function Component() {
   const [availableRestaurants, setAvailableRestaurants] = useState([]);
@@ -34,7 +24,7 @@ export default function Component() {
   useEffect(() => {
     const fetchAvailableRestaurants = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/restaurants/available-tables');
+        const response = await fetch(`${BASE_URL}/restaurants/available-tables`);
         if (!response.ok) {
           throw new Error('Failed to fetch available restaurants');
         }
@@ -49,7 +39,7 @@ export default function Component() {
 
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/restaurants/categories?location=San%20Jose');
+        const response = await fetch(`${BASE_URL}/restaurants/categories?location=San%20Jose`);
         if (!response.ok) {
           throw new Error('Failed to fetch categories');
         }
@@ -335,7 +325,7 @@ function CategorySection({ category }) {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/restaurants/search?cuisine=${category.name}`);
+        const response = await fetch(`${BASE_URL}/restaurants/search?cuisine=${category.name}`);
         if (!response.ok) {
           throw new Error('Failed to fetch restaurants');
         }

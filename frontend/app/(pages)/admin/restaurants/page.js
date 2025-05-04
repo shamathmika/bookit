@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useAuth } from "@/context/AuthContext"
-
+import { BASE_URL } from "@/constants/constants"
 export default function AdminRestaurants() {
   const { user, isLoggedIn } = useAuth()
   const [restaurants, setRestaurants] = useState([])
@@ -25,7 +25,7 @@ export default function AdminRestaurants() {
 
   const fetchPendingRestaurants = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/restaurants/pending', {
+      const response = await fetch(`${BASE_URL}/admin/restaurants/pending`, {
         headers: getAuthHeaders()
       })
 
@@ -50,7 +50,7 @@ export default function AdminRestaurants() {
 
   const handleApprove = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/restaurants/${id}/approve`, {
+      const response = await fetch(`${BASE_URL}/admin/restaurants/${id}/approve`, {
         method: 'PUT',
         headers: getAuthHeaders()
       })
@@ -73,7 +73,7 @@ export default function AdminRestaurants() {
 
   const handleReject = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/admin/restaurants/${id}/reject`, {
+      const response = await fetch(`${BASE_URL}/admin/restaurants/${id}/reject`, {
         method: 'PUT',
         headers: getAuthHeaders()
       })

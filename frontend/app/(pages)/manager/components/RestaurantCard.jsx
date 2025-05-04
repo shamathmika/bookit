@@ -3,7 +3,7 @@ import React, { useState } from "react";
 // import PropTypes from "prop-types";
 import StatBadge from "./StatBadge";
 import { useRouter } from "next/navigation";
-
+import { BASE_URL } from "@/constants/constants";
 const RestaurantCard = ({ restaurant, onDelete }) => {
   const router = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -17,7 +17,7 @@ const RestaurantCard = ({ restaurant, onDelete }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8080/api/manager/restaurants/${restaurant.id}`,
+        `${BASE_URL}/manager/restaurants/${restaurant.id}`,
         {
           method: "DELETE",
           headers: {

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-
+import { BASE_URL } from "@/constants/constants";
 const AddTablesPage = () => {
   const { user, isLoggedIn, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -21,7 +21,7 @@ const AddTablesPage = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
+          `${BASE_URL}/manager/restaurants/restaurants-by-manager/${user.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const AddTablesPage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8080/api/manager/tables/${form.restaurantId}/add-tables`,
+        `${BASE_URL}/manager/tables/${form.restaurantId}/add-tables`,
         {
           method: "POST",
           headers: {
