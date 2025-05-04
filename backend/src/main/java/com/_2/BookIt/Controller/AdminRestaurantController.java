@@ -47,11 +47,4 @@ public class AdminRestaurantController {
     public ResponseEntity<?> getAdminDashboard() {
         return ResponseEntity.ok(adminRestaurantService.getAdminDashboardStats());
     }
-
-    // Get all restaurants
-    @GetMapping
-    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
-        return ResponseEntity.ok(adminRestaurantService.getAllRestaurants());
-    }
-
 }

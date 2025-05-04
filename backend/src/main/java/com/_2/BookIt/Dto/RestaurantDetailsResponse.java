@@ -22,7 +22,8 @@ public class RestaurantDetailsResponse {
     private String street;
     private String city;
     private String state;
-    private String zipCode;// [lng, lat]
+    private String zipCode;
+    private double[] coordinates;     // [lng, lat]
     private String googleMapsEmbedUrl;
     private List<String> photos;
     private List<ReviewResponse> reviews;

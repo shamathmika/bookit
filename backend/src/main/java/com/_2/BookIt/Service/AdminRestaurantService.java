@@ -61,10 +61,5 @@ public class AdminRestaurantService {
         return restaurantRepository.findById(new ObjectId(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
     }
-
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findAll();
-    }
-
 }
 
