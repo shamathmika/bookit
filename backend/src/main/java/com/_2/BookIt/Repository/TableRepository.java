@@ -34,7 +34,7 @@ public interface TableRepository extends MongoRepository<Table, String> {
 	
 	List<Table> findAllByRestaurantIDIn (List<ObjectId> restaurantIds);
 	
-	List<Table> findByRestaurantIDAndCapacityGreaterThanEqual (ObjectId restaurantId, int capacity);
+	List<Table> findByRestaurantIDAndCapacityGreaterThanEqual (ObjectId restaurantID, int capacity);
 	
 	void deleteByRestaurantID (ObjectId objectId);
 }

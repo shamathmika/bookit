@@ -32,7 +32,13 @@ public interface BookingRepository extends MongoRepository<Booking, ObjectId> {
 			"{ '$count': 'count' }"
 	})
 	Long countBookingsLastMonth ();
-	
+
+	@Query("{ 'restaurantID': ?0, 'dateTime': { $gte: ?1, $lt: ?2 } }")
+	List<Booking> findBookingsByRestaurantIdAndDate(ObjectId restaurantID, Date start, Date end);
+
+	List<Booking> findByRestaurantIDAndDateTimeBetween(ObjectId restaurantID, Date start, Date end);
+
+
 	@Query ("{ 'tableID': ?0, 'dateTime': ?1, 'status': { $in: ?2 } }")
 	List<Booking> findByTableIDAndDateTimeAndStatusIn (ObjectId tableId, java.util.Date dateTime, List<String> statuses);
 	

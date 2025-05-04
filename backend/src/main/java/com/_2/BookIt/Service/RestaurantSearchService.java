@@ -7,14 +7,11 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +32,8 @@ public class RestaurantSearchService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
+    private static final ZoneId ZONE_SJ = ZoneId.of("America/Los_Angeles");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
 
     public List<RestaurantSearchResponse> search(
             String name,
@@ -45,17 +43,29 @@ public class RestaurantSearchService {
             String datetimeStr,
             int people
     ) {
-        Date now = new Date();
-        Date inputTime = now;
+        ZonedDateTime now = ZonedDateTime.now(ZONE_SJ).truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime inputTime = now;
+        boolean isToday = true;
         if (datetimeStr != null) {
-            inputTime = Date.from(Instant.parse(datetimeStr));
+            inputTime = Instant.parse(datetimeStr).atZone(ZONE_SJ);
+            isToday = inputTime.toLocalDate().isEqual(now.toLocalDate());
         }
 
-        List<Date> timesToCheck = List.of(
-                shiftTime(inputTime, -30),
-                inputTime,
-                shiftTime(inputTime, 30)
-        );
+        List<ZonedDateTime> slotsToCheck;
+        if (isToday && inputTime.isBefore(now.plusMinutes(30))) {
+            int minute = now.getMinute();
+            int minutesToNextSlot = (minute % 30 == 0) ? 0 : 30 - (minute % 30);
+            ZonedDateTime slot0 = now.plusMinutes(minutesToNextSlot).truncatedTo(ChronoUnit.MINUTES);
+            ZonedDateTime slot1 = slot0.plusMinutes(30);
+            slotsToCheck = List.of(slot0, slot1);
+        } else {
+            long minute = inputTime.getMinute();
+            long minuteRoundedDown = (minute / 30) * 30;
+            ZonedDateTime slotMid = inputTime.withMinute((int) minuteRoundedDown).withSecond(0).withNano(0);
+            ZonedDateTime slotBefore = slotMid.minusMinutes(30);
+            ZonedDateTime slotAfter = slotMid.plusMinutes(30);
+            slotsToCheck = List.of(slotBefore, slotMid, slotAfter);
+        }
 
         List<Restaurant> restaurants = restaurantRepo.findAll().stream()
                 .filter(r -> r.getStatus().toString().equals("ACTIVE"))
@@ -74,69 +84,64 @@ public class RestaurantSearchService {
         }
         if (restaurants.isEmpty()) return List.of();
 
-        List<ObjectId> restaurantIds = restaurants.stream()
-                .map(Restaurant::getId)
-                .toList();
+        List<ObjectId> restaurantIds = restaurants.stream().map(Restaurant::getId).toList();
 
         Map<ObjectId, List<Table>> tablesByRestaurant = tableRepo.findAllByRestaurantIDIn(restaurantIds).stream()
                 .filter(t -> t.getCapacity() >= people)
                 .collect(Collectors.groupingBy(Table::getRestaurantID));
 
-        List<Booking> bookings = bookingRepo.findByRestaurantIDInAndDateTimeInAndStatusIn(
-                restaurantIds, timesToCheck, List.of("confirmed", "pending")
-        );
-        Map<Date, Map<ObjectId, Set<ObjectId>>> booked = new HashMap<>();
-        for (Date slot : timesToCheck) booked.put(slot, new HashMap<>());
-        for (Booking b : bookings) {
-            booked.get(b.getDateTime())
-                    .computeIfAbsent(b.getRestaurantID(), k -> new HashSet<>())
-                    .add(b.getTableID());
-        }
-
-        Date startOfDay = Date.from(inputTime.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate().atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
-        Date endOfDay = Date.from(inputTime.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate().plusDays(1).atStartOfDay(ZoneId.systemDefault())
-                .minusSeconds(1)
-                .toInstant());
+        ZonedDateTime startOfDay = inputTime.toLocalDate().atStartOfDay(ZONE_SJ);
+        ZonedDateTime endOfDay = startOfDay.plusDays(1).minusSeconds(1);
 
         Map<ObjectId, Long> bookedTodayMap = new HashMap<>();
-        for (BookingCount bc : bookingRepo.countConfirmedTodayByRestaurant(restaurantIds, startOfDay, endOfDay)) {
+        for (BookingCount bc : bookingRepo.countConfirmedTodayByRestaurant(
+                restaurantIds,
+                Date.from(startOfDay.toInstant()),
+                Date.from(endOfDay.toInstant())
+        )) {
             bookedTodayMap.put(bc.getId(), bc.getCount());
         }
+
         Map<ObjectId, Long> reviewCountMap = new HashMap<>();
         for (ReviewCount rc : reviewRepo.countReviewsByRestaurant(restaurantIds)) {
             reviewCountMap.put(rc.getId(), rc.getCount());
         }
 
-        LocalDateTime nowLDT = LocalDateTime.now();
-        boolean isToday = inputTime.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-                .isEqual(nowLDT.toLocalDate());
-
         List<RestaurantSearchResponse> result = new ArrayList<>();
         for (Restaurant r : restaurants) {
             ObjectId restId = r.getId();
             List<Table> tables = tablesByRestaurant.getOrDefault(restId, List.of());
+            if (tables.isEmpty()) continue;
+
             List<String> availableAt = new ArrayList<>();
-            for (Date slot : timesToCheck) {
-                if (isToday && slot.before(now)) continue;
+            LocalTime opening = LocalTime.parse(r.getOpeningTime().toUpperCase(), TIME_FORMATTER);
+            LocalTime closing = LocalTime.parse(r.getClosingTime().toUpperCase(), TIME_FORMATTER);
+            int totalTables = tables.size();
 
-                Set<ObjectId> busy = booked.get(slot).getOrDefault(restId, Set.of());
-                LocalTime slotTime = slot.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-                LocalTime opening = LocalTime.parse(r.getOpeningTime(), TIME_FORMATTER);
-                LocalTime closing = LocalTime.parse(r.getClosingTime(), TIME_FORMATTER);
+            List<ObjectId> tableIds = tables.stream().map(t -> new ObjectId(t.getId())).toList();
+            List<Booking> bookingsToday = bookingRepo.findByTableIDInAndDateTimeBetweenAndStatusIn(
+                    tableIds,
+                    Date.from(startOfDay.toInstant()),
+                    Date.from(endOfDay.toInstant()),
+                    List.of("confirmed", "pending")
+            );
 
-                boolean open = !slotTime.isBefore(opening) && !slotTime.isAfter(closing);
+            Map<String, Long> bookingCountBySlot = bookingsToday.stream()
+                    .map(booking -> booking.getDateTime().toInstant().atZone(ZONE_SJ).toLocalTime()
+                            .truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ofPattern("HH:mm")))
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-                if (tables.stream().anyMatch(t -> !busy.contains(t.getId())) && open) {
-                    availableAt.add(format(slot));
+            for (ZonedDateTime slot : slotsToCheck) {
+                LocalTime slotTime = slot.toLocalTime();
+                if (slotTime.isBefore(opening) || !slotTime.isBefore(closing)) continue;
+
+                String slotStr = slotTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+                long bookedCount = bookingCountBySlot.getOrDefault(slotStr, 0L);
+                if (bookedCount < totalTables) {
+                    availableAt.add(slotStr);
                 }
             }
+
             if (!availableAt.isEmpty()) {
                 result.add(new RestaurantSearchResponse(
                         restId.toHexString(),
@@ -158,12 +163,12 @@ public class RestaurantSearchService {
                 .toList();
     }
 
+
     public RestaurantDetailsResponse getRestaurantDetails(String id) {
         ObjectId objectId = new ObjectId(id);
         Restaurant r = restaurantRepo.findById(objectId).orElseThrow();
         List<Review> reviews = reviewRepo.findByRestaurantID(objectId);
 
-        // ✅ Enrich reviews with customer names
         List<ReviewResponse> enrichedReviews = reviews.stream().map(review -> {
             String customerName = userRepository.findById(review.getCustomerID().toHexString())
                     .map(User::getName)
@@ -171,28 +176,25 @@ public class RestaurantSearchService {
             return new ReviewResponse(review, customerName);
         }).toList();
 
-        Date now = new Date();
-        Date startOfDay = Date.from(now.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate().atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
-        Date endOfDay = Date.from(now.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate().plusDays(1).atStartOfDay(ZoneId.systemDefault())
-                .minusSeconds(1)
-                .toInstant());
+        ZonedDateTime now = ZonedDateTime.now(ZONE_SJ);
+        ZonedDateTime startOfDay = now.toLocalDate().atStartOfDay(ZONE_SJ);
+        ZonedDateTime endOfDay = startOfDay.plusDays(1).minusSeconds(1);
 
-        long bookedToday = bookingRepo.countConfirmedTodayByRestaurant(List.of(objectId), startOfDay, endOfDay)
+        long bookedToday = bookingRepo.countConfirmedTodayByRestaurant(List.of(objectId),
+                        Date.from(startOfDay.toInstant()), Date.from(endOfDay.toInstant()))
                 .stream().findFirst().map(BookingCount::getCount).orElse(0L);
 
         long totalReviews = reviewRepo.countReviewsByRestaurant(List.of(objectId))
                 .stream().findFirst().map(ReviewCount::getCount).orElse(0L);
 
-        double[] coords = r.getAddress().getLocation().getCoordinates();
-        String mapsUrl = String.format(
-                "https://www.google.com/maps?q=%f,%f&z=15&output=embed",
-                coords[1], coords[0]
-        );
+        String formattedAddress = String.format("%s, %s, %s %s",
+                r.getAddress().getStreet(),
+                r.getAddress().getCity(),
+                r.getAddress().getState(),
+                r.getAddress().getZipCode()
+        ).replace(" ", "+");
+
+        String mapsUrl = "https://www.google.com/maps?q=" + formattedAddress + "&z=15&output=embed";
 
         return new RestaurantDetailsResponse(
                 r.getId().toHexString(),
@@ -208,24 +210,9 @@ public class RestaurantSearchService {
                 r.getAddress().getCity(),
                 r.getAddress().getState(),
                 r.getAddress().getZipCode(),
-                coords,
                 mapsUrl,
                 r.getPhotos(),
                 enrichedReviews
         );
     }
-
-    private Date shiftTime(Date date, int minutes) {
-        return Date.from(date.toInstant().plus(minutes, ChronoUnit.MINUTES));
-    }
-
-    private String format(Date date) {
-        return date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalTime()
-                .truncatedTo(ChronoUnit.MINUTES)
-                .toString();
-    }
-
-
 }
