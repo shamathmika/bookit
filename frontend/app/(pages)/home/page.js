@@ -175,7 +175,7 @@ export default function Component() {
             >
               <div className="flex gap-4">
                 <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                  {restaurant.photos && restaurant.photos.length > 0 ? (
+                  {restaurant.photos && restaurant.photos.length > 0 && restaurant.photos[0] ? (
                     <Image
                       src={restaurant.photos[0]}
                       alt={restaurant.name}
@@ -225,7 +225,7 @@ export default function Component() {
                 >
                   <div className="flex gap-4">
                     <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                      {restaurant.photos && restaurant.photos.length > 0 ? (
+                      {restaurant.photos && restaurant.photos.length > 0 && restaurant.photos[0] ? (
                         <Image
                           src={restaurant.photos[0]}
                           alt={restaurant.name}
@@ -277,7 +277,7 @@ export default function Component() {
                 >
                   <div className="flex gap-4">
                     <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                      {restaurant.photos && restaurant.photos.length > 0 ? (
+                      {restaurant.photos && restaurant.photos.length > 0 && restaurant.photos[0] ? (
                         <Image
                           src={restaurant.photos[0]}
                           alt={restaurant.name}
