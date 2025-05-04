@@ -31,7 +31,6 @@ public class BookingController {
 	
 	// ✅ Get bookings by restaurant
 	@GetMapping ("/restaurant/{restaurantId}")
-	@PreAuthorize ("hasRole('ROLE_MANAGER')")
 	public ResponseEntity<List<Booking>> getByRestaurant (@PathVariable String restaurantId) {
 		return ResponseEntity.ok(bookingService.getBookingsByRestaurant(new ObjectId(restaurantId)));
 	}

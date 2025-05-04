@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -41,42 +42,46 @@ public class BookingService {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
+
+	private static final ZoneId ZONE_SJ = ZoneId.of("America/Los_Angeles");
+
 	public Booking createPendingBooking (ObjectId restaurantId, ObjectId userId, LocalDateTime dateTime, int people) {
 		List<Table> tables = tableRepository.findByRestaurantIDAndCapacityGreaterThanEqual(restaurantId, people);
 		if (tables.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No suitable tables available");
 		}
-		
-		Date from = Date.from(dateTime.minusMinutes(29).atZone(ZoneId.systemDefault()).toInstant());
-		Date to = Date.from(dateTime.plusMinutes(29).atZone(ZoneId.systemDefault()).toInstant());
-		
+
+		// Use same ZONE_SJ for accurate comparison and saving
+		ZonedDateTime zonedDateTime = dateTime.atZone(ZONE_SJ);
+		Date from = Date.from(zonedDateTime.minusMinutes(29).toInstant());
+		Date to = Date.from(zonedDateTime.plusMinutes(29).toInstant());
+
 		List<Booking> existing = bookingRepository.findByTableIDInAndDateTimeBetweenAndStatusIn(
 				tables.stream().map(t -> new ObjectId(t.getId())).toList(),
 				from, to,
 				List.of("confirmed", "pending")
 		);
-		
+
 		Set<ObjectId> bookedTables = existing.stream()
 				.map(Booking::getTableID)
 				.collect(Collectors.toSet());
-		
+
 		for (Table table : tables) {
 			if (!bookedTables.contains(new ObjectId(table.getId()))) {
 				Booking booking = new Booking();
 				booking.setRestaurantID(restaurantId);
 				booking.setTableID(new ObjectId(table.getId()));
 				booking.setUserID(userId);
-				booking.setDateTime(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()));
+				booking.setDateTime(Date.from(zonedDateTime.toInstant())); // save in consistent timezone
 				booking.setTotalCustomers(people);
 				booking.setStatus("pending");
 				return bookingRepository.save(booking);
 			}
 		}
-		
+
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available table found for selected time");
 	}
-	
+
 	public Booking confirmBooking (ObjectId bookingId, ConfirmationType type) {
 		Booking booking = bookingRepository.findById(bookingId)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
