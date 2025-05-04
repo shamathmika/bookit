@@ -84,9 +84,24 @@ export function Header() {
   const handleSearchSubmit = async () => {
     try {
       const params = new URLSearchParams();
-      if (searchQuery) params.append("name", searchQuery);
+      
+      // Extract numbers from searchQuery as strings
+      const numbers = searchQuery.match(/\d+/g);
+      let processedSearchQuery = searchQuery;
+      let zipCode = null;
+      
+      if (numbers && numbers.length > 0) {
+        // Use the first number found as zipCode (keeping it as a string)
+        zipCode = numbers[0];
+        // Remove the number from the search query
+        processedSearchQuery = searchQuery.replace(numbers[0], '').trim();
+      }
+      
+      if (processedSearchQuery) params.append("name", processedSearchQuery);
       if (location) params.append("location", location);
       if (guestCount) params.append("people", guestCount);
+      if (zipCode) params.append("zipCode", zipCode);
+      
       const combined = new Date(
         date.getFullYear(), date.getMonth(), date.getDate(),
         time.getHours(), time.getMinutes()

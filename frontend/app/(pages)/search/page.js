@@ -25,11 +25,13 @@ export default function SearchPage() {
         const people = searchParams.get("people") || "1";
         const datetime = searchParams.get("datetime") || "2025-04-28T17:30:00-07:00";
         const name = searchParams.get("name") || "";
+        const zipCode = searchParams.get("zipCode") || "";
 
         const queryParams = new URLSearchParams({
           location,
           people,
           ...(name && { name }),
+          ...(zipCode && { zipCode }),
           datetime
         });
 
