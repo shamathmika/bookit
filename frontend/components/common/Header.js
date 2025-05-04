@@ -13,15 +13,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export function Header() {
-  
   const router = useRouter();
   const pathname = usePathname();
-  const [userRole, setUserRole] = useState(null);
 
-  // New state for login status
+  const { user, isLoggedIn, logout, loading } = useAuth();
+  const userRole = user?.role ?? null;
 
-
-  // Existing state
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [location, setLocation] = useState("");
@@ -29,44 +26,17 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
 
-  const { isLoggedIn, logout } = useAuth();
-
   useEffect(() => {
     if (!isTimePickerOpen) {
       const interval = setInterval(() => {
         setTime(new Date());
-      }, 60000); // Update every min
-    
+      }, 60000);
       return () => clearInterval(interval);
     }
   }, [isTimePickerOpen]);
-  
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const base64Url = token.split('.')[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          }).join(''));
-          const payload = JSON.parse(jsonPayload);
-          setUserRole(payload.role);
-        } catch (error) {
-          console.error("Error parsing token:", error);
-        }
-      }
-    } else {
-      setUserRole(null);
-    }
-  }, [isLoggedIn]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     logout();
-    setUserRole(null);
     router.push("/home");
   };
 
@@ -84,24 +54,21 @@ export function Header() {
   const handleSearchSubmit = async () => {
     try {
       const params = new URLSearchParams();
-      
-      // Extract numbers from searchQuery as strings
+
       const numbers = searchQuery.match(/\d+/g);
       let processedSearchQuery = searchQuery;
       let zipCode = null;
-      
+
       if (numbers && numbers.length > 0) {
-        // Use the first number found as zipCode (keeping it as a string)
         zipCode = numbers[0];
-        // Remove the number from the search query
-        processedSearchQuery = searchQuery.replace(numbers[0], '').trim();
+        processedSearchQuery = searchQuery.replace(numbers[0], "").trim();
       }
-      
+
       if (processedSearchQuery) params.append("name", processedSearchQuery);
       if (location) params.append("location", location);
       if (guestCount) params.append("people", guestCount);
       if (zipCode) params.append("zipCode", zipCode);
-      
+
       const combined = new Date(
         date.getFullYear(), date.getMonth(), date.getDate(),
         time.getHours(), time.getMinutes()
@@ -188,7 +155,7 @@ export function Header() {
               onCalendarClose={() => setIsTimePickerOpen(false)}
               showTimeSelect
               showTimeSelectOnly
-              timeIntervals={15}
+              timeIntervals={30}
               timeCaption="Time"
               dateFormat="h:mm aa"
               className="w-24 outline-none bg-transparent"
@@ -204,45 +171,47 @@ export function Header() {
         </div>
 
         {/* Auth controls */}
-        <div className="flex items-center gap-2">
-          {isLoggedIn ? (
-            <>
-              {userRole === "ROLE_CUSTOMER" && (
-                <Link href="/user">
-                  <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
-                    Profile
-                  </button>
-                </Link>
-              )}
-              {userRole === "ROLE_MANAGER" && (
-                <>
-                  <Link href="/manager/dashboard">
-                    <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
-                      Manage
-                    </button>
-                  </Link>
+        {!loading && (
+          <div className="flex items-center gap-2">
+            {isLoggedIn ? (
+              <>
+                {userRole === "ROLE_CUSTOMER" && (
                   <Link href="/user">
                     <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
                       Profile
                     </button>
                   </Link>
-                </>
-              )}
-              <button
-                onClick={handleLogout}
-                className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link href="/login">
-              <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded">
-                Sign In
-              </button>
-            </Link>
-          )}
-        </div>
+                )}
+                {userRole === "ROLE_MANAGER" && (
+                  <>
+                    <Link href="/manager/dashboard">
+                      <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
+                        Manage
+                      </button>
+                    </Link>
+                    <Link href="/user">
+                      <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded mr-2">
+                        Profile
+                      </button>
+                    </Link>
+                  </>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link href="/login">
+                <button className="border border-[#8B2615] text-[#8B2615] px-4 py-2 rounded">
+                  Sign In
+                </button>
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
