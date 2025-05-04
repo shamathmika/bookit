@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import TableCard from "../components/TableCard";
 
 const ManageTablesPage = () => {
-  const { user } = useAuth();
+  const { user, isLoggedIn, loading: authLoading } = useAuth(); // added loading check
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState("");
   const [tables, setTables] = useState([]);
@@ -12,7 +12,6 @@ const ManageTablesPage = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  // Fetch restaurants
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -21,7 +20,7 @@ const ManageTablesPage = () => {
           `http://localhost:8080/api/manager/restaurants/restaurants-by-manager/${user.id}`,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -42,12 +41,11 @@ const ManageTablesPage = () => {
       }
     };
 
-    if (user?.id) {
+    if (user?.id && user.role === "ROLE_MANAGER") {
       fetchRestaurants();
     }
   }, [user?.id]);
 
-  // Fetch tables when restaurant is selected
   useEffect(() => {
     const fetchTables = async () => {
       if (!selectedRestaurantId) return;
@@ -58,7 +56,7 @@ const ManageTablesPage = () => {
           `http://localhost:8080/api/manager/tables/${selectedRestaurantId}`,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -85,7 +83,7 @@ const ManageTablesPage = () => {
         {
           method: "DELETE",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify([tableId]),
@@ -96,12 +94,11 @@ const ManageTablesPage = () => {
         throw new Error("Failed to delete table");
       }
 
-      // Remove the deleted table from the state
-      setTables(tables.filter(table => table.id !== tableId));
+      setTables(tables.filter((table) => table.id !== tableId));
       setSuccessMessage("Table deleted successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
-      throw new Error(err.message);
+      setError(err.message);
     }
   };
 
@@ -113,7 +110,7 @@ const ManageTablesPage = () => {
         {
           method: "PUT",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -122,16 +119,30 @@ const ManageTablesPage = () => {
         throw new Error("Failed to update table");
       }
 
-      // Update the table in the state
-      setTables(tables.map(table => 
-        table.id === tableId ? { ...table, capacity: seats } : table
-      ));
+      setTables(
+        tables.map((table) =>
+          table.id === tableId ? { ...table, capacity: seats } : table
+        )
+      );
       setSuccessMessage("Table updated successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
-      throw new Error(err.message);
+      setError(err.message);
     }
   };
+
+  // 🔐 Auth protection
+  if (authLoading) {
+    return <div className="text-slate-500">Checking authentication...</div>;
+  }
+
+  if (!isLoggedIn || user?.role !== "ROLE_MANAGER") {
+    return (
+      <div className="text-red-600 text-lg font-semibold">
+        Please log in as a manager to access this page.
+      </div>
+    );
+  }
 
   if (loading) {
     return <div className="text-slate-500">Loading restaurants...</div>;
@@ -142,7 +153,11 @@ const ManageTablesPage = () => {
   }
 
   if (!restaurants.length) {
-    return <div className="text-slate-500">No restaurants found. Add one first.</div>;
+    return (
+      <div className="text-slate-500">
+        No restaurants found. Add one first.
+      </div>
+    );
   }
 
   return (
@@ -161,7 +176,9 @@ const ManageTablesPage = () => {
           onChange={(e) => setSelectedRestaurantId(e.target.value)}
         >
           {restaurants.map((r) => (
-            <option key={r.id} value={r.id}>{r.name}</option>
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
           ))}
         </select>
       </div>
@@ -177,7 +194,7 @@ const ManageTablesPage = () => {
                 table={{
                   id: table.id,
                   number: table.tableNumber,
-                  seats: table.capacity
+                  seats: table.capacity,
                 }}
                 onDelete={handleDeleteTable}
                 onUpdate={handleUpdateTable}
@@ -190,4 +207,4 @@ const ManageTablesPage = () => {
   );
 };
 
-export default ManageTablesPage; 
+export default ManageTablesPage;
