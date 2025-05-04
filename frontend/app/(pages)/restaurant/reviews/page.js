@@ -127,7 +127,7 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
               disabled={submitting}
             />
           </div>
-
+{/* 
           <div className="mb-6">
             <label className="block text-base font-medium mb-2">Photos</label>
             <div className="flex items-center gap-2 flex-wrap">
@@ -160,7 +160,7 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
                 disabled={submitting}
               />
             </div>
-          </div>
+          </div> */}
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md">

@@ -43,24 +43,7 @@ export default function RestaurantDetails() {
       }
       const data = await response.json()
       setRestaurant(data)
-
-      // Get current date in YYYY-MM-DD format
-      const today = new Date()
-      const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-      
-      const searchResponse = await fetch(
-        `${BASE_URL}/restaurants/${params.id}/available-times?date=${formattedDate}&people=1`
-      )
-      if (!searchResponse.ok) {
-        throw new Error('Failed to fetch available times')
-      }
-      const availableTimes = await searchResponse.json()
-      // Take only the first 3 times
-      const limitedTimes = availableTimes.slice(0, 20)
-      setAvailableTimes(limitedTimes)
-      if (limitedTimes.length > 0) {
-        setSelectedTime(limitedTimes[0])
-      }
+      await fetchAvailableTimes(selectedDate)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -68,9 +51,40 @@ export default function RestaurantDetails() {
     }
   }
 
+  const fetchAvailableTimes = async (date) => {
+    try {
+      // Format date to YYYY-MM-DD
+      const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      
+      const searchResponse = await fetch(
+        `${BASE_URL}/restaurants/${params.id}/available-times?date=${formattedDate}&people=${selectedPeople}`
+      )
+      if (!searchResponse.ok) {
+        throw new Error('Failed to fetch available times')
+      }
+      const availableTimes = await searchResponse.json()
+      // Take only the first 20 times
+      const limitedTimes = availableTimes.slice(0, 40)
+      setAvailableTimes(limitedTimes)
+      if (limitedTimes.length > 0) {
+        setSelectedTime(limitedTimes[0])
+      }
+    } catch (err) {
+      setError(err.message)
+      setTimeout(() => setError(null), 3000)
+    }
+  }
+
   useEffect(() => {
     fetchRestaurantDetails()
   }, [params.id])
+
+  // Add effect to fetch available times when date or number of people changes
+  useEffect(() => {
+    if (selectedDate) {
+      fetchAvailableTimes(selectedDate)
+    }
+  }, [selectedDate, selectedPeople])
 
   const handleReservation = async () => {
     try {
@@ -407,7 +421,10 @@ export default function RestaurantDetails() {
                 <div className="relative">
                   <DatePicker
                     selected={selectedDate}
-                    onChange={date => setSelectedDate(date)}
+                    onChange={date => {
+                      setSelectedDate(date)
+                      setSelectedTime(null) // Reset selected time when date changes
+                    }}
                     minDate={new Date()}
                     className="w-full p-2 border rounded"
                     dateFormat="MMMM d, yyyy"
