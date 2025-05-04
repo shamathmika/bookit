@@ -46,7 +46,7 @@ export default function RestaurantDetails() {
 
       // Get current date in YYYY-MM-DD format
       const today = new Date()
-      const formattedDate = today.toISOString().split('T')[0]
+      const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
       
       const searchResponse = await fetch(
         `http://localhost:8080/api/restaurants/${params.id}/available-times?date=${formattedDate}&people=1`
