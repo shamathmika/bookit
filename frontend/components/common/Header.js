@@ -150,7 +150,7 @@ export function Header() {
               <Search className="ml-2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
-                placeholder="Search for Location, Restaurant or Cuisine"
+                placeholder="Search by Name or Zip-code"
                 className="w-full px-2 py-2 outline-none"
                 value={searchQuery}
                 onChange={handleSearch}
