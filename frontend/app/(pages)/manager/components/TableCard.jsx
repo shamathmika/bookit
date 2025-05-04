@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 
 const TableCard = ({ table, onDelete, onUpdate }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -148,14 +148,14 @@ const TableCard = ({ table, onDelete, onUpdate }) => {
   );
 };
 
-TableCard.propTypes = {
-  table: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    number: PropTypes.number.isRequired,
-    seats: PropTypes.number.isRequired,
-  }).isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
-};
+// TableCard.propTypes = {
+//   table: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     number: PropTypes.number.isRequired,
+//     seats: PropTypes.number.isRequired,
+//   }).isRequired,
+//   onDelete: PropTypes.func.isRequired,
+//   onUpdate: PropTypes.func.isRequired,
+// };
 
 export default TableCard; 

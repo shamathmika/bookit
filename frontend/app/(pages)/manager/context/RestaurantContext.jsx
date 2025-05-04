@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 import { uuid } from "../utils/uuid";
 
 const RestaurantContext = createContext();
@@ -65,8 +65,8 @@ export const RestaurantProvider = ({ children }) => {
   );
 };
 
-RestaurantProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+// RestaurantProvider.propTypes = {
+//   children: PropTypes.node.isRequired,
+// };
 
 export const useRestaurantContext = () => useContext(RestaurantContext); 

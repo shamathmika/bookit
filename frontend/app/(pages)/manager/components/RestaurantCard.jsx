@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 import StatBadge from "./StatBadge";
 import { useRouter } from "next/navigation";
 
@@ -139,23 +139,23 @@ const RestaurantCard = ({ restaurant, onDelete }) => {
   );
 };
 
-RestaurantCard.propTypes = {
-  restaurant: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    image: PropTypes.string,
-    address: PropTypes.string,
-    phone: PropTypes.string,
-    cuisine: PropTypes.string,
-    costRating: PropTypes.number,
-    rating: PropTypes.number,
-    status: PropTypes.string,
-    openingTime: PropTypes.string,
-    closingTime: PropTypes.string,
-    approvalStatus: PropTypes.string,
-  }).isRequired,
-  onDelete: PropTypes.func.isRequired,
-};
+// RestaurantCard.propTypes = {
+//   restaurant: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     name: PropTypes.string.isRequired,
+//     description: PropTypes.string,
+//     image: PropTypes.string,
+//     address: PropTypes.string,
+//     phone: PropTypes.string,
+//     cuisine: PropTypes.string,
+//     costRating: PropTypes.number,
+//     rating: PropTypes.number,
+//     status: PropTypes.string,
+//     openingTime: PropTypes.string,
+//     closingTime: PropTypes.string,
+//     approvalStatus: PropTypes.string,
+//   }).isRequired,
+//   onDelete: PropTypes.func.isRequired,
+// };
 
 export default RestaurantCard; 
