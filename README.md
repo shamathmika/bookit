@@ -11,8 +11,8 @@
 |---------------------------|------------|------------------------------------------------------------------------------------------|
 | **Indraneel Vishwas Sarode** | Frontend   | UI development, customer booking, admin and manager dashboard, AWS and Vercel deployment          |
 | **Vignesh Jetty Ravi**     | Frontend   | Manager dashboard UI, restaurant pages, reviews, integration with backend               |
-| **Jahnavi Kedia**          | Backend    | Customer and manager APIs, booking logic, search, and Swagger documentation             |
-| **Shamathmika**            | Backend    | Authentication, email confirmations, admin APIs, error handling, and data integration  |
+| **Jahnavi Kedia**          | Backend    | Customer and admin APIs, user profile APIs, search, and Swagger documentation             |
+| **Shamathmika**            | Backend    | Authentication, email confirmations, manager APIs, booking API, and mongoDB creation with mock data  |
 
 ---
 
