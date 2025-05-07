@@ -9,10 +9,10 @@
 
 | Member                     | Role       | Contribution Highlights                                                                 |
 |---------------------------|------------|------------------------------------------------------------------------------------------|
-| **Indraneel Vishwas Sarode** | Frontend   | UI development, customer booking, admin and manager dashboard, AWS and Vercel deployment          |
+| **Indraneel Vishwas Sarode** | Frontend | UI development, customer booking, admin and manager dashboard, AWS and Vercel deployment          |
 | **Vignesh Jetty Ravi**     | Frontend   | Manager dashboard UI, restaurant pages, reviews, integration with backend               |
-| **Jahnavi Kedia**          | Backend    | Customer and admin APIs, user profile APIs, search, and Swagger documentation             |
-| **Shamathmika**            | Backend    | Authentication, email confirmations, manager APIs, booking API, and mongoDB creation with mock data  |
+| **Jahnavi Kedia**          | Backend    | Customer and Admin APIs, User Profile APIs, Reviews APIs, Search and list restaurants APIs, Available Restaurants and timeslots APIs, Google Map Integration, Booking stats APIs, Database design, Swagger documentation|
+| **Shamathmika**            | Backend    | Authentication, email confirmations, manager APIs, booking API, Categories APIs and MongoDB creation with mock data  |
 
 ---
 
@@ -58,10 +58,12 @@
 ## 🧩 Features by Role
 
 ### Customer
-- Sign up, login, logout
-- Search restaurants with filters (location, Zip, Name)
+- Sign up, log in, log out
+- Search restaurants with filters (location, Zip, Name, Time, #People)
 - Book and cancel reservations
 - View profile and edit
+- View Reservations
+- View Review
 - Leave reviews and ratings
 - View restaurants on Google Maps
 - Receive email confirmations
@@ -91,4 +93,4 @@
 
 ## 🧪 Testing and Feedback
 
-Each sprint concluded with internal testing and code reviews. Features were verified against the user stories and integration points between frontend and backend were validated through test bookings and admin flows.
+Each sprint concluded with internal testing and code reviews. Features were verified against the user stories, and integration points between the frontend and backend were validated through test bookings and admin flows.
