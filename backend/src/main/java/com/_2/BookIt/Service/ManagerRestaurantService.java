@@ -93,13 +93,17 @@ public class ManagerRestaurantService {
 	}
 	
 	public void deleteRestaurantById (String restaurantId) {
-		restaurantRepository.deleteById(new ObjectId(restaurantId));
+		Restaurant restaurant = restaurantRepository.findById(new ObjectId(restaurantId))
+				.orElseThrow(() -> new RuntimeException("Restaurant not found"));
+		restaurant.setStatus(RestaurantStatus.INACTIVE);
+		restaurantRepository.save(restaurant);
 	}
 	
 	public void deleteRestaurantsByManagerId (String managerId) {
 		List<Restaurant> restaurants = getRestaurantsByManager(managerId);
 		for (Restaurant restaurant : restaurants) {
-			restaurantRepository.deleteById(restaurant.getId());
+			restaurant.setStatus(RestaurantStatus.INACTIVE);
+			restaurantRepository.save(restaurant);
 		}
 	}
 	
