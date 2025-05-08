@@ -69,13 +69,13 @@ export default function Login() {
             <div className="relative">
               <div className="flex border rounded-md overflow-hidden">
                 <div className="flex">
-                  <button
+                  {/* <button
                     type="button"
                     className={`flex items-center justify-center w-12 h-12 ${contactMethod === "phone" ? "bg-gray-100" : "bg-white"}`}
                     onClick={() => setContactMethod("phone")}
                   >
                     <Phone className="h-5 w-5 text-gray-500" />
-                  </button>
+                  </button> */}
                   <button
                     type="button"
                     className={`flex items-center justify-center w-12 h-12 ${contactMethod === "email" ? "bg-gray-100" : "bg-white"}`}
@@ -124,11 +124,11 @@ export default function Login() {
               Sign In
             </button>
 
-            <div className="text-right">
+            {/* <div className="text-right">
               <Link href="/forgot-password" className="text-[#8B2615] text-sm hover:text-[#7a1f12]">
                 Forgot Password?
               </Link>
-            </div>
+            </div> */}
 
             {/* <div className="flex items-center">
               <div className="flex-1 border-t border-gray-300"></div>

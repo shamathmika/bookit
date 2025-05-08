@@ -118,22 +118,22 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-[#1a1a1a] text-white flex flex-col">
-        <div className="p-6 border-b border-gray-700">
-          <h1 className="text-xl font-medium">Admin</h1>
+      <div className="w-64 bg-gradient-to-b from-indigo-900 to-indigo-800 text-white flex flex-col shadow-lg">
+        <div className="p-6 border-b border-indigo-700">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-200 to-white bg-clip-text text-transparent">Admin Panel</h1>
         </div>
 
-        <nav className="flex-1">
-          <Link href="/admin" className="flex items-center px-6 py-4 bg-[#b8a8a8] text-black">
-            Dashboard
+        <nav className="flex-1 py-4">
+          <Link href="/admin" className="flex items-center px-6 py-4 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-r-lg shadow-md">
+            <span className="mr-2">📊</span> Dashboard
           </Link>
-          <Link href="/admin/restaurants" className="flex items-center px-6 py-4 hover:bg-gray-800">
-            Restaurants
+          <Link href="/admin/restaurants" className="flex items-center px-6 py-4 hover:bg-indigo-700/50 transition-colors duration-200">
+            <span className="mr-2">🍽️</span> Restaurants
           </Link>
-          <Link href="/admin/remove" className="flex items-center px-6 py-4  hover:bg-gray-800">
-            Delete Restaurant
+          <Link href="/admin/remove" className="flex items-center px-6 py-4 hover:bg-indigo-700/50 transition-colors duration-200">
+            <span className="mr-2">🗑️</span> Delete Restaurant
           </Link>
         </nav>
       </div>
@@ -141,56 +141,66 @@ export default function AdminDashboard() {
       {/* Main content */}
       <div className="flex-1 overflow-auto">
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-8">DASHBOARD</h1>
+          <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Dashboard Overview</h1>
 
           {/* Stats cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div className="bg-gray-200 rounded-lg p-6">
-              <h2 className="text-lg font-medium mb-4 text-center">Total Restaurants</h2>
-              <p className="text-5xl font-bold text-center">{dashboardData.totalRestaurants}</p>
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+              <h2 className="text-lg font-semibold mb-4 text-gray-600">Total Restaurants</h2>
+              <p className="text-5xl font-bold text-blue-600">{dashboardData.totalRestaurants}</p>
             </div>
 
-            <div className="bg-gray-200 rounded-lg p-6">
-              <h2 className="text-lg font-medium mb-4 text-center">Pending Approvals</h2>
-              <p className="text-5xl font-bold text-center">{dashboardData.pendingApprovals}</p>
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+              <h2 className="text-lg font-semibold mb-4 text-gray-600">Pending Approvals</h2>
+              <p className="text-5xl font-bold text-yellow-500">{dashboardData.pendingApprovals}</p>
             </div>
 
-            <div className="bg-gray-200 rounded-lg p-6">
-              <h2 className="text-lg font-medium mb-4 text-center">Total Bookings</h2>
-              <p className="text-5xl font-bold text-center">{monthlyStats[0]?.totalBookings || 0}</p>
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+              <h2 className="text-lg font-semibold mb-4 text-gray-600">Total Bookings</h2>
+              <p className="text-5xl font-bold text-green-600">{monthlyStats[0]?.totalBookings || 0}</p>
             </div>
 
-            <div className="bg-gray-200 rounded-lg p-6">
-              <h2 className="text-lg font-medium mb-4 text-center">Cancellations</h2>
-              <p className="text-5xl font-bold text-center">{monthlyStats[0]?.totalCancellations || 0}</p>
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+              <h2 className="text-lg font-semibold mb-4 text-gray-600">Cancellations</h2>
+              <p className="text-5xl font-bold text-red-500">{monthlyStats[0]?.totalCancellations || 0}</p>
             </div>
           </div>
 
           {/* Restaurant-wise Stats */}
           <div className="mb-12">
-            <h2 className="text-2xl font-medium mb-6">Restaurant Performance</h2>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Restaurant Performance</h2>
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Restaurant Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Bookings</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cancellations</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Success Rate</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Restaurant Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total Bookings</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Cancellations</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Success Rate</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {bookingStats.map((stat) => (
-                    <tr key={stat.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <tr key={stat.id} className="hover:bg-gray-50 transition-colors duration-200">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {restaurantNames[stat.restaurantID] || "Loading..."}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{stat.totalBookings}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{stat.totalCancellations}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {stat.totalBookings > 0 
-                          ? `${Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100)}%`
-                          : 'N/A'}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          stat.totalBookings > 0 
+                            ? Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100) >= 80
+                              ? 'bg-green-100 text-green-800'
+                              : Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100) >= 50
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {stat.totalBookings > 0 
+                            ? `${Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100)}%`
+                            : 'N/A'}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -201,15 +211,15 @@ export default function AdminDashboard() {
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border rounded-lg p-6">
-              <h3 className="text-lg font-medium mb-4">Monthly Reservations</h3>
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+              <h3 className="text-xl font-bold mb-6 text-gray-800">Monthly Reservations</h3>
               <div className="h-64">
                 <MonthlyReservationsChart data={monthlyStats} />
               </div>
             </div>
 
-            <div className="border rounded-lg p-6">
-              <h3 className="text-lg font-medium mb-4">Popular Time Slots</h3>
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+              <h3 className="text-xl font-bold mb-6 text-gray-800">Popular Time Slots</h3>
               <div className="h-64">
                 <PopularTimeSlotsChart data={popularSlots} />
               </div>
@@ -243,7 +253,7 @@ function MonthlyReservationsChart({ data }) {
 
   return (
     <div className="h-full">
-      <div className="flex h-full items-end space-x-2">
+      <div className="flex h-full items-end space-x-4">
         {chartData.map((stat, index) => {
           const barHeight = (stat.totalBookings / maxValue) * height;
           const cancellationHeight = (stat.totalCancellations / maxValue) * height;
@@ -252,27 +262,27 @@ function MonthlyReservationsChart({ data }) {
             <div key={index} className="flex-1 flex flex-col items-center">
               <div className="w-full flex flex-col items-center">
                 <div 
-                  className="w-8 bg-blue-500 rounded-t"
+                  className="w-10 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg shadow-md"
                   style={{ height: `${barHeight}px` }}
                 />
                 <div 
-                  className="w-8 bg-red-500 rounded-t"
+                  className="w-10 bg-gradient-to-t from-red-500 to-red-400 rounded-t-lg shadow-md"
                   style={{ height: `${cancellationHeight}px` }}
                 />
               </div>
-              <div className="text-xs mt-2">{stat.month}</div>
+              <div className="text-sm font-medium mt-2 text-gray-600">{stat.month}</div>
             </div>
           );
         })}
       </div>
-      <div className="flex justify-between mt-4 text-xs">
+      <div className="flex justify-between mt-6 text-sm">
         <div className="flex items-center">
-          <div className="w-3 h-3 bg-blue-500 mr-1"></div>
-          <span>Bookings</span>
+          <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-blue-400 rounded mr-2"></div>
+          <span className="text-gray-600">Bookings</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 bg-red-500 mr-1"></div>
-          <span>Cancellations</span>
+          <div className="w-4 h-4 bg-gradient-to-r from-red-500 to-red-400 rounded mr-2"></div>
+          <span className="text-gray-600">Cancellations</span>
         </div>
       </div>
     </div>
@@ -295,25 +305,25 @@ function PopularTimeSlotsChart({ data }) {
 
   return (
     <div className="h-full">
-      <div className="flex h-full items-end space-x-2">
+      <div className="flex h-full items-end space-x-4">
         {timeSlots.map((time, index) => {
           const barHeight = (values[index] / maxValue) * height;
           
           return (
             <div key={time} className="flex-1 flex flex-col items-center">
               <div 
-                className="w-8 bg-green-500 rounded-t"
+                className="w-10 bg-gradient-to-t from-green-500 to-green-400 rounded-t-lg shadow-md"
                 style={{ height: `${barHeight}px` }}
               />
-              <div className="text-xs mt-2">{time}</div>
+              <div className="text-sm font-medium mt-2 text-gray-600">{time}</div>
             </div>
           );
         })}
       </div>
-      <div className="flex justify-center mt-4 text-xs">
+      <div className="flex justify-center mt-6 text-sm">
         <div className="flex items-center">
-          <div className="w-3 h-3 bg-green-500 mr-1"></div>
-          <span>Bookings</span>
+          <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-green-400 rounded mr-2"></div>
+          <span className="text-gray-600">Bookings</span>
         </div>
       </div>
     </div>
