@@ -9,8 +9,8 @@
 
 | Member                     | Role       | Contribution Highlights                                                                 |
 |---------------------------|------------|------------------------------------------------------------------------------------------|
-| **Indraneel Vishwas Sarode** | Frontend | UI development, customer booking, admin and manager dashboard, AWS and Vercel deployment          |
-| **Vignesh Jetty Ravi**     | Frontend   | Manager dashboard UI, restaurant pages, reviews, integration with backend               |
+| **Indraneel Vishwas Sarode** | Frontend | customer UI, Profile UI , customer booking, Home and restaurant pages, AWS and Vercel deployment          |
+| **Vignesh Jetty Ravi**     | Frontend   | manager ui, admin ui, integration with backend               |
 | **Jahnavi Kedia**          | Backend    | Customer and Admin APIs, User Profile APIs, Reviews APIs, Search and list restaurants APIs, Available Restaurants and timeslots APIs, Google Map Integration, Booking stats APIs, Database design, Swagger documentation|
 | **Shamathmika**            | Backend    | Authentication, email confirmations, manager APIs, booking API, Categories APIs and MongoDB creation with mock data  |
 
