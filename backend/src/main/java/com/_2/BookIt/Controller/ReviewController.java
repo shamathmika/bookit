@@ -2,7 +2,9 @@ package com._2.BookIt.Controller;
 
 import com._2.BookIt.Dto.ReviewResponse;
 import com._2.BookIt.Dto.StandaloneReviewRequest;
+import com._2.BookIt.Model.Restaurant;
 import com._2.BookIt.Model.Review;
+import com._2.BookIt.Repository.RestaurantRepository;
 import com._2.BookIt.Repository.ReviewRepository;
 import com._2.BookIt.Security.SecurityUtil;
 import com._2.BookIt.Service.ReviewService;
@@ -26,6 +28,8 @@ public class ReviewController {
 	private ReviewService reviewService;
 	@Autowired
 	private ReviewRepository reviewRepository;
+	@Autowired
+	private RestaurantRepository restaurantRepository;
 	
 	@PostMapping
 	@PreAuthorize ("hasRole('ROLE_CUSTOMER')")
@@ -94,12 +98,13 @@ public class ReviewController {
 		reviews.forEach(r -> System.out.println("📄 Review: " + r));
 		return reviews;
 	}
-	
-	@PostMapping ("/standalone")
-	@PreAuthorize ("hasRole('ROLE_CUSTOMER')")
-	public ResponseEntity<Review> postStandaloneReview (
-			@RequestPart ("request") @Valid StandaloneReviewRequest request,
-			@RequestPart (value = "photos", required = false) List<MultipartFile> photos) {
+
+	@PostMapping("/standalone")
+	@PreAuthorize("hasRole('ROLE_CUSTOMER')")
+	public ResponseEntity<Review> postStandaloneReview(
+			@RequestPart("request") @Valid StandaloneReviewRequest request,
+			@RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+
 		Review review = Review.builder()
 				.restaurantID(new ObjectId(request.getRestaurantID()))
 				.customerID(new ObjectId(request.getCustomerID()))
@@ -107,12 +112,32 @@ public class ReviewController {
 				.comments(request.getComments())
 				.date(request.getDate() != null ? request.getDate() : new Date())
 				.build();
-		
+
+		// Upload photos if present
 		List<MultipartFile> photoList = photos != null ? photos : List.of();
 		List<String> imageUrls = reviewService.uploadReviewImages(photoList);
 		review.setPhotos(imageUrls);
-		
+
+		// Save review
 		Review saved = reviewRepository.save(review);
+
+		// ⬇️ Recalculate and update avg star rating
+		ObjectId restaurantId = saved.getRestaurantID();
+		List<Review> allReviews = reviewRepository.findByRestaurantID(restaurantId);
+		double avgRating = allReviews.stream()
+				.mapToInt(Review::getRating)
+				.average()
+				.orElse(0.0);
+
+		// Optional: round to 1 decimal
+		avgRating = Math.round(avgRating * 10) / 10.0;
+
+		// Update restaurant
+		Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+		restaurant.setAvgStarRating(avgRating);
+		restaurantRepository.save(restaurant);
+		System.out.println(">>> Saved avgRating: " + restaurant.getAvgStarRating());
+		System.out.println(">>> Reloaded from DB: " + restaurantRepository.findById(restaurant.getId()).get().getAvgStarRating());
 		return ResponseEntity.ok(saved);
 	}
 	
