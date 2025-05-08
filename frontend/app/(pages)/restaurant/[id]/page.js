@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Search, User, Calendar, Clock, MapPin, Mail, Phone, ChevronDown, Github, Twitter, X, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import ReviewModal from "../reviews/page"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useAuth } from "@/context/AuthContext"
@@ -19,11 +19,18 @@ export default function RestaurantDetails() {
   const [selectedImage, setSelectedImage] = useState(null)
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   // Reservation form state
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const datetimeParam = searchParams.get("datetime")
+    return datetimeParam ? new Date(datetimeParam) : new Date()
+  })
   const [selectedTime, setSelectedTime] = useState(null)
-  const [selectedPeople, setSelectedPeople] = useState(2)
+  const [selectedPeople, setSelectedPeople] = useState(() => {
+    const peopleParam = searchParams.get("people")
+    return peopleParam ? parseInt(peopleParam) : 2
+  })
   const [showPeopleDropdown, setShowPeopleDropdown] = useState(false)
   const [showTimeDropdown, setShowTimeDropdown] = useState(false)
 

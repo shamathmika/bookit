@@ -84,7 +84,9 @@ const DashboardPage = () => {
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
-          {restaurants.map((r) => (
+          {restaurants
+            .filter(r => r.status !== "inactive")
+            .map((r) => (
             <RestaurantCard
               key={r.id}
               restaurant={{
