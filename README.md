@@ -34,7 +34,10 @@
 - [Class Diagram](https://drive.google.com/file/d/1HSTc2PXmXjUZQByO7DM0Dz6unUvjyvv5/view?usp=sharing)  
 - [Activity Diagram](https://drive.google.com/file/d/1DZKmHHuBFLkwHV8Z79T8U1ZggTlJWXuJ/view?usp=sharing)  
 - [DB Schema (Google Doc)](https://docs.google.com/document/d/1VPLPccsg1l33Uzcl9F5VwUg11EFMA4N3II2IwibCpAQ/edit?tab=t.0)  
-- [MongoDB Sample Data](https://drive.google.com/file/d/1H5ZKha7Na9XGZsErLApgVOEVuUxYx4w2/view?usp=sharing)  
+- [MongoDB Sample Data](https://drive.google.com/file/d/1H5ZKha7Na9XGZsErLApgVOEVuUxYx4w2/view?usp=sharing)
+- [Component Diagram](https://docs.google.com/document/d/1bsJhaqyonQEhmoKLUy4EoYucErJCujauD5KMgFh-EFQ/edit?tab=t.0)
+- [Deployment Diagram](https://docs.google.com/document/d/1bsJhaqyonQEhmoKLUy4EoYucErJCujauD5KMgFh-EFQ/edit?tab=t.0)
+  
 
 ---
 
@@ -78,7 +81,7 @@
 - Remove listings
 - View analytics dashboard
 
-
+  
 ---
 
 ## ✅ Key Highlights from Sprints
@@ -87,7 +90,8 @@
 - **Sprint 2:** Authentication system, basic frontend, backend setup  
 - **Sprint 3:** Restaurant view, search API integration, categories  
 - **Sprint 4:** Full booking flow, reviews, profile, cancellation, emails  
-- **Sprint 5:** Admin & Manager dashboards, CRUD APIs, AWS deployment  
+- **Sprint 5:** Admin & Manager dashboards, CRUD APIs, AWS deployment
+- [Sprint Journal](https://docs.google.com/document/d/1E3iDQT91J5gzZSDd2M-2Tri0JzHRwyQggnvs3R2HQUE/edit?usp=sharing) 
 
 ---
 
