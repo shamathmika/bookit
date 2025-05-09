@@ -36,6 +36,10 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
       setSubmitting(true)
       setError(null)
 
+      if (!user) {
+        throw new Error('Please login to submit review')
+      }
+
       const reviewData = {
         restaurantID: restaurantId,
         customerID: user.id,
@@ -72,6 +76,9 @@ export default function ReviewModal({ isOpen, onClose, restaurantName = "Restaur
       })
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please login to submit review')
+        }
         throw new Error('Failed to submit review')
       }
 
