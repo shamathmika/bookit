@@ -160,10 +160,10 @@ export default function AdminDashboard() {
               <p className="text-5xl font-bold text-green-600">{monthlyStats[0]?.totalBookings || 0}</p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+            {/* <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
               <h2 className="text-lg font-semibold mb-4 text-gray-600">Cancellations</h2>
               <p className="text-5xl font-bold text-red-500">{monthlyStats[0]?.totalCancellations || 0}</p>
-            </div>
+            </div> */}
           </div>
 
           {/* Restaurant-wise Stats */}
@@ -180,26 +180,26 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {bookingStats.map((stat) => (
-                    <tr key={stat.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  {bookingStats
+                    .filter(stat => stat.restaurantName !== "inactive")
+                    .map((stat) => (
+                    <tr key={stat.restaurantName} className="hover:bg-gray-50 transition-colors duration-200">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {restaurantNames[stat.restaurantID] || "Loading..."}
+                        {stat.restaurantName}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{stat.totalBookings}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{stat.totalCancellations}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          stat.totalBookings > 0 
-                            ? Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100) >= 80
+                          stat.successRate === "N/A" 
+                            ? 'bg-gray-100 text-gray-800'
+                            : parseInt(stat.successRate) >= 80
                               ? 'bg-green-100 text-green-800'
-                              : Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100) >= 50
+                              : parseInt(stat.successRate) >= 50
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-red-100 text-red-800'
-                            : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {stat.totalBookings > 0 
-                            ? `${Math.round(((stat.totalBookings - stat.totalCancellations) / stat.totalBookings) * 100)}%`
-                            : 'N/A'}
+                          {stat.successRate}
                         </span>
                       </td>
                     </tr>
