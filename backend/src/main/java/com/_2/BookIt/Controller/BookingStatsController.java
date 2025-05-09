@@ -1,5 +1,6 @@
 package com._2.BookIt.Controller;
 
+import com._2.BookIt.Dto.BookingSummary;
 import com._2.BookIt.Model.Booking;
 import com._2.BookIt.Model.BookingStats;
 import com._2.BookIt.Repository.RestaurantRepository;
@@ -59,9 +60,10 @@ public class BookingStatsController {
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<BookingStats>> getAllStats() {
-        return ResponseEntity.ok(bookingStatsService.getAllStats());
+    public ResponseEntity<List<BookingSummary>> getAllStats() {
+        return ResponseEntity.ok(bookingStatsService.getLiveBookingStats());
     }
+
 
     @PostMapping("/update")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")

@@ -19,7 +19,8 @@ public interface BookingRepository extends MongoRepository<Booking, ObjectId> {
 	List<Booking> findByRestaurantIDInAndDateTimeInAndStatusIn (
 			List<ObjectId> restaurantIds, List<Date> times, List<String> status
 	);
-	
+
+
 	
 	@Aggregation (pipeline = {
 			"{ '$match': { 'status': 'confirmed', 'dateTime': { '$gte': ?1, '$lte': ?2 }, 'restaurantID': { '$in': ?0 } } }",
@@ -43,4 +44,9 @@ public interface BookingRepository extends MongoRepository<Booking, ObjectId> {
 	List<Booking> findByTableIDAndDateTimeAndStatusIn (ObjectId tableId, java.util.Date dateTime, List<String> statuses);
 	
 	List<Booking> findByTableIDInAndDateTimeBetweenAndStatusIn (List<ObjectId> tableIds, Date from, Date to, List<String> statuses);
+
+
+	long countByRestaurantID(ObjectId restaurantID);
+
+	long countByRestaurantIDAndStatus(ObjectId restaurantID, String status);
 }

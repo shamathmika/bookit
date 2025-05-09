@@ -165,6 +165,10 @@ public class RestaurantSearchService {
 
 
     public RestaurantDetailsResponse getRestaurantDetails(String id) {
+        if (id == null || id.length() != 24) {
+            throw new IllegalArgumentException("Invalid restaurant ID: " + id);
+        }
+
         ObjectId objectId = new ObjectId(id);
         Restaurant r = restaurantRepo.findById(objectId).orElseThrow();
         List<Review> reviews = reviewRepo.findByRestaurantID(objectId);
