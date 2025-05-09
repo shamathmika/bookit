@@ -66,23 +66,23 @@ export default function AdminDashboard() {
 
         // Fetch restaurant names for each ID
         const names = {}
-        for (const stat of bookingStatsData) {
-          try {
-            const restaurantResponse = await fetch(`${BASE_URL}/restaurants/${stat.restaurantID}`, {
-              headers: {
-                'Authorization': `Bearer ${user.token}`,
-                'Content-Type': 'application/json'
-              }
-            })
-            if (restaurantResponse.ok) {
-              const restaurantData = await restaurantResponse.json()
-              names[stat.restaurantID] = restaurantData.name
-            }
-          } catch (err) {
-            console.error(`Failed to fetch restaurant name for ID ${stat.restaurantID}:`, err)
-            names[stat.restaurantID] = "Unknown Restaurant"
-          }
-        }
+        // for (const stat of bookingStatsData) {
+        //   try {
+        //     const restaurantResponse = await fetch(`${BASE_URL}/restaurants/${stat.restaurantID}`, {
+        //       headers: {
+        //         'Authorization': `Bearer ${user.token}`,
+        //         'Content-Type': 'application/json'
+        //       }
+        //     })
+        //     if (restaurantResponse.ok) {
+        //       const restaurantData = await restaurantResponse.json()
+        //       names[stat.restaurantID] = restaurantData.name
+        //     }
+        //   } catch (err) {
+        //     console.error(`Failed to fetch restaurant name for ID ${stat.restaurantID}:`, err)
+        //     names[stat.restaurantID] = "Unknown Restaurant"
+        //   }
+        // }
         setRestaurantNames(names)
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
