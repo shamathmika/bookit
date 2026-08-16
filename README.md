@@ -20,6 +20,7 @@
 
 ## 🎨 UI Wireframes
 
+- [Customer UI](https://www.figma.com/design/oD7iFl2Vo2mKEJdKrAMBOX/CMPE-202-Project---Mavericks---UI-Wireframes---Customer?node-id=0-1)  
 - [Manager UI](https://www.figma.com/design/iVyQgk1tTMJgU2CzBtyX1e/demo-ui-wireframe-restaurant-manager?node-id=1-2)  
 - [Admin UI](https://www.figma.com/design/IfnvPNELrO9PSmxRpXhIJN/admin-wireframe?node-id=0-1)  
 
